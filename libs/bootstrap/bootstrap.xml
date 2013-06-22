@@ -2,7 +2,9 @@
 <library>
     <name>Bootstrap</name>
     <version>2.3.2</version>
+    <link>http://twitter.github.io/bootstrap/</link>
     <description>Sleek, intuitive, and powerful front-end framework for faster and easier web development.</description>
+    <author link="https://twitter.com">Twitter, Inc.</author>
     <files>
         <case type="css">/css/bootstrap.min.css</case>
         <case type="css">/css/bootstrap-responsive.min</case>

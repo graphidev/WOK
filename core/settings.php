@@ -32,16 +32,9 @@
 /**
 	Sytem informations.
 */
-	define('SITE_ADDR', 'http://localhost/graphidev'); // System address
-	define('SITE_URL_REWRITING', true); // Allow URL Rewriting
-	define('SYSTEM_DEFAULT_LANGUAGE', 'fr'); // Default system language
-	define('SYSTEM_IS_UPDATING', false); // Is system updating
-	define('SYSTEM_ADMIN_CONTACT', 'contact@graphidev.fr'); // System admin contact
-	
+	define('SITE_ADDR', 'http://localhost/wok'); // System address
+    
 	define('IS_ACTIVATED_ANALYTICS', false); // Internal analytics system
-	define('SYSTEM_ANALYTICS_API', 'Google Analytics'); // Analytics system (default/Google Analytics)
-	define('GOOGLE_ANALYTICS_ID', 'UA-37956333-1'); // If SYSTEM_ANALYTICS_API = Google Analytics, need GOOGLE_ANALYTICS_ID
 	define('SYSTEM_TIMEZONE', 'Europe/Paris'); // System timezone
-	define('SYSTEM_DEFAULT_DATETIME', 'Y-m-d H:i:s'); // Default date format
 	
 ?>

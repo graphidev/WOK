@@ -8,3 +8,13 @@ This project is a framework made to develop website or web tools easier thanks t
 * ...
 
 Author: Sébastien ALEXANDRE (http://www.graphidev.fr)
+
+
+How to use
+-------------
+
+First of all, this is a development to use.
+
+If you want to use it, please edit .htaccess file :
+* RewriteBase line
+* RewriteRule line

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <name>Bootstrap</name>
+    <version>2.3.2</version>
+    <description>Sleek, intuitive, and powerful front-end framework for faster and easier web development.</description>
+    <files>
+        <case type="css">/css/bootstrap.min.css</case>
+        <case type="css">/css/bootstrap-responsive.min</case>
+        <case type="javascript">/js/bootstrap.min.js</case>
+    </files>
+</library>

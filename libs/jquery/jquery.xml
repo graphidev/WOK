@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <name>jQuery</name>
+    <version>1.10.1</version>
+    <description>Write less, do more</description>
+    <files>
+        <case type="javascript">/jquery-1.10.1.min.js</case>
+    </files>
+</library>

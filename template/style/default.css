@@ -1,0 +1,9 @@
+body {
+    font-size: 90%;
+    //background: url('../img/background.jpg');
+}
+
+#main {
+    width: 1024px;
+    margin: 20px auto;
+}

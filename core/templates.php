@@ -47,7 +47,7 @@
             $xml = new DOMDocument();
 			$xml->load(root(PATH_LIBS."/$name/$name.xml"));
             $library = $xml->getElementsByTagName('library')->item(0);
-            $files = $library->getElementsByTagName('files')->item(0)->getElementsByTagName('case');
+            $files = $library->getElementsByTagName('files')->item(0)->getElementsByTagName('file');
             
             foreach($files as $i => $case) {
                 

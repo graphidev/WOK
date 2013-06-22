@@ -6,8 +6,8 @@
     <description>Sleek, intuitive, and powerful front-end framework for faster and easier web development.</description>
     <author link="https://twitter.com">Twitter, Inc.</author>
     <files>
-        <case type="css">/css/bootstrap.min.css</case>
-        <case type="css">/css/bootstrap-responsive.min</case>
-        <case type="js">/js/bootstrap.min.js</case>
+        <file type="css">/css/bootstrap.min.css</file>
+        <file type="css">/css/bootstrap-responsive.min</file>
+        <file type="js">/js/bootstrap.min.js</file>
     </files>
 </library>

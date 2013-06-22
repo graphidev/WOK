@@ -13,8 +13,10 @@ Author: Sébastien ALEXANDRE (http://www.graphidev.fr)
 How to use
 -------------
 
-First of all, this is a development to use.
+First of all, this is a development version.
 
 If you want to use it, please edit .htaccess file :
 * RewriteBase line
 * RewriteRule line
+
+and /core/settings.php

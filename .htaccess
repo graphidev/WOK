@@ -2,7 +2,7 @@
 # this file analyse and treats all HTTP requests
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /graphidev
+    RewriteBase /wok
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
 

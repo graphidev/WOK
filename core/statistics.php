@@ -441,7 +441,8 @@
 								
 								foreach($list as $i => $case) {
 									
-									if($case->getElementsByTagName('browser')->item(0)->hasAttribute('version') && $case->getElementsByTagName('browser')->item(0)->getAttribute('version') != ''):
+									if($case->getElementsByTagName('browser')->item(0)->hasAttribute('version') 
+                                       && $case->getElementsByTagName('browser')->item(0)->getAttribute('version') != ''):
 										$version = $case->getElementsByTagName('browser')->item(0)->getAttribute('version');
 									else:
 										$browser = @get_browser($case->getElementsByTagName('user_agent')->item(0)->nodeValue, true);

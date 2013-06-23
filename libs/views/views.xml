@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <name>Views</name>
+    <version></version>
+    <link></link>
+    <description></description>
+    <author link=""></author>
+    <files>
+        <file type="php">/views.php</file>
+    </files>
+</library>

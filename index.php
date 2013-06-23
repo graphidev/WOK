@@ -38,10 +38,16 @@
     
 	load_core_library('templates');
 	
+    /**
+     * Special views    
+    **/
+    get_library('views');
+    if(function_exists('views') && views()): 
+
 	/**
      * Statics pages
 	**/
-	if(!empty($GLOBALS['_GET']['REQUEST'])):
+	elseif(!empty($GLOBALS['_GET']['REQUEST'])):
 
 		if(is_dir(root(PATH_TEMPLATE.'/'.$GLOBALS['_GET']['REQUEST']))):
 			$dirname = dirname($GLOBALS['_GET']['REQUEST']);

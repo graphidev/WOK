@@ -1,3 +1,10 @@
+<nav id="banner">
+    
+    
+    
+</nav>
+
+
 <div class="navbar">
     <div class="navbar-inner">
         <a class="brand" href="<?php echo path(); ?>">WOK</a>

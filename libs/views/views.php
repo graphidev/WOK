@@ -3,6 +3,7 @@
     /**
      * 
      * This function allow you to specify your own MVC template files according to HTTP request
+     * You also can use it 
      *
      * You can access to different parameters and functions such as :
      *
@@ -30,7 +31,7 @@
             tpl_static_page('homescreen');
             
             return true;
-
+                
         else:
             return false;
         endif;

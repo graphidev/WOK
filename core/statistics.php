@@ -147,11 +147,11 @@
 		private $logs = array();
 		private $path;
 		
-		public function __construct() {
+		public function __construct($path = PATH_STATISTICS) {
 			$this->HTTP_USER_AGENT =  $_SERVER['HTTP_USER_AGENT'];
 			$this->HTTP_ACCEPT_LANGUAGE =  $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			$this->GET_BROWSER = @get_browser(null, true);
-			$this->path = root('/statistics');
+			$this->path = root($path);
 		}
 		
 		function analyze($referer = null) {
@@ -407,12 +407,12 @@
 						
 			while("$year$month$day" <= str_replace('-', '', $upto)):
 				
-				if(is_dir(root("/statistics/$year/$month/$day"))):
+				if(is_dir(root($this->path."/$year/$month/$day"))):
 					
 					if($bots):
-						if(file_exists(root("/statistics/$year/$month/$day/bots.xml"))):
+						if(file_exists(root($this->path."/$year/$month/$day/bots.xml"))):
 							$dom = new DomDocument();
-							$dom->load(root("/statistics/$year/$month/$day/bots.xml"));
+							$dom->load(root($this->path."/$year/$month/$day/bots.xml"));
 							$node = $dom->documentElement;
 							$list = $dom->getElementsByTagName("case");
 							
@@ -431,10 +431,10 @@
 						for($hour=0; $hour<=23; $hour++) {							
 							$hour = add0($hour);
 			
-							if(file_exists(root("/statistics/$year/$month/$day/$hour.xml"))):
+							if(file_exists(root(this->path."/$year/$month/$day/$hour.xml"))):
 
 								$dom = new DomDocument();
-								$dom->load(root("/statistics/$year/$month/$day/$hour.xml"));
+								$dom->load(root($this->path."/$year/$month/$day/$hour.xml"));
 								$node = $dom->documentElement;
 									
 								$list = $dom->getElementsByTagName("case");

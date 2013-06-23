@@ -56,6 +56,7 @@
         load_core_library('utilities'); // Framework fonctions
         load_core_library('compatibility'); // PHP compatibility functions
         load_core_library('timezones'); // Timezones code / name
+        load_core_library('mail'); // Mail class
 
 
         /**

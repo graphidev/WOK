@@ -6,9 +6,7 @@
         
         <?php tpl_headers(); ?>
         
-        <!--
         <meta http-equiv="refresh" content="1; URL=<?php echo path('?no_homescreen=1'); ?>">
-        -->
         
     </head>
     
@@ -16,7 +14,7 @@
         
         <div id="main">
        
-            <h1>Are you ready ...</h1>
+            <h1>You will be redirected in a second</h1>
             
         </div>
         

@@ -15,9 +15,8 @@
             
             <h1>Welcome on homepage</h1>
             
-            <p>
-                <a href="https://github.com/graphidev/WOK">https://github.com/graphidev/WOK</a>
-            </p>
+            <pre><?php print_r(tree(root('/template'))); ?></pre>
+           
             
         </div>
     

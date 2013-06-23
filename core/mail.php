@@ -6,7 +6,6 @@
 		@version 1.3
 		@date 2012-11-18
 		@author Sébastien ALEXANDRE 
-		@link http://projects.graphidev.fr/dev/class-mail
 				
 		@required function mail() allowed
 		@required function strip_magic_quotes()

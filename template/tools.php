@@ -71,7 +71,7 @@
                             <li><a href="#strip_magic_quotes">strip_magic_quotes</a></li>
                             <li><a href="#get_mime_type">get_mime_type</a></li>
                             <li><a href="#strstr_before">strstr_before</a></li>
-                            <li><a href="#mysqlib">MySQLib</a></li>
+                            <!--<li><a href="#mysqlib">MySQLib</a></li>-->
                         </ul>
                     </div>
                     
@@ -329,6 +329,63 @@
                         
                             <p>
                                 This function requires nothing. Enjoy !
+                            </p>
+                            
+                        </div>
+                    </div>
+                    
+                    <hr class="separator" />
+                    
+                    <div id="get_mime_type">
+                        <ul class="nav nav-tabs" data-tool="get_mime_type">
+                            <li class="default active"><a href="#" data-open="default">get_mime_type</a></li>
+                            <li><a href="#" data-open="notes">Notes</a></li>
+                        </ul>
+                        
+                        <div class="tab default">
+                            
+                            <p>
+                                Get the MIME type from a file changed every PHP version. That's why we built this function which will return the file MIME type whatever your PHP version is.
+                            </p>
+                            
+                            <pre><code class="language-php">&lt;?php 
+    echo get_mime_type('/template/img/background.jpg'); // <?php echo get_mime_type(root('/template/img/background.jpg')); ?> 
+?&gt;</code></pre>
+                        </div>
+                        
+                        <div class="tab notes hidden">
+                        
+                            <p>
+                                This function requires nothing. Enjoy !
+                            </p>
+                            
+                        </div>
+                    </div>
+                    
+                    
+                    <hr class="separator" />
+                    
+                    <div id="strstr_before">
+                        <ul class="nav nav-tabs" data-tool="strstr_before">
+                            <li class="default active"><a href="#" data-open="default">strstr_before</a></li>
+                            <li><a href="#" data-open="notes">Notes</a></li>
+                        </ul>
+                        
+                        <div class="tab default">
+                            
+                            <p>
+                                strstr() now allow a third parameter which allow to get the first occurence from the string parameter. This parameter is added in PHP 5.3.0. You will now could do the same if your are in a less version thanks to strstr_before().
+                            </p>
+                            
+                            <pre><code class="language-php">&lt;?php 
+    echo strstr_before('myname@domain.net', '@'); // <?php echo strstr_before('myname@domain.net', '@'); ?> 
+?&gt;</code></pre>
+                        </div>
+                        
+                        <div class="tab notes hidden">
+                        
+                            <p>
+                                This function requires nothing. It also works if your PHP version is higher or egual to 5.3.0 !
                             </p>
                             
                         </div>

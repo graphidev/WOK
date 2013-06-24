@@ -51,19 +51,20 @@
     function get_library($name) {
         
         if(is_dir(root(PATH_LIBS."/$name")) && file_exists(root(PATH_LIBS."/$name/$name.xml"))):
-            
+        
             $xml = new DOMDocument();
 			$xml->load(root(PATH_LIBS."/$name/$name.xml"));
             $library = $xml->getElementsByTagName('library')->item(0);
             $files = $library->getElementsByTagName('files')->item(0)->getElementsByTagName('file');
             
+        
             foreach($files as $i => $case) {
                 
                 $type = $case->getAttribute('type');
                 $path = $case->nodeValue;
                 
                 if(file_exists(root(PATH_LIBS."/$name$path"))):
-                
+                    
                     switch($type) {
                         case 'css':
                             echo '<link href="'.path(PATH_LIBS."/$name$path").'" rel="stylesheet" type="text/css">';
@@ -71,7 +72,6 @@
                         case 'js':
                             echo '<script type="text/javascript" src="'.path(PATH_LIBS."/$name$path").'"></script>';
                         break;
-                        
                         case 'php':
                             include(root(PATH_LIBS."/$name$path"));
                         break;

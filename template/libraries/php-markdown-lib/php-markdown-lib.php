@@ -42,32 +42,33 @@
             
             <?php tpl_banner(); ?>
             
+            <ul class="breadcrumb">
+                <li><a href="<?php echo path(); ?>">WOK</a> <span class="divider">/</span></li>
+                <li><a href="<?php echo path('libraries'); ?>">External libraries</a> <span class="divider">/</span></li>
+                <li>PHP Markdown Lib</li>
+            </ul>
+            
+            
             <div class="content">
                 
+                <div class="rows">
+                    
+                    <div class="span3">
+                    
+                    
+                    </div>
                 
-                <form action="" method="post">
-                    <textarea name="markdown" class="input-block-level" rows="20" placeholder="Type some markdown ...">Titre de niveau 1
-=================
-
-Titre de niveau 2
------------------
-Voici un mot *important* à mon sens
-Voici un mot _important_ à mon sens
+                    <div class="span7">
+                    
                         
-# Titre de niveau 1
-
-## Titre de niveau 2
-
-### Titre de niveau 3
+                        <form action="" method="post">
+                            <textarea name="markdown" class="input-block-level" rows="20" placeholder="Type some markdown ..."><?php echo file_get_contents(root('/files/samples/markdown.md')); ?></textarea>
+                            <input type="submit" value="Preview" class="btn btn-primary btn-block" />
+                        </form>
                         
-* Une puce
-* Une autre puce
-* Et encore une autre puce !
-                    </textarea>
-                    <input type="submit" value="Preview" class="btn btn-primary btn-block" />
-                </form>
-                
-                <div id="preview"></div>
+                        <div id="preview" class="well"></div>
+                    </div>
+                </div>
             </div>
             
         </div>

@@ -48,6 +48,11 @@
             
             <?php tpl_banner(); ?>
             
+            <ul class="breadcrumb">
+                <li><a href="<?php echo path(); ?>">WOK</a> <span class="divider">/</span></li>
+                <li>Included tools</li>
+            </ul>
+            
             <div class="row">
             
                 <div class="span3">

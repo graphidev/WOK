@@ -7,7 +7,7 @@
     <author link="https://twitter.com">Twitter, Inc.</author>
     <files>
         <file type="css">/css/bootstrap.min.css</file>
-        <file type="css">/css/bootstrap-responsive.min</file>
+        <file type="css">/css/bootstrap-responsive.min.css</file>
         <file type="js">/js/bootstrap.min.js</file>
     </files>
 </library>

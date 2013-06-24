@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <name>Prism</name>
+    <version></version>
+    <link>http://prismjs.com/</link>
+    <description>Prism is a lightweight, extensible syntax highlighter, built with modern web standards in mind.</description>
+    <author link=""></author>
+    <files>
+        <file type="css">/prism.css</file>
+        <file type="js">/prism.js</file>
+    </files>
+</library>

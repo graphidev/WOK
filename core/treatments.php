@@ -4,7 +4,7 @@
      * This file contains all the compatiblities functions for PHP
     **/
 
-`
+
     /**
      * Return a cut string (a resume)
     **/
@@ -85,9 +85,9 @@
 			endif;
 		}
 		
+        $string = preg_replace('#<script(.+)?>(.+)</script>#isU', '', $string);
 		$string = preg_replace('# ('.implode('|',$events).')="(.+)"#isU', null, $string);
 		$string = preg_replace('# ('.implode('|',$events).')=\'(.+)\'#isU', null, $string);
-		$string = preg_replace('#<script(.+)?>(.+)</script>#isU', '', $string);
 		
 		return $string;
 	}

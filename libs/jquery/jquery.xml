@@ -2,8 +2,10 @@
 <library>
     <name>jQuery</name>
     <version>1.10.1</version>
+    <link>http://jquery.com/</link>
     <description>Write less, do more</description>
+    <author link="https://jquery.org/team/">jQuery Foundation</author>
     <files>
-        <case type="javascript">/jquery-1.10.1.min.js</case>
+        <file type="js">/jquery-1.10.1.min.js</file>
     </files>
 </library>

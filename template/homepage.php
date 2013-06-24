@@ -13,10 +13,14 @@
             
             <?php tpl_banner(); ?>
             
-            <h1>Welcome on homepage</h1>
-            
-            <pre><?php print_r(tree(root('/template'))); ?></pre>
-           
+            <div class="content">
+                <div class="text-center">
+                 
+                    <h1>Enought starting project from zero ?</h1>
+                    <h2>Let's use WOK framework !</h2>
+                
+                </div>
+            </div>
             
         </div>
     

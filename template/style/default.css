@@ -7,3 +7,29 @@ body {
     width: 1024px;
     margin: 20px auto;
 }
+
+hr.separator {
+    display: block;
+    margin-top: 1px solid #aaa;
+}
+
+.navbar .divider-vertical {
+    margin: 0;
+}
+
+.navbar.navbar-inverse .divider-vertical {
+    border-left: 1px solid #666;
+    border-right: 1px solid #333;
+}
+
+.error404 .content {
+    margin-top: 200px;
+}
+.error404 .content h1 {
+    font-size:20em; 
+    margin: auto;
+}
+
+.error404 .content h2 {
+    margin-top: 150px;
+}

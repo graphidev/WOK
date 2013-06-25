@@ -1,6 +1,6 @@
 <div class="navbar ">
     <div class="navbar-inner">
-        <a class="brand" href="<?php echo path(); ?>">WOK</a>
+        <a class="brand" href="<?php echo path('homepage'); ?>">WOK</a>
         <ul class="nav">
             
             <li class="divider-vertical"></li>
@@ -13,7 +13,7 @@
             
             <li class="divider-vertical"></li>
             
-            <li class="<?php if(get_request() == 'templates') echo 'active'; ?>"><a href="<?php echo path('templates'); ?>">Templates tools</a></li>
+            <li class="<?php if(get_request() == 'template-tools') echo 'active'; ?>"><a href="<?php echo path('template-tools'); ?>">Template tools</a></li>
             
             <li class="divider-vertical"></li>
             

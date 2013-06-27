@@ -178,7 +178,7 @@
                             </p>
                             
                             <pre><code class="language-php">&lt;?php 
-    echo strip_host_root('/wok/tools'); // <?php echo strip_host_root('/wok/tools'); ?> 
+    echo strip_system_root('/wok/tools'); // <?php echo strip_host_root('/wok/tools'); ?> 
 ?&gt;</code></pre>
                         </div>
                         

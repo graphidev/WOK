@@ -91,10 +91,13 @@
                 if(!empty($_POST['setup'])):
                     
                     $settings = file_get_contents('core/settings-default.php');
-                    $settings = preg_replace("#define('SYSTEM_DEFAULT_PROTOCOL', '(.+)?')#isU", "define('SYSTEM_DEFAULT_PROTOCOL', '".$_POST['protocol']."')", $settings);
-                    $settings = preg_replace("#define('SERVER_DOMAIN', '(.+)?')#isU", "define('SERVER_DOMAIN', '".$_POST['domain']."')", $settings);
-                    $settings = preg_replace("#define('SYSTEM_DIRECTORY_PATH', '(.+)?')#isU", "define('SYSTEM_DIRECTORY_PATH', '".$_POST['directory']."')", $settings);
-                    $settings = preg_replace("#define('SYSTEM_TIMEZONE', '(.+)?')#isU", "define('SYSTEM_TIMEZONE', '".$_POST['timezone']."')", $settings);
+                    $settings = preg_replace("#define\('SYSTEM_DEFAULT_PROTOCOL', '(.+)?'\)#", "define('SYSTEM_DEFAULT_PROTOCOL', '".$_POST['protocol']."')", $settings);
+                    $settings = preg_replace("#define\('SERVER_DOMAIN', '(.+)?'\)#", "define('SERVER_DOMAIN', '".$_POST['domain']."')", $settings);
+                    $settings = preg_replace("#define\('SYSTEM_DIRECTORY_PATH', '(.+)?'\)#", "define('SYSTEM_DIRECTORY_PATH', '".$_POST['directory']."')", $settings);
+                    $settings = preg_replace("#define\('SYSTEM_TIMEZONE', '(.+)?'\)#", "define('SYSTEM_TIMEZONE', '".$_POST['timezone']."')", $settings);
+                    $settings = preg_replace("#define\('SESSION_CRYPT', '(.+)?'\)#", "define('SESSION_CRYPT', '".sha1(uniqid('sess_'))."')", $settings);
+                    $settings = preg_replace("#define\('TOKEN_SALT', '(.+)?'\)#", "define('TOKEN_SALT', '".sha1(uniqid('tok_'))."')", $settings);
+                    $settings = preg_replace("#define\('COOKIE_CRYPT', '(.+)?'\)#", "define('COOKIE_CRYPT', '".sha1(uniqid('cook_'))."')", $settings);
                     file_put_contents('core/settings.php', $settings);
 
 
@@ -102,7 +105,7 @@
                     $htaccess = str_replace('__WOK_DIR__', $_POST['directory'], $htaccess);
                     file_put_contents('.htaccess', $htaccess);
 
-                    unlink('setup.php');
+                    //unlink('setup.php');
                     
             ?>
             
@@ -113,7 +116,7 @@
                     Here begin your job. Enjoy !
                 </p>
             
-                <a href="<?php echo path(); ?>" class="btn btn-success btn-block btn-large">Start using WOK !</a>
+                <a href="<?php echo $_POST['protocol'].$_POST['domain'].$_POST['directory']; ?>" class="btn btn-success btn-block btn-large">Start using WOK !</a>
             
             <?php else: ?>
             

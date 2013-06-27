@@ -16,7 +16,7 @@
     **/
     define('SYSTEM_DEFAULT_PROTOCOL', 'http://'); // System default protocol
     define('SERVER_DOMAIN', 'localhost'); // Server domain name or IP address
-    define('SYSTEM_DIRECTORY_PATH', '/wok'); // Relative system directory path
+    define('SYSTEM_DIRECTORY_PATH', '/wok-directory'); // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
 	define('SYSTEM_TIMEZONE', 'Europe/Paris'); // System timezone
 
@@ -25,8 +25,8 @@
      *	Security constants
      * You can use it to add salt in sessions, tokens or cookies' name/value
     **/
-	define('SESSION_CRYPT', '4f965f7d5579b'); // sha1(uniqid('sess_', true));
-	define('TOKEN_SALT', '4f965f7d5579b'); // sha1(uniqid('tok_', true));
-	define('COOKIE_CRYPT', '4f965f7d5579b');  // sha1(uniqid('cook_', true));
+	define('SESSION_CRYPT', 'a1b2c3'); // sha1(uniqid('sess_', true));
+	define('TOKEN_SALT', 'd4e5f6'); // sha1(uniqid('tok_', true));
+	define('COOKIE_CRYPT', 'g7h8i9');  // sha1(uniqid('cook_', true));
 	
 ?>

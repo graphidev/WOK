@@ -178,7 +178,7 @@
                             </p>
                             
                             <pre><code class="language-php">&lt;?php 
-    echo strip_system_root('/wok/tools'); // <?php echo strip_system_root('/wok/tools'); ?> 
+    echo strip_system_root('<?php echo SYSTEM_DIRECTORY_PATH; ?>/tools'); // <?php echo strip_system_root(SYSTEM_DIRECTORY_PATH.'/tools'); ?> 
 ?&gt;</code></pre>
                         </div>
                         

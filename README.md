@@ -16,8 +16,4 @@ How to use
 
 First of all, this is a development version.
 
-If you want to use it, please edit .htaccess file :
-* RewriteBase line
-* RewriteRule line
-
-and /core/settings.php
+If you want to use it, please launch setup.php in your browser.

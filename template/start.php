@@ -40,28 +40,21 @@
                 </p>
                 
                 <p>
-                    Then we'll have to configure two files : .htaccess and /core/settings.php
+                    Then you have to follow the follow the guidelines in setup.php (you got the choice to make your custom configuration or validate proposed parameters). That's it !
                 </p>
+                
+                <h2>Framework organisation</h2>
                 
                 <p>
-                    Because of WOK is working on a MVC model and URL Rewriting module, we need to update the .htaccess file :
+                    Based on an MVC and an open structures, WOK have three main folders : 
                 </p>
                 
-                <pre><code class="language-http"><?php echo file_get_contents(root('/.htaccess')); ?></code></pre>
+                <ul>
+                    <li><b>/core</b> - Required functions, default tools and configuration file</li>
+                    <li><b>/libs</b> - Additional libraries, social networks SDKs and other frameworks (Bootstrap, jQuery, ...)</li>
+                    <li><b>/template</b> - Templates files called by the index.php file</li>
+                </ul>
                 
-                <p>
-                    You have to edit these two lines the set the correct controler : replace /wok by the correct server path.
-                </p>
-                
-                <p>
-                    Now you 
-                </p>
-                
-                <pre><code class="language-php"><?php echo htmlentities(file_get_contents(root('/core/settings.php'))); ?></code></pre>
-                
-                <p>
-                    That's it ! You can now use all the WOK tools !
-                </p>
             </div>
             
         </div>

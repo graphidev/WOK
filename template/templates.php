@@ -133,7 +133,7 @@
                         <h2>Reserved template files</h2>
                         
                         <p>
-                            we can see your eyes saying <quote>"Oh no ! Restricted stuffs again !"</quote><br />
+                            We can see your eyes saying <quote>"Oh no ! Restricted stuffs again !"</quote><br />
                             Well ... no ! Just two names. We won't tell you how to name your files :
                         </p>
                         <ul>

@@ -105,7 +105,7 @@
                     $htaccess = str_replace('__WOK_DIR__', $_POST['directory'], $htaccess);
                     file_put_contents('.htaccess', $htaccess);
 
-                    //unlink('setup.php');
+                    unlink('setup.php');
                     
             ?>
             
@@ -136,24 +136,14 @@
                     <ul>
                         <li>Duplicate /core/settings-default.php and rename it settings.php</li>
                         <li>Define configuration constants (See comments' help)</li>
-                        <li>Create a .htaccess file on WOK root containing ...</li>
-                    </ul>
-                    
-                    <pre><code># Always redirect to index.php
-# this file analyse and treats all HTTP requests
-&lt;IfModule mod_rewrite.c&gt;
-    RewriteEngine On
-    RewriteBase __WOK_DIR__
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-
-    RewriteRule . __WOK_DIR__/index.php [L]
-&lt;/IfModule&gt;</code></pre>
-                    
-                    <ul>
-                        <li>Replace __WOK_DIR__ by the WOK directory (eg. /wok)</li>
+                        <li>Deplucate .htaccess.default and rename it .htaccess</li>
+                        <li>Replace __WOK_DIR__ by the WOK directory in .htaccess (eg. /wok)</li>
                         <li>Remove setup.php file (could be a security flaw)</li>
                     </ul>
+                    
+                    <p class="text-center">
+                        You're done !
+                    </p>
                     
                 </div>
                 

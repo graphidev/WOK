@@ -13,11 +13,11 @@
             
             <li class="divider-vertical"></li>
             
-            <li class="<?php if(get_request() == 'template-tools') echo 'active'; ?>"><a href="<?php echo path('template-tools'); ?>">Template tools</a></li>
+            <li class="<?php if(get_request() == 'tools') echo 'active'; ?>"><a href="<?php echo path('tools'); ?>" class="dropdown">Included tools</a></li>
             
             <li class="divider-vertical"></li>
             
-            <li class="<?php if(get_request() == 'tools') echo 'active'; ?>"><a href="<?php echo path('tools'); ?>" class="dropdown">Included tools</a></li>
+            <li class="<?php if(get_request() == 'templates') echo 'active'; ?>"><a href="<?php echo path('templates'); ?>">Template tools</a></li>
             
             <li class="divider-vertical"></li>
             

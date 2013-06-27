@@ -25,8 +25,8 @@
      *	Security constants
      * You can use it to add salt in sessions, tokens or cookies' name/value
     **/
-	define('SESSION_CRYPT', '735cba040ff840dfb0d49b2b914b63671e15120d'); // sha1(uniqid('sess_', true));
-	define('TOKEN_SALT', '2baff40ad4b9c021556a361e17af1062e4baac63'); // sha1(uniqid('tok_', true));
-	define('COOKIE_CRYPT', '710a238e754f66e242a0fb0ac90d3897a665be85');  // sha1(uniqid('cook_', true));
+	define('SESSION_CRYPT', 'f2c0e7c87fce99ab60860894ae72829b6db13f63'); // sha1(uniqid('sess_', true));
+	define('TOKEN_SALT', '20c47982b0bd5e5a70d7a1c1b6f23493e1b3e593'); // sha1(uniqid('tok_', true));
+	define('COOKIE_CRYPT', 'cfe3523a88eb9f6faa429384ad38a32c7e415ade');  // sha1(uniqid('cook_', true));
 	
 ?>

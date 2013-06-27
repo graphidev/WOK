@@ -65,7 +65,7 @@
                             <li><a href="#path">path</a></li>
                             <li><a href="#root">root</a></li>
                             <!--<li><a href="#tree">tree</a></li>-->
-                            <li><a href="#strip_host_root">strip_host_root</a></li>
+                            <li><a href="#strip_system_root">strip_system_root</a></li>
                             
                             <li class="nav-header">Treatments fonctions</li>
                             <li><a href="#resume">resume</a></li>
@@ -164,8 +164,8 @@
                     
                     <hr class="separator" />
                     
-                    <div id="strip_host_root">
-                        <ul class="nav nav-tabs" data-tool="strip_host_root">
+                    <div id="strip_system_root">
+                        <ul class="nav nav-tabs" data-tool="strip_system_root">
                             <li class="default active"><a href="#" data-open="default">strip_host_root</a></li>
                             <li><a href="#" data-open="notes">Notes</a></li>
                         </ul>
@@ -185,7 +185,7 @@
                         <div class="tab notes hidden">
                         
                             <p>
-                                This function requires the <i>SITE_ADDR</i> constant (/core/settings.php)
+                                This function requires the <i>SYSTEM_DIRETORY_PATH</i> constant (/core/settings.php)
                             </p>
                             
                         </div>

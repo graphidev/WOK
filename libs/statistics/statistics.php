@@ -147,7 +147,7 @@
 		private $logs = array();
 		private $path;
 		
-		public function __construct($path = PATH_STATISTICS) {
+		public function __construct($path) {
 			$this->HTTP_USER_AGENT =  $_SERVER['HTTP_USER_AGENT'];
 			$this->HTTP_ACCEPT_LANGUAGE =  $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			$this->GET_BROWSER = @get_browser(null, true);

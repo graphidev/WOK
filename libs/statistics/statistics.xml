@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library>
+    <name>Statistics</name>
+    <version>1.2</version>
+    <link></link>
+    <description>Get a few informations about your visitors and visits.</description>
+    <author link="http://www.graphidev.fr">GraphiDev</author>
+    <files>
+        <file type="php">/statistics.php</file>
+    </files>
+</library>

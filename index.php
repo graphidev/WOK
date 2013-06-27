@@ -9,13 +9,15 @@
 	/**
      * Define page url request
 	**/
-	$query = strip_host_root($_SERVER['REQUEST_URI']);
+	$query = strip_system_root($_SERVER['REQUEST_URI']);
 	$static = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
 	$additional = str_replace($static, '', preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$3", $query));	
-		
+    
+    
+
 	define('url', path($static));
 		
-	$GLOBALS['_GET']['REQUEST'] = str_replace(SITE_ADDR.'/', '', url);
+	$GLOBALS['_GET']['REQUEST'] = str_replace(path(), '', url);
 	$GLOBALS['_GET']['PARAMETERS'] = array();
 	foreach(explode('&', $additional) as $i => $parameter) {
 		@list($name, $value) = explode('=', $parameter);
@@ -25,21 +27,11 @@
 	if(isset($_POST)):
 		$GLOBALS['_POST'] = $_POST;
 	endif;	
-
-		
-	/**
-     * Launch statistics engine
-	**/
-	if(IS_ACTIVATED_ANALYTICS):
-		$stats = new statistics();
-		$stats->register();
-	endif;
-	
     
-	load_core_library('templates');
+	require_once SYSTEM_ROOT.PATH_CORE."/templates.php";
 	
     /**
-     * Special views    
+     * Special views
     **/
     get_library('views');
     if(function_exists('views') && views()): 

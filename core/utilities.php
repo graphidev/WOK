@@ -9,11 +9,11 @@
 	/**
      * Return absolute URL path to the string parameter
     **/
-	function path($string = null) {
+	function path($string = null, $protocol = SYSTEM_DEFAULT_PROTOCOL) {
 		if(preg_match('#^/(.)*$#', $string)):
-			return SITE_ADDR."$string";
+			return $protocol.SYSTEM_ADDR."$string";
 		else :
-			return SITE_ADDR."/$string";
+			return $protocol.SYSTEM_ADDR."/$string";
 		endif;
 	}
 	
@@ -25,17 +25,16 @@
         // Windows server compatibility
         $str = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $str);
         
-		return SERVER_ROOT.$str;
+		return SYSTEM_ROOT.$str;
 	}
 
     
     /**
      * Remove host additional root on routing
     **/
-	function strip_host_root($url) {
-		$root = preg_replace('#^(https?://(.+))(/(.+))$#', "$3", SITE_ADDR);
-		return preg_replace("#^$root(.+)$#", "$1", $url);
-	}
+    function strip_system_root($url) {
+        return str_replace(SYSTEM_DIRECTORY_PATH, '', $url);  
+    }
 
     
     /**

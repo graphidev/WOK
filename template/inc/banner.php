@@ -13,7 +13,7 @@
             
             <li class="divider-vertical"></li>
             
-            <li class="<?php if(get_request() == 'tools') echo 'active'; ?>"><a href="<?php echo path('tools'); ?>" class="dropdown">Included tools</a></li>
+            <li class="<?php if(preg_match('#^tools/(.+)?$#', get_request())) echo 'active'; ?>"><a href="<?php echo path('tools/'); ?>" class="dropdown">Included tools</a></li>
             
             <li class="divider-vertical"></li>
             
@@ -21,7 +21,7 @@
             
             <li class="divider-vertical"></li>
             
-            <li class="<?php if(preg_match('#^libraries(.+)?#', get_request())) echo 'active'; ?>"><a href="<?php echo path('libraries'); ?>">External libraries</a></li>
+            <li class="<?php if(preg_match('#^libraries(.+)?$#', get_request())) echo 'active'; ?>"><a href="<?php echo path('libraries'); ?>">External libraries</a></li>
             
             <li class="divider-vertical"></li>
             

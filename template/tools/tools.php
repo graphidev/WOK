@@ -77,6 +77,9 @@
                             <li><a href="#get_mime_type">get_mime_type</a></li>
                             <li><a href="#strstr_before">strstr_before</a></li>
                             <!--<li><a href="#mysqlib">MySQLib</a></li>-->
+                            
+                            <li class="nav-header">Additional tools</li>
+                            <li><a href="<?php echo path('tools/file-class'); ?>">file class</a></li>
                         </ul>
                     </div>
                     

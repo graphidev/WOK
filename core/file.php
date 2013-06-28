@@ -36,9 +36,9 @@
 			'other' => array('pkg', 'psd', 'svg', 'tiff', 'tga', 'bmp', 'wmv'),
 		);
 		
-		public function __construct($file = null, $method = null) {
+		public function __construct($file = null, $method = null, $protected = false) {
             if(!empty($file) && !empty($method))
-                $this->$method($file);   
+                $this->$method($file, $protected);   
 		}
 		
 		private function is_authorized($path, $is_external = false) {
@@ -134,18 +134,26 @@
 			else:
 				$this->path = root($path);
 			endif;
+            
+            if(file_exists($this->path)):
 			
-			if(empty($this->filename) && empty($this->extension) && empty($this->mime) && empty($this->size)):
-				$this->filename = str_replace(dirname($this->path).'/', '', $this->path);
-				$this->extension = strtolower(substr(strrchr($this->filename, "."), 1));
-				$this->mime = get_mime_type($this->path);
-				$this->size = filesize($this->path);
-			endif;
-		
-			$n_path = PATH_TMP_FILES.'/'.uniqid();
-			copy($this->path, root($n_path));
-			$this->path = $this->is_authorized($n_path);
-			if($protected): @chmod($this->path, 0600); endif;
+                if(empty($this->filename) && empty($this->extension) && empty($this->mime) && empty($this->size)):
+                    $this->filename = str_replace(dirname($this->path).'/', '', $this->path);
+                    $this->extension = strtolower(substr(strrchr($this->filename, "."), 1));
+                    $this->mime = get_mime_type($this->path);
+                    $this->size = filesize($this->path);
+                endif;
+            
+                $n_path = PATH_TMP_FILES.'/'.uniqid();
+                copy($this->path, root($n_path));
+                $this->path = $this->is_authorized($n_path);
+                if($protected): @chmod($this->path, 0600); endif;
+            
+            else:
+            
+                $this->result = false;
+            endif;
+            
 		}
 				
 		public function resize($width, $height, $destination, $margin = null) {
@@ -209,6 +217,24 @@
                 $this->result = false;
             endif;
 			
+        }
+        
+        public function archive($destination, $filename = null, $protected = false) {
+            
+            if(empty($filename))
+                $filename = $this->filename;
+
+            if(!is_dir(dirname(root($destination)))):
+				mkdir(dirname(root($destination)), 0755, true);
+			endif;
+            
+            $archive = new ZipArchive();
+            $archive->open(root($destination) , ZIPARCHIVE::CREATE);
+			$archive->addFile(root($this->path), "/$filename");
+			$archive->close();
+            
+            if($protected): @chmod(root($destination), 0600); endif;
+                        
         }
 		
 		public function move($destination, $protected = false) {

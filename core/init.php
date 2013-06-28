@@ -24,7 +24,9 @@
     define('PATH_CORE', '/core'); // Core path
 	define('PATH_LIBS', '/libs'); // Libraries path
     define('PATH_DATA', '/data'); // Data's directory path
-	define('PATH_TEMPLATE', '/template'); // Template' directory path
+	define('PATH_TEMPLATE', '/template'); // Template's directory path
+    define('PATH_FILES', '/files'); // Files' directory
+    define('PATH_TMP_FILES', PATH_FILES.'/tmp'); // Temporary files' directory
 
 
     /*
@@ -44,6 +46,7 @@
         require_once SYSTEM_ROOT.PATH_CORE."/compatibility.php"; // PHP compatibility functions
         require_once SYSTEM_ROOT.PATH_CORE."/treatments.php"; // Treatments functions
         require_once SYSTEM_ROOT.PATH_CORE."/timezones.php"; // Timezones code / name
+        require_once SYSTEM_ROOT.PATH_CORE."/file.php"; // File class
         require_once SYSTEM_ROOT.PATH_CORE."/mail.php"; // Mail class
 
 

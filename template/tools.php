@@ -185,7 +185,7 @@
                         <div class="tab notes hidden">
                         
                             <p>
-                                This function requires the <i>SYSTEM_DIRETORY_PATH</i> constant (/core/settings.php)
+                                This function requires the <i>SYSTEM_DIRECTORY_PATH</i> constant (/core/settings.php)
                             </p>
                             
                         </div>
@@ -243,7 +243,7 @@
                             <pre><code class="language-php">&lt;?php 
     $text = 'Lorem ipsum dolor ...'; // Just think this is a really big lorem ipsum text
     
-    // The following are those by default. We suggest do don't change them.
+    // The following settings are those by default. We suggest to don't change them.
     $sensitivity = 4; // Min keywords letters. Allow to exclude common words (eg.: of, a, the, ...)
     $min = 2; // Min keywords percentage
     $max = 8; // Max keywords percentage
@@ -321,12 +321,12 @@
                         <div class="tab default">
                             
                             <p>
-                                Event if the magic are deleted from PHP 5.4.0, this function allow to delete them in PHP &lt; 5.4.0 from a variable or and array.
+                                Event if the magic quotes have been deleted from PHP 5.4.0, this function allow to delete them in PHP &lt; 5.4.0 from a variable or and array.
                             </p>
                             
                             <pre><code class="language-php">&lt;?php 
-    $striped = strip_magic_quotes($_POST['fieldname']); // Strip magic quotes of a POST field request
-    $striped = strip_magic_quotes($_POST); // Strip magic quotes of all POST field request
+    $striped = strip_magic_quotes($_POST['fieldname']); // Strip quotes of a POST field
+    $striped = strip_magic_quotes($_POST); // Strip quotes of all POST field
 ?&gt;</code></pre>
                         </div>
                         
@@ -350,7 +350,7 @@
                         <div class="tab default">
                             
                             <p>
-                                Get the MIME type from a file changed every PHP version. That's why we built this function which will return the file MIME type whatever your PHP version is.
+                                Get the MIME type from a file method changes every PHP version. That's why we built this function which will return the file MIME type whatever your PHP version is.
                             </p>
                             
                             <pre><code class="language-php">&lt;?php 

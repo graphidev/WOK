@@ -120,7 +120,7 @@
                         </table>
                         <p>
                             * Whatever the page name, you can create as many page as you want, this rule will always be applied :<br />
-                            <i><b>The template path is exactly the same as the HTTP request. Just add .php</b></i><br />
+                            <i><b>The template path is exactly the same as the HTTP request. Just add <i>".php"</i></b></i><br />
                             The template files are in <i>/template</i> by default and given by the PATH_TEMPLATE constant.
                         </p>
                         
@@ -298,9 +298,9 @@
                         <div class="tab default">
                             
                             <p>
-                                This function is different thant the previous. It job is to get external libraries (by default in <i>/libs</i> folder).
-                                The libraries files can be CSS, JS, or PHP files. It it's a JS or CSS file, this will write the correct syntax to call them.
-                                If there is PHP files, this will include them.
+                                This function is different than the previous. It job is to get external libraries (by default in <i>/libs</i> folder).
+                                The libraries files can be CSS, JS, or PHP files. If it's a JS or CSS file, this will write the correct syntax to call them.
+                                If there are PHP files, this will include them.
                             </p>
                             
                             <pre><code class="language-php">&lt;?php 
@@ -368,8 +368,9 @@
                             </p>
                             
                             <pre><code class="language-php">&lt;?php 
-    // HTTP Request : /blog/article?id=1234
-    echo get_parameter('id'); // 1234    
+    // HTTP Request : /blog/article?id=1234&amp;view=resume
+    echo get_parameter('id'); // 1234 
+    echo get_parameter('view'); // resume 
 ?&gt;</code></pre>
                         </div>
                         
@@ -394,7 +395,7 @@
                         <ul>
                             <li><b>$GLOBALS['_GET']['REQUEST']</b> - <i>Will return the same thing than get_request() function.</i></li>
                             <li><b>$GLOBALS['_GET']['PARAMETERS']</b> - <i>Will return an array containing the $_GET parameters.</i></li>
-                            <li><b>$GLOBALS['_POST']</b> - <i>Will return an array containing the $_POST parameters.</i></li>
+                            <li><b>$GLOBALS['_POST']</b> - <i>Will return a magic quote striped array containing the $_POST parameters (not accessible from templates pages).</i></li>
                         </ul>
                         
                     </div>

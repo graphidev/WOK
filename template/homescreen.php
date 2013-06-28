@@ -20,7 +20,7 @@
             
             h1.bigger {
                 font-size:5em;
-                margin: 80px 0 100px 0;
+                margin: 70px 0 100px 0;
             }
         </style>
         
@@ -70,7 +70,7 @@
             <h1>Are you a PHP developer ?</h1>
             <h2>Are you tired of complicated frameworks ?</h2>
             <h1 class="bigger">This is for you !</h1>
-            <a class="btn btn-success btn-block" href="<?php echo path('homepage'); ?>"></a>
+            <a class="btn btn-success btn-block btn-large" href="<?php echo path('homepage'); ?>"></a>
             
         </div>
         

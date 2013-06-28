@@ -314,7 +314,10 @@
                         <p>
                             This function reset the file class and it parameters. It also remove the temporary file.<br />
                         </p>
-                        <div class="alert">You have to call this function each time you use the file class !</div>
+                        <div class="alert">
+                            You have to call this function each time you use the file class !<br />
+                            Otherwise you will have a loooooooot of temporary files.
+                        </div>
                         
                         <pre><code class="language-php">&lt;?php 
     $file = new file(); // Initialize the file class

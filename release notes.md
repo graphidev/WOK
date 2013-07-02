@@ -1,6 +1,10 @@
 Release notes
 =============
 
+v 0.3
+-------------
+* Add MySQL class
+
 v 0.2
 -------------
 * Add file class

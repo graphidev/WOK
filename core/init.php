@@ -10,8 +10,8 @@
     **/
 
 	define('WOK_MAJOR_VERSION', 0); // Major version
-	define('WOK_MINOR_VERSION', 1); // Minor version
-	define('WOK_RELEASE_VERSION', 4); // Release version
+	define('WOK_MINOR_VERSION', 3); // Minor version
+	define('WOK_RELEASE_VERSION', 0); // Release version
 	define('WOK_EXTRA_VERSION', 'building'); // Extra version
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION); // Full version (without extra)
 	

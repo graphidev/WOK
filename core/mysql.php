@@ -10,9 +10,14 @@
 
 	class MySQL {
 		private $table;
-		private $fetch = 'array';
 		protected static $interface;
         protected static $database;
+        
+        const FETCH_ARRAY = 'array';
+        const FETCH_OBJECT = 'object';
+        const FETCH_BOOL = 'boolean';
+        const FETCH_COUNT = 'count';
+        const FETCH_ID = 'id';
 		
 		/**
 			@ new / construct
@@ -57,18 +62,6 @@
 		// -----------------------------------
 		
 		/**
-			@ queryFetch
-			@about redefine query fetch mode
-			@param $mode = (string) mode name : array/object
-			@return (string) transformed chain
-		*/
-		public function query_fetch($mode = 'array') {
-			$this->fetch = $mode;
-		}
-		
-		// -----------------------------------
-		
-		/**
 			@ execute/query
 			@about execute an sql query and return results
 			@param $sql = (string) sql query to execute. /!\ Not secured
@@ -76,19 +69,23 @@
 		*/
 		public function execute($sql, $values = array(), $fetch = 'array') {
             
-            if(is_array($values)):
+            if(is_array($values) && count($values) > 0):
                 $query = self::$interface->prepare($sql);
                 $query->execute($values);
             else:
                 $query = self::$interface->query($sql);
             endif;
 			
-			if($this->fetch == 'object'):
+			if($fetch == self::FETCH_OBJECT):
 				$data = $query->fetchObject();
-			elseif($this->fetch == 'boolean'):
+			elseif($fetch == self::FETCH_BOOL):
 				$data = ($query != false ? true : false);
-			else:
+			elseif($fetch == self::FETCH_ARRAY):
 				$data = $query->fetchAll();
+            elseif($fetch == self::FETCH_ID):
+                $data = self::$interface->lastInsertId();
+            else:
+                return $query;
 			endif;
             
             $query->closeCursor();
@@ -140,207 +137,8 @@
 			return self::$interface->quote($string);
 		}
 
-		// -----------------------------------
-		
-		
-		/**
-			@ table
-			@about define current table which will be used for queries
-			@param $table = 		table name (required, string)
-			@param $structure =		return database structure object manager ? (boolean)
-		*/
-		
-		// -----------------------------------
-		
-		/**
-			@ insert
-			@about insert new entry in the current database
-			@param $values = (array) data of each field 
-			@required first call table() method
-		*/
-		public function insert($table, $values) {
-			// Nombre de colonnes dans la table
-			$query = self::$interface->query('SHOW FIELDS FROM '.$table);
-			$columns = array();
-			while ($rows = $query->fetch(PDO::FETCH_ASSOC)) {
-			      $columns[] = $rows['Field'];
-			}
-
-			// Creating SQL query width $values
-			$sql = 'INSERT INTO '.$table.' VALUES(';			
-			foreach($columns as $index => $name) {
-				if(isset($values[$name])):
-					$sql .= ":$name";
-				else:
-					if(substr($name, -3) == '_id'):
-						$sql .= 'NULL';
-					else: 
-						$sql .= "''";
-					endif;
-				endif;
 				
-				if($index+1 < count($columns))
-					$sql .= ', ';
-			}
-			$sql .= ')';
-			
-			//echo $sql;
-			
-			$query = self::$interface->prepare($sql);
-			if($query->execute(strip_magic_quotes($values))):
-				return self::$interface->lastInsertId();
-			else:
-				return false;
-			endif;
-		}
-		
-		// -----------------------------------
-		
-		/**
-			@ update
-			@about update entries according to conditions
-			@param $values = 		(array) fields to update
-			@param $parameters = 	(array) parameters of entries
-			@return (boolean) if success return true, otherwise return false
-			@required first call table() method
-		*/
-		public function update($table, $values, $parameters) {
-			$count = 1; $total = count($values);
-			$sql = 'UPDATE '.$table.' SET ';
-
-			foreach($values as $name => $value) {
-				$sql .= "$name=:$name";
-				if($count != $total):
-					$sql .= ', ';
-				endif;
-				$count++;
-			}
-			
-			$settings = null;
-			foreach($parameters as $name => $value) {
-				if(!empty($settings)) $settings .= ' AND ';
-				$settings .= "$name=".self::$interface->quote($value)."";
-			}		
-			
-			if(!empty($settings)):
-				$settings = "WHERE $settings";
-			endif;
-			
-			//echo "$sql $settings";
-			
-			$query = self::$interface->prepare("$sql $settings");
-			if($query->execute(strip_magic_quotes($values))):
-				return true;
-			else:
-				return false;
-			endif;
-		}
-		
-		// -----------------------------------
-		
-		
-		/**
-			@ delete
-			@about delete entries according to conditions
-			@param $parameters = (array) parameters of entries
-			@return (boolean) if success return true, otherwise return false
-			@required first call table() method
-		*/			
-		public function delete($table, $parameters) {
-			$settings = null;
-			foreach($parameters as $name => $value) {
-				if(!empty($settings)) $settings .= ' AND ';
-				$settings .= "$name=:$name";
-			}		
-			
-			if(!empty($settings))
-				$settings = "WHERE $settings";
-													
-			$query = self::$interface->prepare("DELETE FROM ".$table." $settings");
-			if($query->execute($parameters)):
-				return true;
-			else:
-				return false;
-			endif;
-		}
-		
-		// -----------------------------------
-		
-		/**
-			@ count
-			@about count entries according to conditions
-			@param $settings = 	(array) parameters of entries
-			@return (int) calculation result
-			@required first call table() method
-		*/
-		public function count($table, $parameters = null, $field = '*') {
-			$settings = null;
-			foreach($parameters as $name => $value) {
-				if(!empty($settings)) $settings .= ' AND ';
-				$settings .= "$name='$value'";
-			}		
-			
-			if(!empty($settings))
-				$settings = "WHERE $settings";
-			
-			$query = self::$interface->query("SELECT count($field) AS count FROM ".$table." $settings");
-			$data = $query->fetch(PDO::FETCH_OBJ);
-			
-			return $data->count;
-		}
-		
-		// -----------------------------------
-			
-		/**
-			@ select
-			@about search entries according to conditions
-			@param $parameters = 	(array) parameters of entries
-			@param $fields = 		(string) fields to return (* = all by default)
-			@param $order =			(string) ordered by fields name
-			@param $limit = 		(mixed) max entries or interval
-			@param $object =		(boolean) return as object
-			@return (mixed) if $object parameter is true, return an object, otherwise an array.
-			@required first call table() method
-		*/
-		public function select($parameters, $fields = '*', $order = null, $limit = 0, $object = false) {
-			$settings = null;
-			foreach($parameters as $name => $value) {
-				if(!empty($settings)) $settings .= ' AND ';
-				if(is_array($value)) :
-					
-				else:
-					$settings .= "$name='$value'";
-				endif;
-			}
-			
-			if(!empty($settings))
-				$settings = "WHERE $settings";
-			
-			if(!empty($order))
-				$order = "ORDER BY $order";
-				
-			if(!empty($limit)):
-				$limit = "LIMIT $limit";
-			else:
-				$limit = '';
-			endif;
-			
-			if(is_array($fields))
-				$fields = implode(',', $fields);
-						
-			$query = self::$interface->query("SELECT $fields FROM ".$table." $settings $order $limit");
-			
-			return ($object ? $query->fetchObject() : $query->fetchAll());
-			
-			$query->closeCursor();
-		}
-		
 	}
-
-
-
-
-
 
     class MySQLTable extends MySQL {
         

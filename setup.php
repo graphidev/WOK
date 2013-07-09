@@ -206,7 +206,7 @@
                         <input type="submit" class="btn btn-success btn-block btn-large" name="setup" value="Setup" />
                     
                     <?php else: ?>
-                        
+
                         <div class="alert alert-error">
                     
                             Write permissions are not available : setup.php need them to generate configuration files. 

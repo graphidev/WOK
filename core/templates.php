@@ -3,8 +3,10 @@
 	function tpl_static_page($name) {
 		if(file_exists(root(PATH_TEMPLATE."/$name.php"))):
 			include(root(PATH_TEMPLATE."/$name.php"));
-		else:
+		elseif(file_exists(root(PATH_TEMPLATE."/404.php"))):
 			include(root(PATH_TEMPLATE."/404.php"));
+        else:
+            exit("404 Document not found");
 		endif;
 	}
 	

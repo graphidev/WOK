@@ -11,19 +11,18 @@
 	**/
 	$query = strip_system_root($_SERVER['REQUEST_URI']);
 	$static = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
-	$additional = str_replace($static, '', preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$3", $query));	
-    
-    
+	$additional = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
 
 	define('url', path($static));
-		
+
 	$GLOBALS['_GET']['REQUEST'] = str_replace(path(), '', url);
 	$GLOBALS['_GET']['PARAMETERS'] = array();
 	foreach(explode('&', $additional) as $i => $parameter) {
 		@list($name, $value) = explode('=', $parameter);
 		$GLOBALS['_GET']['PARAMETERS'][$name] = urldecode($value);
 	}
-	
+
+
 	if(isset($_POST)):
 		$GLOBALS['_POST'] = $_POST;
 	endif;	
@@ -31,10 +30,15 @@
 	require_once SYSTEM_ROOT.PATH_CORE."/templates.php";
 	
     /**
+     * Preload
+    **/
+    if(file_exists(root('preload.php')))
+        require_once(root('preload.php'));
+
+    /**
      * Special views
     **/
-    get_library('views');
-    if(function_exists('views') && views()): 
+    if(function_exists('controller') && controller()): 
 
 	/**
      * Statics pages

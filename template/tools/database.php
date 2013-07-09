@@ -10,6 +10,14 @@
     $db = new MySQL($host, $user, $password, $encode);
     
     $db->database('wok');
+    
+    $query = $db->query('SELECT COUNT(*) AS total FROM ugame.accounts WHERE account_id=1', null, MySQL::FETCH_OBJECT);
+
+    if($query->total):
+        exit($query->total);
+    else:
+        exit('ERROR');
+    endif;
 
     if($db->createBase('mydatabase')):
         $db->database('mydatabase');        
@@ -41,6 +49,8 @@
         $table = $db->table('table_test');
         print_r($table->getColumns());
         echo '<pre>';
+        
+
         
         
         //$db->dropBase('mydatabase');

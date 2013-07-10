@@ -45,16 +45,28 @@
 	**/
 	elseif(!empty($GLOBALS['_GET']['REQUEST'])):
 
-		if(is_dir(root(PATH_TEMPLATE.'/'.$GLOBALS['_GET']['REQUEST']))):
+        /**
+         * Directory, check the file with the same name in this directory
+        **/
+        if(is_dir(root(PATH_TEMPLATE.'/'.substr($GLOBALS['_GET']['REQUEST'], 0, -1)))):
+             
 			$dirname = dirname($GLOBALS['_GET']['REQUEST']);
-			if(substr($GLOBALS['_GET']['REQUEST'], -1) == '/'):
-				$filename = str_replace($dirname, '', substr($GLOBALS['_GET']['REQUEST'], 0, -1));
-			else:
-				$filename = str_replace($dirname, '', $GLOBALS['_GET']['REQUEST']);
-			endif;
-			tpl_static_page(str_replace('//', '/', $GLOBALS['_GET']['REQUEST'].$filename));
+
+            if(substr($GLOBALS['_GET']['REQUEST'], -1) == '/'):
+                 $filename = str_replace($dirname, '', substr($GLOBALS['_GET']['REQUEST'], 0, -1));
+            else:
+                $filename = str_replace($dirname, '', $GLOBALS['_GET']['REQUEST']);
+            endif;
+        
+            tpl_static_page(str_replace('//', '/', $GLOBALS['_GET']['REQUEST'].$filename));
+        
+        /**
+         * File, check the filename
+        **/
 		else:
+
 			tpl_static_page($GLOBALS['_GET']['REQUEST']);
+
 		endif;
     
 	/**

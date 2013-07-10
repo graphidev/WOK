@@ -1,5 +1,4 @@
 <?php 
-    
     /**
      *    Welcome in WOK initialize file
      *
@@ -22,7 +21,7 @@
     **/
 	define('SYSTEM_ROOT', dirname(dirname(__FILE__))); // Define absolute root path
     define('PATH_CORE', '/core'); // Core path
-	define('PATH_LIBS', '/libs'); // Libraries path
+	define('PATH_LIBS', '/libraries'); // Libraries path
     define('PATH_DATA', '/data'); // Data's directory path
 	define('PATH_TEMPLATE', '/template'); // Template's directory path
     define('PATH_FILES', '/files'); // Files' directory

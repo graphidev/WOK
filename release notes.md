@@ -3,6 +3,7 @@ Release notes
 
 v 0.3
 -------------
+* Replace preview library by controller function (V0.3:1)
 * Add MySQL class
 
 v 0.2

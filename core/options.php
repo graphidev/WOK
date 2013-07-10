@@ -6,7 +6,12 @@
     **/
     
     function controller() {
-        return false;
+        if(get_request() == ''):
+            tpl_static_page('homescreen');
+            return true;
+        else:
+            return false;
+        endif;
     }
     
 ?>

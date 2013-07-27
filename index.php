@@ -48,7 +48,7 @@
         /**
          * Directory, check the file with the same name in this directory
         **/
-        if(is_dir(root(PATH_TEMPLATE.'/'.substr($GLOBALS['_GET']['REQUEST'], 0, -1)))):
+        if(is_dir(root(PATH_TEMPLATES.'/'.substr($GLOBALS['_GET']['REQUEST'], 0, -1)))):
              
 			$dirname = dirname($GLOBALS['_GET']['REQUEST']);
 

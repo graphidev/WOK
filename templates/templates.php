@@ -121,7 +121,7 @@
                         <p>
                             * Whatever the page name, you can create as many page as you want, this rule will always be applied :<br />
                             <i><b>The template path is exactly the same as the HTTP request. Just add <i>".php"</i></b></i><br />
-                            The template files are in <i>/template</i> by default and given by the PATH_TEMPLATE constant.
+                            The template files are in <i>/template</i> by default and given by the PATH_TEMPLATES constant.
                         </p>
                         
                     </div>

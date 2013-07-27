@@ -1,0 +1,13 @@
+CACHE MANIFEST
+# 2013-07-09 v1.0.7
+
+CACHE
+appcache/offline
+appcache/javascript
+
+
+NETWORK
+#appcache/online
+
+FALLBACK
+appcache/online appcache/offline

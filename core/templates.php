@@ -50,6 +50,16 @@
 		endif;
 	}
 
+    function _e($path, $data = array()) {
+        if($GLOBALS['LOCALES'])
+            return $GLOBALS['LOCALES']->_e($path, $data);
+        else
+            return path;
+    }
+    function _t($path, $data = array()) {
+        _e($path, $data = array());
+    }
+
     function get_library($name) {
         
         if(is_dir(root(PATH_LIBS."/$name")) && file_exists(root(PATH_LIBS."/$name/$name.xml"))):

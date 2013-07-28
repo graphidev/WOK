@@ -79,7 +79,9 @@
                             <!--<li><a href="#mysqlib">MySQLib</a></li>-->
                             
                             <li class="nav-header">Additional tools</li>
-                            <li><a href="<?php echo path('tools/file-class'); ?>">file class</a></li>
+                            <li><a href="<?php echo path('tools/session'); ?>">Session class</a></li>
+                            <li><a href="<?php echo path('tools/locales'); ?>">Locales class</a></li>
+                            <li><a href="<?php echo path('tools/file-class'); ?>">File class</a></li>
                         </ul>
                     </div>
                     

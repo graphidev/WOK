@@ -17,20 +17,21 @@
     <body>
         
         <div id="main">
-            
+        
             <?php 
-                $locale = new Locales('fr_FR');
-
-                echo $locale->t('default:menu.home');
+                
+                echo _e('default:menu.home');
                 echo ' | ';
                 $data = array(
                     'year'=> date('Y'), 
                     'owner'=> 'Sébastien ALEXANDRE'
                 );
-                echo $locale->t('default:footer.credits', $data);
+                echo _e('default:footer.credits', $data);
             ?>
             
             <hr />
+            
+            
             
             <?php
                 $array = array(

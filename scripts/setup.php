@@ -3,7 +3,7 @@
 	/**
      * Initialize WOK
     **/
-	require_once "core/init.php";
+	require_once "../core/init.php";
 
 ?>
 
@@ -15,11 +15,11 @@
         
         <title>WOK setup</title>
         
-        <link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css" type="text/css">
-        <link rel="stylesheet" href="libs/bootstrap/css/bootstrap-responsive.min.css" type="text/css">
+        <link rel="stylesheet" href="../libraries/bootstrap/css/bootstrap.min.css" type="text/css">
+        <link rel="stylesheet" href="../libraries/bootstrap/css/bootstrap-responsive.min.css" type="text/css">
         
-        <script src="libs/bootstrap/js/bootstrap.js"></script>
-        <script src="libs/jquery/jquery-1.10.1.min.js"></script>
+        <script src="../libraries/bootstrap/js/bootstrap.js"></script>
+        <script src="../libraries/jquery/jquery-1.10.1.min.js"></script>
         
         <script>
             $(document).ready(function() {
@@ -90,7 +90,7 @@
 
                 if(!empty($_POST['setup'])):
                     
-                    $settings = file_get_contents('core/settings-default.php');
+                    $settings = file_get_contents('../core/settings-default.php');
                     $settings = preg_replace("#define\('SYSTEM_DEFAULT_PROTOCOL', '(.+)?'\)#", "define('SYSTEM_DEFAULT_PROTOCOL', '".$_POST['protocol']."')", $settings);
                     $settings = preg_replace("#define\('SERVER_DOMAIN', '(.+)?'\)#", "define('SERVER_DOMAIN', '".$_POST['domain']."')", $settings);
                     $settings = preg_replace("#define\('SYSTEM_DIRECTORY_PATH', '(.+)?'\)#", "define('SYSTEM_DIRECTORY_PATH', '".$_POST['directory']."')", $settings);
@@ -101,9 +101,9 @@
                     file_put_contents('core/settings.php', $settings);
 
 
-                    $htaccess = file_get_contents('.htaccess.default');
+                    $htaccess = file_get_contents('../.htaccess.default');
                     $htaccess = str_replace('__WOK_DIR__', $_POST['directory'], $htaccess);
-                    file_put_contents('.htaccess', $htaccess);
+                    file_put_contents('../.htaccess', $htaccess);
 
                     unlink('setup.php');
                     

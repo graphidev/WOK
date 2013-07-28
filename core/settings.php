@@ -19,6 +19,7 @@
     define('SYSTEM_DIRECTORY_PATH', '/wok'); // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
 	define('SYSTEM_TIMEZONE', 'Europe/Paris'); // System timezone
+    define('SYSTEM_ACCEPT_LANGUAGES', 'en_EN,fr_FR'); // System accepted languages
 
 
     /**

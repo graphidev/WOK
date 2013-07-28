@@ -19,7 +19,7 @@
         }
         
         // $locale->t('default:navigation.home')
-        public function t($path, $data = array()) {
+        public function _e($path, $data = array()) {
             $locale = strstr_before($path, ':');
             
             if(empty($locale)): // locale by default
@@ -42,9 +42,11 @@
                     return $path;
             }
             
-            foreach($data as $index => $value) {
-                $locale = str_replace(":$index", $value, $locale);
-            }
+            if(!empty($data)):
+                foreach($data as $index => $value) {
+                    $locale = str_replace(":$index", $value, $locale);
+                }
+            endif;
             
             return $locale;
                                 

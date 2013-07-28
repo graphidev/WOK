@@ -46,7 +46,8 @@
         require_once SYSTEM_ROOT.PATH_CORE."/compatibility.php"; // PHP compatibility functions
         require_once SYSTEM_ROOT.PATH_CORE."/treatments.php"; // Treatments functions
         require_once SYSTEM_ROOT.PATH_CORE."/timezones.php"; // Timezones code / name
-        require_once SYSTEM_ROOT.PATH_CORE."/locales.php"; // Timezones code / name
+        require_once SYSTEM_ROOT.PATH_CORE."/session.php"; // Session class
+        require_once SYSTEM_ROOT.PATH_CORE."/locales.php"; // Locales class
         require_once SYSTEM_ROOT.PATH_CORE."/file.php"; // File class
         require_once SYSTEM_ROOT.PATH_CORE."/mail.php"; // Mail class
 

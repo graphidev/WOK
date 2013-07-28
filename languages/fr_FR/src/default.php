@@ -6,6 +6,11 @@
             'about' => 'À propos',
         ),
         
+        'token' => array(
+            'authorized' => 'Token autorisé',
+            'unauthorized' => 'Token non autorisé !',
+        ),
+        
         'footer' => array(
             'plan' => 'Plan du site',
             'notices' => 'Mentions légales',

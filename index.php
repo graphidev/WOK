@@ -27,7 +27,7 @@
 		$GLOBALS['_POST'] = $_POST;
 	endif;
 
-    $session = new Session();
+    $GLOBALS['session'] = new Session();
     $GLOBALS['LOCALES'] = new Locales($session->language());
     
 	require_once SYSTEM_ROOT.PATH_CORE."/templates.php";

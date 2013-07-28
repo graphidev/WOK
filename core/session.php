@@ -90,20 +90,24 @@
                 return self::$browser;
         }
 		
-		public function set_token(){
+		public function token(){
 			$token = uniqid(rand());
-			$_SESSION['token_'.TOKEN_SALT]['value'] = $token;
-			$_SESSION['token_'.TOKEN_SALT]['time'] = time();
+			$_SESSION['token_'.TOKEN_SALT][$token]['value'] = $token;
+			$_SESSION['token_'.TOKEN_SALT][$token]['time'] = time();
 			return $token;
 		}
 
-		public function is_token_authorized($token, $duration = 15) {
-			$maxtime = $_SESSION['token_'.TOKEN_SALT]['time'] + $duration*60;
-			if($token == $_SESSION['token_'.TOKEN_SALT]['value'] && time() <= $maxtime ):
-				return true;
-			else:
-				return false;
-			endif;
+		public function is_authorized_token($token, $duration = 5) {
+            if(!empty($_SESSION['token_'.TOKEN_SALT][$token])):
+                $maxtime = $_SESSION['token_'.TOKEN_SALT][$token]['time'] + $duration*60;
+                if($token == $_SESSION['token_'.TOKEN_SALT][$token]['value'] && time() <= $maxtime ):
+                    return true;
+                else:
+                    return false;
+                endif;
+            else:
+                return false;
+            endif;
 		}
 			
 	}

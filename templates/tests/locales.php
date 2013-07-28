@@ -30,6 +30,24 @@
             ?>
             
             <hr />
+            <?php
+                global $session; 
+
+                if(!empty($_POST['token'])):
+                    if($session->is_authorized_token($_POST['token'], 1)):
+                        echo '<div class="alert alert-info">'._e('token.authorized').'</div>';
+                    else:
+                        echo '<div class="alert alert-error">'._e('token.unauthorized').'</div>';
+                    endif;
+                else:
+            ?>
+                <form action="#" method="POST">
+                    <input type="hidden" name="token" value="<?php echo $session->token(); ?>" />
+                    <input type="submit" class="btn btn-primary" value="check token" />
+                </form>
+            <?php
+                endif;
+            ?>
             
             
             

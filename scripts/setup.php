@@ -98,14 +98,14 @@
                     $settings = preg_replace("#define\('SESSION_CRYPT', '(.+)?'\)#", "define('SESSION_CRYPT', '".sha1(uniqid('sess_'))."')", $settings);
                     $settings = preg_replace("#define\('TOKEN_SALT', '(.+)?'\)#", "define('TOKEN_SALT', '".sha1(uniqid('tok_'))."')", $settings);
                     $settings = preg_replace("#define\('COOKIE_CRYPT', '(.+)?'\)#", "define('COOKIE_CRYPT', '".sha1(uniqid('cook_'))."')", $settings);
-                    file_put_contents('core/settings.php', $settings);
+                    file_put_contents('../core/settings.php', $settings);
 
 
                     $htaccess = file_get_contents('../.htaccess.default');
                     $htaccess = str_replace('__WOK_DIR__', $_POST['directory'], $htaccess);
                     file_put_contents('../.htaccess', $htaccess);
 
-                    unlink('setup.php');
+                    //unlink('setup.php');
                     
             ?>
             
@@ -165,11 +165,11 @@
                     
 
                     <label for="directory">WOK directory</label>
-                    <input class="input-block-level" type="text" name="directory" id="directory" value="<?php echo str_replace($_SERVER['DOCUMENT_ROOT'], '', SYSTEM_ROOT); ?>" placeholder="/wok">
+                    <input class="input-block-level" type="text" name="directory" id="directory" value="/<?php echo str_replace($_SERVER['DOCUMENT_ROOT'], '', SYSTEM_ROOT); ?>" placeholder="/wok">
                     
                     
                     <label for="address">System address</label>
-                    <input class="input-block-level" type="url" name="address" id="address" value="http://<?php echo $_SERVER['SERVER_NAME'].str_replace($_SERVER['DOCUMENT_ROOT'], '', SYSTEM_ROOT); ?>" placeholder="http://localhost/wok" required disabled>
+                    <input class="input-block-level" type="url" name="address" id="address" value="http://<?php echo $_SERVER['SERVER_NAME'].'/'.str_replace($_SERVER['DOCUMENT_ROOT'], '', SYSTEM_ROOT); ?>" placeholder="http://localhost/wok" required disabled>
                     
                     
                     

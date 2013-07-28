@@ -35,9 +35,9 @@
     /**
      * Preload
     **/
-    if(file_exists(root('preload.php')))
-        require_once(root('preload.php'));
-
+    if(file_exists(root('/preload.php')))
+        require_once(root('/preload.php'));
+    
     /**
      * Special views
     **/

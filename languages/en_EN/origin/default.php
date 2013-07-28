@@ -1,9 +1,18 @@
 <?php
 
     $data = array(
-        'menu' => array(
+        'project' => array(
+            'name' => 'WOK'
+        ),
+        
+        'navigation' => array(
             'home' => 'Home',
             'about' => 'About',
+            'use' => 'Usage',
+            'tools' => 'Tools',
+            'scripts' => 'Scripts',
+            'libraries' => 'Libraries',
+            'github' => 'On Github',
         ),
         
         'token' => array(

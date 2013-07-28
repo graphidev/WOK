@@ -6,7 +6,7 @@
     **/
     
     function controller() {
-        if(get_request() == ''):
+        if(get_request() == '' || get_request() == '/'):
             tpl_static_page('homescreen');
             return true;
         else:

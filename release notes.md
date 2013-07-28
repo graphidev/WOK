@@ -3,8 +3,8 @@ Release notes
 
 v 0.3
 -------------
+* Add Locales and Session classes (v0.3:2)
 * Replace preview library by controller function (v0.3:1)
-* Add MySQL class
 
 v 0.2
 -------------

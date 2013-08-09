@@ -1,6 +1,7 @@
 <?php
 
 	function tpl_static_page($name) {
+        header("Content-Type: text/html");
 		if(file_exists(root(PATH_TEMPLATES."/$name.php"))):
 			include(root(PATH_TEMPLATES."/$name.php"));
 		elseif(file_exists(root(PATH_TEMPLATES."/404.php"))):
@@ -57,7 +58,7 @@
             return path;
     }
     function _t($path, $data = array()) {
-        _e($path, $data = array());
+        echo _e($path, $data);
     }
 
     function get_library($name) {

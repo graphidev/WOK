@@ -1,6 +1,14 @@
 Release notes
 =============
 
+v 0.4
+------------
+* Locales now support formats (v0.4.1)
+* Automatic setup script (PHP CLI)
+* Analytics library included.
+* Stability libraries patches.
+* Now require PHP 5.3 or more
+
 v 0.3
 -------------
 * Add Locales and Session classes (v0.3:2)

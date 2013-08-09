@@ -8,7 +8,7 @@
 		@author Sébastien ALEXANDRE 
 				
 		@required function mail() allowed
-		@required function strip_magic_quotes()
+		@required function get_mime_type()
 		
 	*/
 	
@@ -55,7 +55,7 @@
 	 		@param (string) $value = mail object
 	 	*/	 	
 	 	public function object($value) {
-	 		$this->object =  strip_magic_quotes($value);
+	 		$this->object =  $value;
 	 	}
 	 	
 	 	// -----------------------------------
@@ -67,8 +67,8 @@
 	 		@parem (string) $name = addressee's name (mail will be used if $name is not defined)
 	 	*/
 	 	public function to($mail, $name = null) {
-	 		$this->addressee['addr'] = strip_magic_quotes($mail);
-	 		$this->addressee['name'] = (empty($name) ? strip_magic_quotes($mail) : strip_magic_quotes($name));
+	 		$this->addressee['addr'] = $mail;
+	 		$this->addressee['name'] = (empty($name) ? $mail : $name);
 	 	}
 	 	
 	 	// -----------------------------------
@@ -80,9 +80,9 @@
 	 	*/
 	 	public function Cc($mail) {
 	 		if(is_array($mail)):
-	 			$this->Cc = array_merge($this->Cc, strip_magic_quotes($mail));
+	 			$this->Cc = array_merge($this->Cc, $mail);
 	 		else:
-	 			$this->Cc[] = strip_magic_quotes($mail);
+	 			$this->Cc[] = $mail;
 	 		endif;
 	 	}
 	 	
@@ -95,9 +95,9 @@
 	 	*/
 	 	public function Bcc($mail) {
 	 		if(is_array($mail)):
-	 			$this->Bcc = array_merge($this->Bcc, strip_magic_quotes($mail));
+	 			$this->Bcc = array_merge($this->Bcc, $mail);
 	 		else:
-	 			$this->Bcc[] = strip_magic_quotes($mail);
+	 			$this->Bcc[] = $mail;
 	 		endif;
 	 	}
 	 	
@@ -111,12 +111,12 @@
 	 		@param (string $more = additional informations about the sender (added as signature)
 	 	*/
 	 	public function from($mail, $name, $more = null) {
-			$this->sender['name'] = strip_magic_quotes($name);
-			$this->sender['addr'] = strip_magic_quotes($mail);
+			$this->sender['name'] = $name;
+			$this->sender['addr'] = $mail;
 			
 			$this->signature = $this->sender['name']."\n".$this->sender['addr'];
 			if(!empty($more)):
-				$this->signature .= "\n".strip_magic_quotes($more);
+				$this->signature .= "\n".$more;
 			endif;
 	 	}
 	 	

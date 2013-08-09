@@ -1,7 +1,7 @@
 <html>
     
     <head>
-        <title>Web Operational Kit</title>
+        <title><?php _t('about:pagename'); ?></title>
         
         <?php tpl_headers(); ?>
         
@@ -9,19 +9,43 @@
     
     <body>
         
-        <div id="main">
-            
-            <?php tpl_banner(); ?>
-            
+        <div id="main" >
+                        
             <div class="content">
                 
-                <h1>About WOK</h1>
-                
-                <p>
-                    After working on heavy frameworks, we decided to make a lighter way to develope web site and web app. That's why we created the Web Operation Kit (WOK).
-                </p>
+                <div class="hero-unit">
+                    
+                    <h1><?php _t('about:title'); ?></h1>          
+                    
+                    
+                    <div class="content">
+                        
+                        <p><?php echo nl2br(_e('about:content.hang')); ?></p>
+                        
+                        <ul>
+                            <li><?php _t('about:content.list.compatibility'); ?></li>
+                            <li><?php _t('about:content.list.mvc'); ?></li>
+                            <li><?php _t('about:content.list.multilingual'); ?></li>
+                            <li><?php _t('about:content.list.libraries'); ?></li>
+                            <li><?php _t('about:content.list.open'); ?></li>
+                            <li><?php _t('about:content.list.more'); ?></li>
+                        </ul>
+                        
+                        <p class="text-right"><?php _t('about:content.doubt'); ?></p>
+                        
+                    </div>
+                    
+                    <div class="buttons">
+                        <a href="<?php echo path('/'); ?>" class="btn btn-inverse btn-large pull-left">« <?php _t('buttons.previous'); ?></a>
+                        <a href="<?php echo path('/functions'); ?>" class="btn btn-primary btn-large pull-right"><?php _t('buttons.next'); ?> »</a>
+                    </div>
+                    
+                    <div class="clearfix"></div>
+                    
+                </div>
                 
             </div>
+           
             
         </div>
     

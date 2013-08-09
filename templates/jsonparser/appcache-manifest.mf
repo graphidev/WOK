@@ -1,0 +1,15 @@
+CACHE MANIFEST
+# 2013-07-28 v1.0.0
+
+CACHE:
+jsonparser/jsonparser
+jsonparser/jquery
+jsonparser/bootstrap/css/bootstrap.min.css
+jsonparser/bootstrap/js/bootstrap.min.js
+
+
+NETWORK:
+*
+
+FALLBACK:
+jsonparser/ jsonparser/jsonparser

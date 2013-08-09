@@ -7,11 +7,11 @@
     
     function controller() {
         if(get_request() == '' || get_request() == '/'):
-            tpl_static_page('homescreen');
+            tpl_static_page('discover');
             return true;
         else:
             return false;
         endif;
     }
-
+    
 ?>

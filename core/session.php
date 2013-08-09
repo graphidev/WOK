@@ -50,7 +50,6 @@
                 self::$language = $_SESSION['sess_'.SESSION_CRYPT]['language'];
             endif;
         
-            
             self::$browser =                @get_browser(null, true);
             self::$HTTP_USER_AGENT =        $_SERVER['HTTP_USER_AGENT'];
 			self::$HTTP_ACCEPT_LANGUAGE =   $_SERVER['HTTP_ACCEPT_LANGUAGE'];

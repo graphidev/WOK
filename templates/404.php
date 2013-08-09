@@ -10,9 +10,7 @@
     <body>
         
         <div id="main" class="error404" >
-            
-            <?php tpl_banner(); ?>
-            
+                        
             <div class="content text-center">
                 
                 <h1>404</h1>

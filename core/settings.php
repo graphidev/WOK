@@ -15,12 +15,14 @@
      * This informations are required for some functions and other conditions.
     **/
     define('SYSTEM_DEFAULT_PROTOCOL', 'http://'); // System default protocol
-    define('SERVER_DOMAIN', 'localhost'); // Server domain name or IP address
-    define('SYSTEM_DIRECTORY_PATH', '/wok'); // Relative system directory path
-	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
-	define('SYSTEM_TIMEZONE', 'Europe/Paris'); // System timezone
-    define('SYSTEM_ACCEPT_LANGUAGES', 'en_EN,fr_FR'); // System accepted languages
+    define('SERVER_DOMAIN', 'wok.loc'); // Server domain name or IP address
+    define('SYSTEM_DIRECTORY_PATH', ''); // Relative system directory path
 
+	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
+    
+	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
+    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN,fr_FR'; // System accepted languages
+    
     
     /**
      * System logs

@@ -27,7 +27,7 @@
                     </div>
                     
                     <div class="buttons">
-                        <a href="<?php echo path('/about'); ?>" class="btn btn-primary btn-large"><?php _t('buttons.more'); ?> »</a>
+                        <a href="<?php echo path('/package/'); ?>" class="btn btn-primary btn-large"><?php _t('buttons.more'); ?> »</a>
                     </div>
                     
                     <p>

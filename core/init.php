@@ -49,6 +49,7 @@
         **/
         require_once SYSTEM_ROOT.PATH_CORE . '/settings.php'; // Framework settings
         
+        require_once SYSTEM_ROOT.PATH_CORE . '/controller.php'; // Framework controller
         require_once SYSTEM_ROOT.PATH_CORE . '/console.php'; // Framework logger
         require_once SYSTEM_ROOT.PATH_CORE . '/utilities.php'; // Framework fonctions
         require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions

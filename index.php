@@ -12,14 +12,13 @@
 	$query = strip_system_root($_SERVER['REQUEST_URI']);
 	$static = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
 	$additional = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
-
+    
 	$GLOBALS['_GET']['REQUEST'] = str_replace(path(), '', path($static));
 	$GLOBALS['_GET']['PARAMETERS'] = array();
 	foreach(explode('&', $additional) as $i => $parameter) {
 		@list($name, $value) = explode('=', $parameter);
 		$GLOBALS['_GET']['PARAMETERS'][$name] = urldecode($value);
 	}
-
 
 	if(isset($_POST)):
 		$GLOBALS['_POST'] = $_POST;
@@ -30,107 +29,73 @@
     **/
     $GLOBALS['session'] = new Session();
     $GLOBALS['LOCALES'] = new Locales($session->language());
-    
-    /**
-     * Init libraries list
-    **/
-    
-    
-	require_once SYSTEM_ROOT.PATH_CORE . '/templates.php';
-	
-    /**
-     * Preload
-    **/
-    if(file_exists(root('/preload.php')))
-        require_once(root('/preload.php'));
-    
-    /**
-     * Custom controller
-    **/
-    if(function_exists('controller') && controller()): 
-
-	/**
-     * Statics pages and API calls
-	**/
-	elseif(!empty($GLOBALS['_GET']['REQUEST'])):
-    
-        /**
-         * API calls
-        **/
-        if(preg_match('#^api/(.+)$#', $GLOBALS['_GET']['REQUEST'])):
-
-            /**
-             * Directory, check the file with the same name in this directory
-            **/
-            if(is_dir(root(PATH_APIS.'/'.substr($GLOBALS['_GET']['REQUEST'], 0, -1)))):
-                 
-                $dirname = dirname($GLOBALS['_GET']['REQUEST']);
-    
-                if(substr($GLOBALS['_GET']['REQUEST'], -1) == '/'):
-                     $filename = str_replace($dirname, '', substr($GLOBALS['_GET']['REQUEST'], 0, -1));
-                else:
-                    $filename = str_replace($dirname, '', $GLOBALS['_GET']['REQUEST']);
-                endif;
-                
-                $api = root(PATH_APIS.'/'.str_replace('//', '/', $GLOBALS['_GET']['REQUEST'].$filename));
-
-                if(file_exists($api))
-                    include($api);
-                else
-                    tpl_static_page('404');
-            
-            /**
-             * File, check the filename
-            **/
-            else:
-            
-                $api = root(PATH_APIS.'/'.$GLOBALS['_GET']['REQUEST']);
-                if(file_exists($api))
-                    include($api);
-                else
-                    tpl_static_page('404');
-                    
-    
-            endif;
         
-        /**
-         * Statics pages
-        **/
-        else:
-            
-            /**
-             * Directory, check the file with the same name in this directory
-            **/
-            if(is_dir(root(PATH_TEMPLATES.'/'.substr($GLOBALS['_GET']['REQUEST'], 0, -1)))):
-                 
-                $dirname = dirname($GLOBALS['_GET']['REQUEST']);
+	require_once SYSTEM_ROOT.PATH_CORE . '/templates.php';
     
-                if(substr($GLOBALS['_GET']['REQUEST'], -1) == '/'):
-                     $filename = str_replace($dirname, '', substr($GLOBALS['_GET']['REQUEST'], 0, -1));
-                else:
-                    $filename = str_replace($dirname, '', $GLOBALS['_GET']['REQUEST']);
-                endif;
-            
-                tpl_static_page(str_replace('//', '/', $GLOBALS['_GET']['REQUEST'].$filename));
-            
-            /**
-             * File, check the filename
-            **/
-            else:
-    
-                tpl_static_page($GLOBALS['_GET']['REQUEST']);
-    
-            endif;
 
-        endif;
+    /**
+     * Set Custom controllers
+    **/
+    if(file_exists(root('/manifest.php')))
+        require_once(root('/manifest.php'));
     
-	/**
-     * Homepage
-	**/
-	elseif(empty($GLOBALS['_GET']['REQUEST'])):
-		tpl_static_page('homepage');
-	else:
-		tpl_static_page($GLOBALS['_GET']['REQUEST']);
-	endif;
-	
+
+    /**
+     * Set API's controller
+    **/
+    Controller::add(function($query) {
+            return preg_match('#^api/(.+)?$#', $query);
+        }, function($query) {
+            $api = root(PATH_APIS.'/'.preg_replace('#^api/(.+)?$#', '$1', $GLOBALS['_GET']['REQUEST']).'.php');
+            if(file_exists($api)):
+                include_once($api);
+            else:
+                header('Content-type: application/json');
+                echo json_encode(array('error'=>true, 'info'=>'API doesn\'t exists'));
+            endif;
+        }, true);
+    
+
+    /**
+     * Set static pages controllers
+    **/    
+    Controller::add(function($query) {
+            return empty($query);
+        }, 
+        function() {
+            tpl_static_page('homepage');
+        }, true);
+    
+
+    // This is the default controller
+    Controller::add(true, function($query) {
+        /**
+         * Directory, check the file with the same name in this directory
+        **/
+        if(is_dir(root(PATH_TEMPLATES.'/'.substr($query, 0, -1)))):         
+            $dirname = dirname($query);
+    
+            if(substr($GLOBALS['_GET']['REQUEST'], -1) == '/'):
+                 $filename = str_replace($dirname, '', substr($query, 0, -1));
+            else:
+                $filename = str_replace($dirname, '', $query);
+            endif;
+            
+            tpl_static_page(str_replace('//', '/', $query.$filename));
+            
+        /**
+         * File, check the filename
+        **/
+        else:   
+            tpl_static_page($query);
+    
+        endif;
+    }, true);
+    
+
+    /**
+     * Invoke the controller queue
+    **/
+    Controller::invoke($GLOBALS['_GET']['REQUEST']);
+
 ?>

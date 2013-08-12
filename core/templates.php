@@ -1,29 +1,30 @@
 <?php
 
 	function tpl_static_page($name) {
-		if(file_exists(root(PATH_TEMPLATE."/$name.php"))):
-			include(root(PATH_TEMPLATE."/$name.php"));
-		elseif(file_exists(root(PATH_TEMPLATE."/404.php"))):
-			include(root(PATH_TEMPLATE."/404.php"));
+        header("Content-Type: text/html");
+		if(file_exists(root(PATH_TEMPLATES."/$name.php"))):
+			include(root(PATH_TEMPLATES."/$name.php"));
+		elseif(file_exists(root(PATH_TEMPLATES."/404.php"))):
+			include(root(PATH_TEMPLATES."/404.php"));
         else:
             exit("404 Document not found");
 		endif;
 	}
 	
 	function tpl_headers($dir = '/inc') {
-		include(root(PATH_TEMPLATE."/$dir/headers.php"));
+		include(root(PATH_TEMPLATES."/$dir/headers.php"));
 	}
 	
 	function tpl_banner($dir = '/inc') {
-		include(root(PATH_TEMPLATE."/$dir/banner.php"));
+		include(root(PATH_TEMPLATES."/$dir/banner.php"));
 	}
 	
 	function tpl_footer($dir = '/inc') {
-		include(root(PATH_TEMPLATE."$dir/footer.php"));
+		include(root(PATH_TEMPLATES."$dir/footer.php"));
 	}
 	
 	function tpl_sidebar($dir = '/inc') {
-		include(root(PATH_TEMPLATE."$dir/sidebar.php"));
+		include(root(PATH_TEMPLATES."$dir/sidebar.php"));
 	}
 	
 	function get_page() {
@@ -49,6 +50,16 @@
 			return false;
 		endif;
 	}
+
+    function _e($path, $data = array()) {
+        if($GLOBALS['LOCALES'])
+            return $GLOBALS['LOCALES']->_e($path, $data);
+        else
+            return path;
+    }
+    function _t($path, $data = array()) {
+        echo _e($path, $data);
+    }
 
     function get_library($name) {
         

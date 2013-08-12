@@ -80,10 +80,14 @@
 		);
 		
 		private static $mobiles = array(
-			'iPod', 'iPad', 'iPhone', 'iOS',
+			'iPod', 'iPhone', 'iOS',
 			'blackberry', 'SymbianOS', 'Android',
 			'Kindle', 'Windows Phone'
 		);
+        
+        private static $tablets = array(
+            'iPad', 'Kindle', 'tablet', 'Touch'
+        )
 		
 		private static $bots = array(
 			'Googlebot/'				=> 'GoogleBot',
@@ -144,6 +148,7 @@
 		private static $visitor = array();
 		private $is_bot = false;
 		private $is_mobile = false;
+        private $is_tablet = false;
 		private $logs = array();
 		private $path;
 		
@@ -284,6 +289,24 @@
 			
 			return $this->is_mobile;
 		}
+        
+        public function is_tablet() {
+            if(!empty($_COOKIE['tablet']) && $_COOKIE['tablet'] == 'true'):
+				$this->is_tablet = true;
+            
+			elseif(!$this->is_mobile() && 
+            (in_array(self::$visitor['OS'], self::$tablets) || 
+			in_array(self::$visitor['device'], self::$tablets) || 
+			in_array(self::$visitor['browser'], self::$tablets))):
+				$this->is_tablet = true;
+            
+			else:
+				$this->is_tablet = false;
+            
+			endif;
+			
+			return $this->is_tablet;
+        }
 		
 		public function register($referer = null) {
 			

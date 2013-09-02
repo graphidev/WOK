@@ -4,18 +4,15 @@
      * This is the controller class
      * All it's methods are statics
     **/
-    
+
     class Controller {
         
+        private static $queue       = array();
+        private static $state       = true;
         
-        private static $queue = array();
-        private static $state = true;
-        
-        
-        public static function add($conditions, $action, $strict = false) {
+        public static function assign($conditions, $action, $strict = false) {
             self::$queue[] = array($conditions, $action, $strict);
         }
-        
          
         private static function execute($conditions, $action, $query, $strict = false) {
              if(is_bool($conditions)):
@@ -43,18 +40,17 @@
             endif;
         }
         
-        
-        public static function invoke($query) {            
+        public static function invoke(&$request) {            
             foreach(self::$queue as $index => $value){
                 if(self::$state):
                     list($conditions, $action, $strict) = $value;
-                    self::$state = !self::execute($conditions, $action, $query, $strict);
+                    self::$state = !self::execute($conditions, $action, $request, $strict);
                 endif;
             
             }
             
         }
-        
+                
     }
 
 ?>

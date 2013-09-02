@@ -22,6 +22,7 @@
     
 	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
     const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN,fr_FR'; // System accepted languages
+    const SYSTEM_DEFAULT_LANGUAGE           = 'en_EN'; // System default language
     
     
     /**

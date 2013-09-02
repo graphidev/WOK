@@ -1,28 +1,59 @@
 <?php
 
-    class Locales {
+    class Locales extends Session {
         
-        private $language;
-        private $locales = array();
-        private static $accepted_languages = array();
+        private static $locales = array();
         
+        public function __construct() {}
+
         
-        public function __construct($language) {
-            self::$accepted_languages =  explode(',', SYSTEM_ACCEPT_LANGUAGES);
-            $this->language = $language;
-            $this->load('default');
+        /**
+         * Get a locale file
+        **/
+        private static function load($locale) {
+            if(file_exists(root(PATH_LOCALES.'/'.parent::$language."/$locale.json")))
+                self::$locales[parent::$language][$locale] = json_decode(file_get_contents(root(PATH_LOCALES.'/'.parent::$language."/$locale.json")), true);
+            
+            elseif(file_exists(root(PATH_LOCALES.'/'.parent::$language."/$locale.properties")))
+                self::generate($locale);
+            
+            else
+                self::$locales[parent::$language][$locale] = array();
         }
         
+        /**
+         * Generate JSON locale
+        **/
+        private static function generate($locale) {
+            $handle = fopen(root(PATH_LOCALES.'/'.parent::$language."/$locale.properties"), 'r');
+            if($handle):
+                while(!feof($handle)):
+                    $line = fgets($handle);
+                    if(substr($line, 0, 1) != '#'):
+                        $path = str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true));
+                        $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false))));
+                                    
+                        $data = array();
+                        eval("\$data['$path']='$value';");
+            
+                        $origin = (isset(self::$locales[self::$language][$locale]) ? self::$locales[self::$language][$locale] : array());
+                        self::$locales[self::$language][$locale] = array_merge_recursive($origin, $data);
+                    endif;
+                endwhile;
+                            
+                fclose($handle);
+            endif;
+            
+            $json = fopen(root(PATH_LOCALES.'/'.parent::$language."/$locale.json"), 'w+');
+            fwrite($json, json_encode(self::$locales[self::$language][$locale]));
+            fclose($json);
+        }
         
-        private function load($locale) {
-            if(file_exists(root(PATH_LOCALES.'/'.$this->language."/$locale.json")))
-                $this->locales[$this->language][$locale] = json_decode(file_get_contents(root(PATH_LOCALES.'/'.$this->language."/$locale.json")), true);
-            else
-                $this->locales[$this->language][$locale] = array();
-        }        
-        
-        public function _e($path, $data = array()) {
-            setLocale(LC_ALL, $this->language);
+        /**
+         * Get a locale translation
+        **/
+        public static function _e($path, $data = array()) {
+            setLocale(LC_ALL, parent::$language);
             $locale = strstr($path, ':', true);
             
             if(empty($locale)): // locale by default
@@ -33,20 +64,21 @@
             endif;
             
             // Load locale if it isn't.
-            if(!isset($this->locales[$this->language][$locale]))
-                $this->load($locale);
-            
+            if(!isset(self::$locales[parent::$language][$locale]))
+                self::load($locale);
+                    
             // Return the finale node value
-            $translation = $this->locales[$this->language][$locale];
+            $translation = self::$locales[parent::$language][$locale];
+
             foreach($nodes as $i => $node) {
                 if(is_array($translation) && isset($translation[$node])):
                     $translation = $translation[$node];
                 else: // Try to get the default locale
-                    if($this->language != self::$accepted_languages[0]):
-                        $backup = $this->language;
-                        $this->language = self::$accepted_languages[0];
-                        $translation = $this->_e($path);
-                        $this->language = $backup;
+                    if(parent::$language != SYSTEM_DEFAULT_LANGUAGE):
+                        $backup = parent::$language;
+                        parent::$language = SYSTEM_DEFAULT_LANGUAGE;
+                        $translation = self::_e($path);
+                        parent::$language = $backup;
                     else:
                         return $path;
                     endif;
@@ -110,7 +142,7 @@
             endif;
             
             // Replace with an other translation
-            $language = $this->language; // $this allowed in anonymous functions with PHP 5.4 and newer
+            $language = parent::$language; // $this allowed in anonymous functions with PHP 5.4 and newer
             $translation = preg_replace_callback("#&\[(.+)\]#isU", function($matches) use (&$language, &$locale){
                 $locales = new Locales($language);
                 return $locales->_e(str_replace('~', $locale, $matches[1]));

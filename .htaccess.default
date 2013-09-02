@@ -1,10 +1,12 @@
-# Always redirect to index.php
+# Always redirect to the controller file
 # this file analyse and treats all HTTP requests
+# Directories request are redirected to the
+# controller file in order to a better compatibility
+# Uncomment the second rewrite condition to allow them
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase __WOK_DIR__
     RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteCond %{REQUEST_FILENAME} !-d
-
+    #RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . __WOK_DIR__/index.php [L]
 </IfModule>

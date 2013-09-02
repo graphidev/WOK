@@ -2,19 +2,21 @@
 
 	class Session {
         
-        protected static $uniqid;
-        protected static $ip;
-        protected static $browser;
-        protected static $language;
-        protected static $HTTP_USER_AGENT;
-        protected static $HTTP_ACCEPT_LANGUAGE;
-                
+        public static $uniqid;
+        public static $IP;
+        public static $browser;
+        public static $language;
+        public static $HTTP_USER_AGENT;
+        public static $HTTP_ACCEPT_LANGUAGE;
+        public static $functions = array();
         
-		public function __construct() {
-
+		public static function start() {
+            
+            session_start(); // Start sessions
+            
             // Define session ID
             if(!isset($_SESSION['sess_'.SESSION_CRYPT])):
-                $this->set('uniqid', uniqid());
+                self::set('uniqid', uniqid());
             endif;
             
             self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];
@@ -25,11 +27,11 @@
 			elseif(!empty($_SERVER["HTTP_X_FORWARDED_FOR"])):
 				self::$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
 			else:
-				self::$ip = $_SERVER["REMOTE_ADDR"];
+				self::$IP = $_SERVER["REMOTE_ADDR"];
 			endif;
             
             // Define session language
-            if(!$this->get('language')):
+            if(!self::get('language')):
             
                 $accepted_languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
                 if(isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])):
@@ -44,7 +46,7 @@
                 if(empty(self::$language))
                     self::$language = $accepted_languages[0];
                 
-                $this->set('language', self::$language);
+                self::set('language', self::$language);
             
             else:
                 self::$language = $_SESSION['sess_'.SESSION_CRYPT]['language'];
@@ -56,47 +58,43 @@
 			
         }
         
-        public function set($name, $value, $bruteforce = true) {
+        public static function set($name, $value, $bruteforce = true) {
             $_SESSION['sess_'.SESSION_CRYPT][$name] = $value;
         }
         
-        public function get($name) {
+        public static function get($name) {
             if(isset($_SESSION['sess_'.SESSION_CRYPT][$name]))
                 return $_SESSION['sess_'.SESSION_CRYPT][$name];
             else
                 return false;
         }
         
-        public function ip() {
-            return self::$ip;
-        }
-        
-		public function language($set = null) {
+		public static function language($set = null) {
             if(!empty($set)):
                 $accepted_languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
                 if(in_array($set, $accepted_languages)):
                     self::$language = $set;
-                    $this->set('language', $set);
+                    self::set('language', $set);
                 endif;
             endif;
             return self::$language;
         }
         
-        public function browser($get = null) {
+        public static function browser($get = null) {
             if(!empty($get))
                 return self::$browser[$get];
             else
                 return self::$browser;
         }
 		
-		public function token(){
+		public static function token(){
 			$token = uniqid(rand());
 			$_SESSION['token_'.TOKEN_SALT][$token]['value'] = $token;
 			$_SESSION['token_'.TOKEN_SALT][$token]['time'] = time();
 			return $token;
 		}
 
-		public function is_authorized_token($token, $duration = 5) {
+		public static function is_authorized_token($token, $duration = 5) {
             if(!empty($_SESSION['token_'.TOKEN_SALT][$token])):
                 $maxtime = $_SESSION['token_'.TOKEN_SALT][$token]['time'] + $duration*60;
                 if($token == $_SESSION['token_'.TOKEN_SALT][$token]['value'] && time() <= $maxtime ):

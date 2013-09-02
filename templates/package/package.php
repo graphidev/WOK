@@ -3,7 +3,7 @@
     <head>
         <title><?php _t('package:pagename'); ?></title>
         
-        <?php tpl_headers(); ?>
+        <?php Response::inc('inc/headers', PATH_TEMPLATES); ?>
         
     </head>
     
@@ -14,7 +14,12 @@
             <div class="content">
                 
                 <div class="hero-unit">
-                    
+                        
+                    <?php 
+                        $data = json_decode(file_get_contents(root(PATH_FILES.'/data/'.Session::$language.'/package.psdf')), true); 
+                        echo PSDF::parse($data); 
+                    ?>
+                    <!--
                     <h1><?php _t('package:title'); ?></h1>          
                     
                     
@@ -33,6 +38,7 @@
                         <p class="text-right"><?php _t('package:content.doubt'); ?></p>
                         
                     </div>
+                    -->
                     
                     <div class="buttons">
                         <a href="<?php echo path('/'); ?>" class="btn btn-inverse btn-large pull-left">« <?php _t('buttons.previous'); ?></a>

@@ -142,7 +142,7 @@
 	 	public function attachment($path, $name) {
 	 		$this->attachments[] = array(
 	 			'name' => $name,
-	 			'type' => get_mime_type($path),
+	 			'type' => \Compatibility\get_mime_type($path),
 	 			'content' => base64_encode(file_get_contents($path))
 	 		);
 	 	}

@@ -3,7 +3,7 @@
     <head>
         <title><?php _t('controller:pagename'); ?></title>
         
-        <?php tpl_headers(); ?>
+        <?php Response::inc('inc/headers', PATH_TEMPLATES); ?>
         
     </head>
     

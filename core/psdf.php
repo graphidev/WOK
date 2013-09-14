@@ -83,19 +83,11 @@
             foreach($parsers as $type => $callback) {
                 PSDF::format($type, $callback);
             }
-
+            
             foreach($data as $i => $item) {
                 if(!empty($item['type'])):
-                    
                     $parser = self::callback($item['type']);
-                
-                    switch($item['type']) {
-                        case 'list':
-                            $html .= $parser($item, $item['ordered'], $parser);
-                            break;
-                        default:
-                            $html .= $parser($item);
-                    }
+                    $html .= $parser($item);
                 endif;
             }
             
@@ -113,13 +105,13 @@
      * Paragraph
     **/
     PSDF::model('paragraph', function($paragraph) {
-        return '<p class="text-'.$paragraph['alignment'].'">'.PSDF::richtext($paragraph['value']).'</p>';
+        return '<p class="text-'.(!empty($paragraph['alignment']) ? $paragraph['alignment'] : 'default').'">'.PSDF::richtext($paragraph['value']).'</p>';
     });
     
     /**
      * Code (block)
     **/
-    PSDF::model('code', function($code) {    
+    PSDF::model('code', function($code) {
         return '<pre><code class="language-'.$code['language'].'">'.htmlentities($code['value']).'</code></pre>';;
     });
     
@@ -156,14 +148,14 @@
      * Alert (block)
     **/
     PSDF::model('alert', function($alert) {
-         return '<div class="alert alert-'.$alert['style'].'">'.$alert['value'].'</div>';
+         return '<div class="alert '.implode(' ', $alert['classes']).'">'.$alert['value'].'</div>';
     });
     
     /**
      * List (recursive)
     **/
     PSDF::model('list', function($list) {        
-        $tag = ($list['ordered'] ? 'ol' : 'ul');
+        $tag = (!empty($list['ordered'])  ? 'ol' : 'ul');
         $html = "<$tag>";
         
         /**

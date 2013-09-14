@@ -3,30 +3,12 @@
     class  Response {
         
         private static $base = '/';
+        public static $data = array();
+        
         
         /**
-         * Define the response type
+         * Redirect permanently or not
         **/
-        public static function type($type) {
-            switch($type) {
-                case 'text':
-                    $type = 'text/plain';
-                    break;
-                case 'html':
-                    $type = 'text/html';
-                    break;
-                case 'json':
-                    $type = 'application/json';
-                    break;
-                case 'xml':
-                    $type = 'application/xml';
-                    break;
-                default:
-                    $type = $type;
-            }
-            header("Content-type: $type");
-        }
-        
         public function redirect($target, $permanent = true) {
             $code = ($permanet ? 301 : 302);
             $message = ($permanet ? 'Moved permanently' : 'Moved Temporarily');
@@ -59,22 +41,6 @@
             endif;
         }
         
-        public static function content($data) {
-            
-        }
-        
-        /**
-         * Include a common element from the current base
-        **/
-        public static function inc($name, $base = null) {
-            
-            if(empty($base)) // Redefine base
-                $base = self::$base;
-                                    
-            if(file_exists(root("$base/$name.php")))
-                include(root("$base/$name.php"));
-        }
-        
         /**
          * Call a static file
         **/
@@ -86,6 +52,53 @@
             else:
                 Response::view('404');
             endif;
+        }
+        
+        /**
+         * Define the response type
+        **/
+        public static function type($type) {
+            switch($type) {
+                case 'text':
+                    $type = 'text/plain';
+                    break;
+                case 'html':
+                    $type = 'text/html';
+                    break;
+                case 'json':
+                    $type = 'application/json';
+                    break;
+                case 'xml':
+                    $type = 'application/xml';
+                    break;
+                default:
+                    $type = $type;
+            }
+            header("Content-type: $type");
+        }
+        
+        /**
+         * Return custom datas
+         * Working with custom response type
+        **/
+        public static function assign($data, $object = false) {
+            if(is_array($data) && $object)
+                self::$data = json_decode(json_encode($data), false);
+            else
+                self::$data = $data;
+        }
+                
+        
+        /**
+         * Include a common element from the current base
+        **/
+        public static function inc($name, $base = null) {
+            
+            if(empty($base)) // Redefine base
+                $base = self::$base;
+                                    
+            if(file_exists(root("$base/$name.php")))
+                include(root("$base/$name.php"));
         }
         
     }

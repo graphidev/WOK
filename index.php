@@ -22,11 +22,11 @@
      * Set default homepage controller
     **/
     Controller::assign(function($query) {
-            return empty($query);
-        }, 
-        function() {
-            Response::view('homepage');
-        }, true);
+        return empty($query);
+    }, 
+    function() {
+        Response::view('homepage');
+    }, true);
     
 
     /**

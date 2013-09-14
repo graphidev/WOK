@@ -1,7 +1,7 @@
 <html>
     
     <head>
-        <title><?php _t('discover:pagename'); ?></title>
+        <title><?php echo Response::$data->title ?></title>
         
         <?php Response::inc('inc/headers', PATH_TEMPLATES); ?>
         
@@ -10,30 +10,14 @@
     <body>
         
         <div id="main" >
+            
+            <?php Response::inc('inc/navbar', PATH_TEMPLATES); ?>
                         
             <div class="content">
                 
-                <div class="hero-unit">
+                <div class="jumbotron">
 
-                    <?php 
-                        $data = json_decode(file_get_contents(root(PATH_FILES.'/data/'.Session::$language.'/discover.psdf')), true); 
-                        echo PSDF::parse($data); 
-                    ?>
-                    
-                    <!--
-                    
-                    <div class="thumbnail pull-right">
-                        <img src="<?php echo path(PATH_FILES.'/images/300x400.jpeg'); ?>" alt="Placekitten" />
-                    </div>
-                    
-                    <h1><?php _t('discover:title'); ?></h1>
-                    <div class="content">
-                        
-                        <p><?php _t('discover:marketing.hang'); ?></p>
-                        <p><?php _t('discover:marketing.desire'); ?></p>
-                        
-                    </div>
-                    -->
+                    <?php echo Response::$data->content ?>
                     
                     <div class="buttons">
                         <a href="<?php echo path('/package/'); ?>" class="btn btn-primary btn-large"><?php _t('buttons.more'); ?> »</a>

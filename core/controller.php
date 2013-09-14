@@ -13,6 +13,18 @@
         public static function assign($conditions, $action, $strict = false) {
             self::$queue[] = array($conditions, $action, $strict);
         }
+        
+        public static function inc($library, $once = true) {
+            if(file_exists(root(PATH_LIBRARIES."/$library.php"))):
+                if($once)
+                    require_once root(PATH_LIBRARIES."/$library.php");
+                else
+                    include root(PATH_LIBRARIES."/$library.php");
+                return true;
+            else:
+                return false;
+            endif;
+        }
          
         private static function execute($conditions, $action, $query, $strict = false) {
              if(is_bool($conditions)):

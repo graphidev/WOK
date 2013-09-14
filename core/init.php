@@ -26,11 +26,12 @@
 	define('SYSTEM_ROOT', dirname(__DIR__)); 
 
     const PATH_CORE             = '/core'; // Core path
-	const PATH_LIBS             = '/libraries'; // Libraries path
+	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_DATA             = '/data'; // Data's directory path
     const PATH_LOCALES          = '/languages'; // Languages' files directory
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
     const PATH_FILES            = '/files'; // Files' directory
+    const PATH_RESOURCES        = '/resources'; // Resources' directory
     const PATH_TMP_FILES        = '/files/tmp'; // Temporary files' directory
     const PATH_APIS             = '/api'; // API's path
     const PATH_LOGS             = '/logs'; // PHP logs directory
@@ -48,22 +49,31 @@
          * We can load settings and required libraries
         **/
         require_once SYSTEM_ROOT.PATH_CORE . '/settings.php'; // Framework settings
-
+        
         require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions
         require_once SYSTEM_ROOT.PATH_CORE . '/utilities.php'; // Framework fonctions
         require_once SYSTEM_ROOT.PATH_CORE . '/treatments.php'; // Treatments functions
-        require_once SYSTEM_ROOT.PATH_CORE . '/psdf.php'; // PSDF Treatment
-
+        
+        spl_autoload_register(function($name) {
+            $name = strtolower($name);
+            if(file_exists(SYSTEM_ROOT.PATH_CORE . "/$name.php"))
+                require_once SYSTEM_ROOT.PATH_CORE . "/$name.php";
+        });
+        /*
         require_once SYSTEM_ROOT.PATH_CORE . '/request.php'; // Framework request class
         require_once SYSTEM_ROOT.PATH_CORE . '/controller.php'; // Framework controller class
         require_once SYSTEM_ROOT.PATH_CORE . '/response.php'; // Response class
         require_once SYSTEM_ROOT.PATH_CORE . '/session.php'; // Session class
         require_once SYSTEM_ROOT.PATH_CORE . '/locales.php'; // Locales class
+        
+        require_once SYSTEM_ROOT.PATH_CORE . '/psdf.php'; // PSDF Treatment
+        require_once SYSTEM_ROOT.PATH_CORE . '/file.php'; // File manager class
+        require_once SYSTEM_ROOT.PATH_CORE . '/mail.php'; // Mail class
+        */
 
         require_once SYSTEM_ROOT.PATH_CORE . '/console.php'; // Framework logger
         require_once SYSTEM_ROOT.PATH_CORE . '/timezones.php'; // Timezones code / name
-        require_once SYSTEM_ROOT.PATH_CORE . '/file.php'; // File manager class
-        require_once SYSTEM_ROOT.PATH_CORE . '/mail.php'; // Mail class
+        
 
         /**
          * Particular cases which require some adjustements or conditions

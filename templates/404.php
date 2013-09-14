@@ -3,7 +3,7 @@
     <head>
         <title>404 Document not found</title>
         
-        <?php tpl_headers(); ?>
+        <?php Response::inc('inc/headers', PATH_TEMPLATES) ?>
         
     </head>
     

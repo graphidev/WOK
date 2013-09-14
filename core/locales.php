@@ -3,9 +3,9 @@
     class Locales extends Session {
         
         private static $locales = array();
+        private static $formats = array();
         
         public function __construct() {}
-
         
         /**
          * Get a locale file
@@ -88,13 +88,13 @@
             
             
             /**
-             * default :input
-             * string (:index|format)
-             * date/time [:index|format]
-             * money {:index|format}
-             * reference &[locale:node.get.name]
-             * reference &[~:node.get.name]
-             * resume (:index|1234)
+             * default      :input
+             * string       (:index|format)
+             * date/time    [:index|format]
+             * money        {:index|format} {:index}
+             * reference    &[locale:node.get.name]
+             * reference    &[~:node.get.name]
+             * resume       (:index|1234)
             **/
             if(!empty($data)):
                 foreach($data as $index => $value) {
@@ -112,24 +112,32 @@
                     
                     // Call a predefined format
                     $translation = preg_replace_callback("#\(:$index\|(.+)\)#isU", function($matches) use (&$value){
-                        switch ($matches[1]) {
-                            case 'trim':
-                                return trim($value);
-                            break;
-                            case 'uppercase':
-                                return mb_strtoupper($value, 'UTF-8');
-                            break;
-                            case 'lowercase':
-                                return mb_strtolower($value, 'UTF-8');
-                            break;
-                            case 'reverse':
-                                return \Compatibility\strrev($value);
-                            default:
-                                if(is_numeric($matches[1]))
-                                    return resume($value, intval($matches[1]));
-                                else
-                                    return $value;
+                        $formats = explode(',', $matches[1]);
+                        foreach($formats as $i => $format) {
+                            switch ($format) {
+                                case 'trim':
+                                    $value = trim($value);
+                                break;
+                                case 'uppercase':
+                                    $value = mb_strtoupper($value, 'UTF-8');
+                                break;
+                                case 'lowercase':
+                                    $value = mb_strtolower($value, 'UTF-8');
+                                break;
+                                case 'reverse':
+                                    $value = \Compatibility\strrev($value);
+                                default:
+                                    if(is_numeric($format)):
+                                        $value = resume($value, intval($format));
+                                    elseif(!empty(self::$formats[$format])):
+                                        $parser = self::$formats[$format];
+                                        $value = $parser($value);
+                                    else:
+                                        return $value;
+                                    endif;
+                            }
                         }
+                        
                     }, $translation);
                     
                     // Replace with locale money format
@@ -144,12 +152,19 @@
             // Replace with an other translation
             $language = parent::$language; // $this allowed in anonymous functions with PHP 5.4 and newer
             $translation = preg_replace_callback("#&\[(.+)\]#isU", function($matches) use (&$language, &$locale){
-                $locales = new Locales($language);
-                return $locales->_e(str_replace('~', $locale, $matches[1]));
+                return Locales::_e(str_replace('~', $locale, $matches[1]));
             }, $translation);
             
             return $translation;
                                 
+        }
+        
+        
+        /**
+         * Set a format
+        **/
+        public static function assign($format, $callback) {
+            self::$formats[$format] = $callback;
         }
         
     }

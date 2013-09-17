@@ -36,10 +36,12 @@
             $handle = fopen(root(PATH_LOCALES.'/'.parent::$language."/$locale.properties"), 'r');
             if($handle):
                 while(!feof($handle)):
-                    $line = fgets($handle);
-                    if(substr($line, 0, 1) != '#'):
-                        $path = str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true));
-                        $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false))));
+                    $line = trim(fgets($handle));
+                    $beginwith = substr($line, 0, 1);
+                    if($beginwith != '#' && $beginwith != '!'):
+                        $path = trim(str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true))); // Property name
+                        $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false)))); // Property value
+                        $value = str_replace(array('\n','\r'), "\r\n", $value); // Allow breaklines in value
                                     
                         $data = array();
                         eval("\$data['$path']='$value';");

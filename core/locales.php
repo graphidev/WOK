@@ -11,14 +11,22 @@
          * Get a locale file
         **/
         private static function load($locale) {
-            if(file_exists(root(PATH_LOCALES.'/'.parent::$language."/$locale.json")))
-                self::$locales[parent::$language][$locale] = json_decode(file_get_contents(root(PATH_LOCALES.'/'.parent::$language."/$locale.json")), true);
+            $source = root(PATH_LOCALES.'/'.parent::$language."/$locale.properties");
+            $parsed = root(PATH_LOCALES.'/'.parent::$language."/$locale.json");
+            if(file_exists($parsed)):
+                
+                if(file_exists($source) && filemtime($source) > filemtime($parsed)):
+                    self::generate($locale);
+                else:
+                    self::$locales[parent::$language][$locale] = json_decode(file_get_contents($parsed), true);
+                endif;
             
-            elseif(file_exists(root(PATH_LOCALES.'/'.parent::$language."/$locale.properties")))
+            elseif(file_exists()):
                 self::generate($locale);
             
-            else
+            else:
                 self::$locales[parent::$language][$locale] = array();
+            endif;
         }
         
         /**

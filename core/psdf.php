@@ -97,6 +97,7 @@
         
     }
 
+
     /**
      * PSDF default parser models
     **/
@@ -158,36 +159,12 @@
         $tag = (!empty($list['ordered'])  ? 'ol' : 'ul');
         $html = "<$tag>";
         
-        /**
-         * Recursive list
-        **/
-        $recursive = function($tag, $items, $recursive) {
-            $html = "<$tag>";
-            foreach($items as $key => $item) {
-                $html .= '<li>'.$item['value'];
-                            
-                if(!empty($item['items'])):
-                    $html .= $recursive($tag, $item['items'], $recursive);
-                endif;
-                            
-                $html .= '</li>';
-                            
-            }
-            $html .= "</$tag>";
-            return $html;
-        };
-        
-        /**
-         * Classic list
-        **/
         foreach($list['items'] as $key => $item) {
-            $html .= '<li>'.$item['value'];
-                        
-            if(!empty($item['items']))
-                $html .= $recursive($tag, $item['items'], $recursive);
-                        
-            $html .= '</li>';
-                            
+            
+            if(is_array($item['value']))
+               $html .= '<li>'.PSDF::parse($item['value']).'</li>';
+            else
+               $html .= '<li>'.$item['value'].'</li>';
         }
                     
         $html .= "</$tag>";

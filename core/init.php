@@ -26,6 +26,7 @@
 	define('SYSTEM_ROOT', dirname(__DIR__)); 
 
     const PATH_CORE             = '/core'; // Core path
+    const PATH_VAR              = '/var'; // Config path
 	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_DATA             = '/data'; // Data's directory path
     const PATH_LOCALES          = '/languages'; // Languages' files directory
@@ -34,7 +35,7 @@
     const PATH_RESOURCES        = '/resources'; // Resources' directory
     const PATH_TMP_FILES        = '/files/tmp'; // Temporary files' directory
     const PATH_APIS             = '/api'; // API's path
-    const PATH_LOGS             = '/logs'; // PHP logs directory
+    const PATH_LOGS             = '/var/logs'; // PHP logs directory
 
     /*
      * Once we have pathes, we can call essential libraries.
@@ -42,18 +43,21 @@
      * Thereof contains all required constants to have functionnal libraries. 
      * Without it, some troubles may appear.
     **/
-    if(file_exists(SYSTEM_ROOT.PATH_CORE.'/settings.php')):
+    if(file_exists(SYSTEM_ROOT.PATH_VAR.'/settings.php')):
         
         /**
          * All right ! Settings file exists.
          * We can load settings and required libraries
         **/
-        require_once SYSTEM_ROOT.PATH_CORE . '/settings.php'; // Framework settings
+        require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
         
         require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions
         require_once SYSTEM_ROOT.PATH_CORE . '/utilities.php'; // Framework fonctions
         require_once SYSTEM_ROOT.PATH_CORE . '/treatments.php'; // Treatments functions
         
+        /**
+         * Libraries auto loader
+        **/
         spl_autoload_register(function($name) {
             $name = strtolower($name);
             if(file_exists(SYSTEM_ROOT.PATH_CORE . "/$name.php"))
@@ -72,7 +76,6 @@
         */
 
         require_once SYSTEM_ROOT.PATH_CORE . '/console.php'; // Framework logger
-        require_once SYSTEM_ROOT.PATH_CORE . '/timezones.php'; // Timezones code / name
         
 
         /**
@@ -92,8 +95,8 @@
          * Once everything is fine loaded, we call the options file.
          * This one will be used to add your own stuffs.
         **/
-        if(file_exists(SYSTEM_ROOT.PATH_CORE.'/options.php'))
-			require_once(SYSTEM_ROOT.PATH_CORE.'/options.php');
+        if(file_exists(SYSTEM_ROOT.PATH_VAR.'/options.php'))
+			require_once(SYSTEM_ROOT.PATH_VAR.'/options.php');
         
     endif;
 

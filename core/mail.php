@@ -129,7 +129,7 @@
 	 		@require method template()
 	 	*/
 	 	public function content($message) {
-		 	$this->content= $message;
+		 	$this->content = $message;
 	 	}
 	 	
 	 	// -----------------------------------

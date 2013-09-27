@@ -5,8 +5,9 @@
         private static $request;
         private static $headers;
         
-        private static $logs = array();
-        private static $format = '[:time] [:type] :log';
+        private static $logs        = array();
+        private static $format      = '[:time] [:type] :log';
+        private static $emails      = array();
         
         /**
          * Logs types
@@ -22,8 +23,8 @@
         /**
          * Redefine logs format
         **/
-        public function __construct($format) {
-            self::$format = $format;
+        public function __construct($emails = array()) {
+            self::$emails = $emails; 
         }
         
         /**
@@ -100,6 +101,7 @@
             if(!empty(self::$logs)):
                 
                 $date = date('Y-m-d');
+                $fatals = null;
             
                 if(!is_dir(root(PATH_LOGS . "/$date")))
                     mkdir(root(PATH_LOGS . "/$date"), 0755, true);
@@ -119,6 +121,7 @@
                     
                     if($log['fatal']):
                         $filename = 'fatal';
+                        $fatals .= $row;
                     
                     elseif(in_array(strtolower($log['type']), $types)):
                         $filename = strtolower($log['type']);
@@ -134,6 +137,19 @@
                 foreach($files as $name => $file) {
                     fclose($file);
                 }
+            
+            /**
+             * Send fatal errors by e-mail
+            **/
+            if(!empty($fatals) && !empty(self::$emails)):
+                $from = 'debug@'.SERVER_DOMAIN;
+                $mail = new mail('['.SERVER_DOMAIN.'] Fatal error (log)');
+                $mail->from('debug@'.SERVER_DOMAIN, 'Debug', 'Automatic email. Do not respond.');
+                $mail->to(self::$emails[0]);
+                $mail->Cc(self::$emails);
+                $mail->content($fatals);
+                $mail->send();
+            endif;
                 
             endif;
         }

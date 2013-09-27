@@ -23,7 +23,6 @@
     const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN,fr_FR'; // System accepted languages
     $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
     define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
-    
 
     /**
      *	Security constants

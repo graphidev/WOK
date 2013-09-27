@@ -7,9 +7,11 @@ Future
 
 v 0.5
 ------------
-* Full stability
+* Full stability and structure
 * Libraries model (not moving)
-* Add PSDF (as test) (canceled) (done in 0.4)
+* Implement Console class (logs)
+* Add Console (logger)
+* Add PSDF (as test) (done in 0.4)
 * Add Controller class (done in 0.4)
 
 v 0.4

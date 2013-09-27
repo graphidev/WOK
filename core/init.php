@@ -27,6 +27,8 @@
 
     const PATH_CORE             = '/core'; // Core path
     const PATH_VAR              = '/var'; // Config path
+    const PATH_TMP              = '/var/tmp'; // Temporary path
+    const PATH_LOGS             = '/var/logs'; // PHP logs directory
 	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_DATA             = '/data'; // Data's directory path
     const PATH_LOCALES          = '/languages'; // Languages' files directory
@@ -35,7 +37,6 @@
     const PATH_RESOURCES        = '/resources'; // Resources' directory
     const PATH_TMP_FILES        = '/files/tmp'; // Temporary files' directory
     const PATH_APIS             = '/api'; // API's path
-    const PATH_LOGS             = '/var/logs'; // PHP logs directory
 
     /*
      * Once we have pathes, we can call essential libraries.
@@ -62,21 +63,7 @@
             $name = strtolower($name);
             if(file_exists(SYSTEM_ROOT.PATH_CORE . "/$name.php"))
                 require_once SYSTEM_ROOT.PATH_CORE . "/$name.php";
-        });
-        /*
-        require_once SYSTEM_ROOT.PATH_CORE . '/request.php'; // Framework request class
-        require_once SYSTEM_ROOT.PATH_CORE . '/controller.php'; // Framework controller class
-        require_once SYSTEM_ROOT.PATH_CORE . '/response.php'; // Response class
-        require_once SYSTEM_ROOT.PATH_CORE . '/session.php'; // Session class
-        require_once SYSTEM_ROOT.PATH_CORE . '/locales.php'; // Locales class
-        
-        require_once SYSTEM_ROOT.PATH_CORE . '/psdf.php'; // PSDF Treatment
-        require_once SYSTEM_ROOT.PATH_CORE . '/file.php'; // File manager class
-        require_once SYSTEM_ROOT.PATH_CORE . '/mail.php'; // Mail class
-        */
-
-        require_once SYSTEM_ROOT.PATH_CORE . '/console.php'; // Framework logger
-        
+        });    
 
         /**
          * Particular cases which require some adjustements or conditions

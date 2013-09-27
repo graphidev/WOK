@@ -3,3 +3,4 @@ var/settings.php
 resources/*
 files/tmp/*
 files/*
+templates/*

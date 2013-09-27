@@ -9,11 +9,14 @@ v 0.5
 ------------
 * Full stability
 * Libraries model (not moving)
-* Add Datareader (as test)
-* Add Controller class
+* Add PSDF (as test) (canceled) (done in 0.4)
+* Add Controller class (done in 0.4)
 
 v 0.4
 ------------
+* Prepare to migrate to v0.5
+* Request have URI parameters (v0.4.3)
+* Add PSDF format (v0.4.2)
 * Locales now support formats (v0.4.1)
 * Automatic setup script (PHP CLI)
 * Now require PHP 5.3 or more

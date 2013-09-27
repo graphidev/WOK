@@ -12,7 +12,7 @@
         **/
         private static function load($locale) {
             $source = root(PATH_LOCALES.'/'.parent::$language."/$locale.properties");
-            $parsed = root(PATH_LOCALES.'/'.parent::$language."/$locale.json");
+            $parsed = root(PATH_TMP.'/'.parent::$language.".$locale.json");
             if(file_exists($parsed)):
                 if(file_exists($source) && filemtime($source) > filemtime($parsed)):
                     self::generate($locale);
@@ -53,7 +53,7 @@
                 fclose($handle);
             endif;
             
-            $json = fopen(root(PATH_LOCALES.'/'.parent::$language."/$locale.json"), 'w+');
+            $json = fopen(root(PATH_TMP.'/'.parent::$language.".$locale.json"), 'w+');
             fwrite($json, json_encode(self::$locales[self::$language][$locale]));
             fclose($json);
         }

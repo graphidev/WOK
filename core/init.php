@@ -31,7 +31,7 @@
     const PATH_LOGS             = '/var/logs'; // PHP logs directory
 	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_DATA             = '/data'; // Data's directory path
-    const PATH_LOCALES          = '/languages'; // Languages' files directory
+    const PATH_LOCALES          = '/locales'; // Languages' files directory
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
     const PATH_FILES            = '/files'; // Files' directory
     const PATH_RESOURCES        = '/resources'; // Resources' directory

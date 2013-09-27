@@ -14,14 +14,13 @@
             $source = root(PATH_LOCALES.'/'.parent::$language."/$locale.properties");
             $parsed = root(PATH_LOCALES.'/'.parent::$language."/$locale.json");
             if(file_exists($parsed)):
-                
                 if(file_exists($source) && filemtime($source) > filemtime($parsed)):
                     self::generate($locale);
                 else:
                     self::$locales[parent::$language][$locale] = json_decode(file_get_contents($parsed), true);
                 endif;
             
-            elseif(file_exists()):
+            elseif(file_exists($source)):
                 self::generate($locale);
             
             else:

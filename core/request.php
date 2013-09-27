@@ -93,7 +93,6 @@
                                 }
                             endif;
                         }
-                        print_r(self::$params); exit(self::$URI);
                         break;
                     endif;
                 }

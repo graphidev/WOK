@@ -1,2 +1,5 @@
 .DS_Store
-core/settings.php
+var/settings.php
+resources/*
+files/tmp/*
+files/*

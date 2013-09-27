@@ -4,6 +4,16 @@
      * Initialize WOK
     **/
 	require_once 'core/init.php';
+
+    /**
+     * Foremost, we'll check if all the folders which must be writable are writable
+    **/
+
+    if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS)) || !@is_writable(root(PATH_FILES)) || !@is_writable(root(PATH_TMP_FILES))):
+        Response::Type('html', 503);
+        exit('not writable folders');
+        Response::view('503');
+    endif;
     
     /**
      * Init the Request

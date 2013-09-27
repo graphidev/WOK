@@ -97,21 +97,22 @@
         **/
         public static function view($name) {
             self::$base = dirname(PATH_TEMPLATES."/$name");
-            Response::type('html');
-
+            
             if(file_exists(root(PATH_TEMPLATES."/$name.php"))):
-                header("HTTP/1.1 200 OK");
+                Response::type('html', 200);
                 include_once(root(PATH_TEMPLATES."/$name.php"));
                 
             
             else:
-                header("HTTP/1.1 404 Not found");
+                Response::type('html', 404);
             
-                if(file_exists(root(PATH_TEMPLATES."/404.php")))
+                if(file_exists(root(PATH_TEMPLATES."/404.php"))):
                     include_once(root(PATH_TEMPLATES."/404.php"));
             
-                else
+                else:
                     exit("404 Document not found");
+
+                endif;
             
             endif;
         }
@@ -147,7 +148,7 @@
                     $type = 'application/xml';
                     break;
                 default:
-                    $type = $type;
+                    $type = (!empty($type) ? $type : 'text/html');
             }
             header("Content-type: $type", true, $code);
             header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
@@ -172,7 +173,7 @@
             
             if(empty($base)) // Redefine base
                 $base = self::$base;
-                                    
+                       
             if(file_exists(root("$base/$name.php")))
                 include(root("$base/$name.php"));
         }

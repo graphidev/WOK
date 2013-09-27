@@ -23,9 +23,9 @@
             
             // Definse session language
             if(!empty($_SERVER["HTTP_CLIENT_IP"])):
-				self::$ip = $_SERVER["HTTP_CLIENT_IP"];
+				self::$IP = $_SERVER["HTTP_CLIENT_IP"];
 			elseif(!empty($_SERVER["HTTP_X_FORWARDED_FOR"])):
-				self::$ip = $_SERVER["HTTP_X_FORWARDED_FOR"];
+				self::$IP = $_SERVER["HTTP_X_FORWARDED_FOR"];
 			else:
 				self::$IP = $_SERVER["REMOTE_ADDR"];
 			endif;

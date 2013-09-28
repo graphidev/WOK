@@ -16,16 +16,6 @@
 
     
     /**
-     * Sample of resource response usage
-    **/
-    Controller::assign(function($request) {
-        return (Request::$domain == 'static.'.SERVER_DOMAIN ? true : false);
-    }, function($request) {
-        Response::resource($request);
-    },true);
-    
-    
-    /**
      * Redefine homepage controller (otherwise: homepage template)
     **/
     Controller::assign(function($request) {

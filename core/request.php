@@ -51,7 +51,7 @@
              * Check parameters
             **/
             if(!empty($_GET)): // GET parameters
-                self::$params['GET'] = $_GET;
+                self::$params['GET'] = &$_GET;
             elseif(!empty($additional)):
                 foreach(explode('&', $additional) as $i => $parameter) {
                     @list($name, $value) = explode('=', $parameter);
@@ -60,11 +60,11 @@
             endif;
             
             if(!empty($_POST)): // POST parameters
-                self::$params['POST'] = $_POST;
+                self::$params['POST'] = &$_POST;
             endif;
             
             if(!empty($_FILES)): // FILES parameters
-                self::$params['FILES'] = $_FILES;
+                self::$params['FILES'] = &$_FILES;
             endif;
                     
             

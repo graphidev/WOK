@@ -73,7 +73,7 @@
             **/
             if(!empty(self::$config)):
                 foreach(self::$config as $i => $request) {
-                    if(preg_match('#^'.$request['url'].'$#isU', self::$URI)):
+                    if(preg_match('#^'.$request['url'].'$#isU', self::$URI) && (empty($request['domain']) || $request['domain'] == self::$domain)):
                         foreach($request['parameters'] as $name => $param) {
                             if($param['type'] != $request['method']):
                                 /** [IDEA]: (require an other switch) return parameter'value according to type (int, float ...) **/
@@ -107,6 +107,7 @@
             
             foreach($urls as $case) {
                 $url = $case->getAttribute('url');
+                $domain = ($case->hasAttribute('domain') ? str_replace('~', SERVER_DOMAIN, $case->getAttribute('domain')) : null);
                 $method = ($case->hasAttribute('method') ? strtoupper($case->getAttribute('method')) : 'GET');
                 $action = ($case->hasAttribute('action') ? $case->getAttribute('action') : null);
                 $count = 1;

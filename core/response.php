@@ -1,6 +1,6 @@
 <?php
     
-    class  Response {
+    class  Response extends Request {
         
         private static $base = '/';
         public static $data = array();

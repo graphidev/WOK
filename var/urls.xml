@@ -4,6 +4,7 @@
     <!-- Use the following structure -->
     <!-- 
         request
+            - domain (optional) : The domain access (~ corresponds to the default domain)
             - url (required) : the URI access, add a colon before parameters
             - method (default=get) : the access method (get, post head, put, ...)
             - action (recommended) : string for the action that should be called (null by default)
@@ -32,6 +33,10 @@
         <param name="name" type="string" />
         <param name="id" regexp="[0-9]+" />
         <param name="test" type="string" required="no" />
+    </request>
+    
+    <request domain="static.~" url=":path" action="resource:call">
+        <param name="path" type="string" regexp="[a-z0-9/_-]+" />
     </request>
     
 </access>

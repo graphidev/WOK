@@ -4,3 +4,4 @@ resources/*
 files/tmp/*
 files/*
 templates/*
+var/tmp/*

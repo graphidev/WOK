@@ -1,225 +1,158 @@
 <?php
+    
+    define('ACCESS_PATH', dirname(dirname(__FILE__)));
 
-	/**
-     * Initialize WOK
+    require ACCESS_PATH . "/core/init.php";
+
+    function input($string) {
+        echo $string;
+        $handle = fopen("php://stdin","r");
+        $data = trim(fgets($handle));
+        if($data == 'exit')
+            exit("[WOK setup aborted]\n\n");
+        else
+            return $data;
+    }
+
+    function setSetting($name, $value, $settings) {
+        $settings = preg_replace("#const $name (.+)?= '(.+)?';#", "const $name $1= '$value';", $settings);
+        echo "-- -- $name : $value\n";
+        return $settings;
+    }
+    
+    
+    /**
+     * WOK ASCII name
     **/
-	require_once "../core/init.php";
+    echo  "
+ __          ______  _  __       
+ \ \        / / __ \| |/ /      
+  \ \  /\  / / |  | | ' /       
+   \ \/  \/ /| |  | |  <        
+    \  /\  / | |__| | . \       
+     \/  \/   \____/|_|\_\      
+    \n";
 
+
+    echo "\n[Setup WOK " . WOK_VERSION . "]\n";
+    echo "* The following program will help you to configure WOK\n";
+    echo "* Please type 'exit' in any time if you want to stop it\n\n";
+
+    /**
+     * Check PHP version
+    **/
+    if(PHP_VERSION < 5.3)
+        exit("ERROR :: You must updgrade your PHP version to 5.3 at least\n\n");
+    
+    /**
+     * Check required folders
+    **/
+    if(!@is_writable(ACCESS_PATH.PATH_VAR) || 
+       !@is_writable(ACCESS_PATH.PATH_TMP) || 
+       !@is_writable(ACCESS_PATH.PATH_LOGS) || 
+       !@is_writable(ACCESS_PATH.PATH_FILES) || 
+       !@is_writable(ACCESS_PATH.PATH_TMP_FILES)):
+        echo "ERROR :: The following folders must be accesible for writing :\n";
+        echo "- " . PATH_VAR . "\n";
+        echo "- " . PATH_TMP . "\n";
+        echo "- " . PATH_LOGS . "\n";
+        echo "- " . PATH_FILES . "\n";
+        echo "- " . PATH_TMP_FILES . "\n";
+        exit("\n");
+    endif;
+
+    /**
+     * Try to calculate default settings
+    **/
+    $protocol = 'http://';
+    $domain = php_uname('n');
+    $directory = str_replace(dirname(SYSTEM_ROOT), '', SYSTEM_ROOT);
+    $timezone = @date_default_timezone_get();
+
+    /**
+     * Customize settings
+    **/
+    $manual = strtoupper(input("Would you customize your setup ? (Y/N) : "));
+    if(empty($manual) || $manual == 'Y'):
+        
+        echo "* Press enter (empty value) to get the calculated value\n";
+        
+        $input_protocol = input("-- Default access protocol [http/https] > ").'://';
+        $input_domain = input("-- Default access domain [$domain] > ");
+        $input_directory = input("-- Default access subdirectory [$directory] > ");
+        $input_timezone = input("-- Server timezone [$timezone] > ");   
+        
+        $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
+        $protocol = ($input_protocol != '://' ? $input_protocol.'://' : $protocol);
+        $domain = (!empty($input_domain) ? $input_domain : $domain);
+        $directory = $input_directory;
+    
+    endif;
+
+    $url = $protocol.$domain.$directory;
+    
+    echo "\n";
+    
+
+
+    /**
+     * Configure languages
+    **/
+    echo "Which languages are supported in your project ?\n";
+    echo "* The languages codes must correspond to the ISO 639 norm (country_LANGUAGE)\n";
+    echo "* The program will ask you a new language until you press Enter (empty value)\n";
+    echo "* If you won't define any language, the 'en_EN' code will be applied\n";
+        
+    $languages = array();
+    $new = true;
+    while(strtolower($new) != '') {
+        $new = input("-- Add language > ");
+        if(!empty($new))
+            $languages[] = $new;
+    }
+    if(count($languages) == 0)
+        $languages = array('en_EN');
+    
+    echo "\n";
+    
+
+    /**
+     * Save configuration
+    **/
+    echo "Generate configuration file ...\n";
+    $settings = file_get_contents(ACCESS_PATH.PATH_VAR.'/settings-default.php');
+
+    $settings = setSetting('SYSTEM_DEFAULT_PROTOCOL', $protocol, $settings);
+    $settings = setSetting('SERVER_DOMAIN', $domain, $settings);
+    $settings = setSetting('SYSTEM_DIRECTORY_PATH', $directory, $settings);
+    $settings = setSetting('SYSTEM_TIMEZONE', $timezone, $settings);
+    $settings = setSetting('SYSTEM_ACCEPT_LANGUAGES', implode(',', $languages), $settings);
+
+    echo "\nGenerate crypt salts ...\n";
+    $settings = setSetting('SESSION_CRYPT', sha1(uniqid('sess_')), $settings);
+    $settings = setSetting('TOKEN_SALT', sha1(uniqid('tok_')), $settings);
+    $settings = setSetting('COOKIE_CRYPT', sha1(uniqid('cook_')), $settings);
+    
+    if(!file_exists(ACCESS_PATH.PATH_VAR.'/settings.php')):
+        $file = fopen(ACCESS_PATH.PATH_VAR.'/settings.php', 'w+');
+        fclose($file);
+    endif;
+
+    file_put_contents(ACCESS_PATH.PATH_VAR.'/settings.php', $settings);
+
+    echo "\nCreate languages folders (if necessary) ...\n";
+    foreach($languages as $i => $language) {
+        if(@mkdir(ACCESS_PATH.PATH_LOCALES."/$language"))
+            echo "-- /languages/$language\n";
+    }
+    echo "\n";
+
+
+    /**
+     * End of WOK setup
+    **/
+    echo "* We are happy yo say that the configuration is done (if no errors appears).\n";
+    echo "* We really hope that you will like WOK and use it for many of your projects. \n";
+
+    exit("[/Setup WOK " . WOK_VERSION . "]\n\n");
 ?>
-
-<html>
-
-    <head>
-        
-        <meta charset="UTF-8">
-        
-        <title>WOK setup</title>
-        
-        <link rel="stylesheet" href="../libraries/bootstrap/css/bootstrap.min.css" type="text/css">
-        <link rel="stylesheet" href="../libraries/bootstrap/css/bootstrap-responsive.min.css" type="text/css">
-        
-        <script src="../libraries/bootstrap/js/bootstrap.js"></script>
-        <script src="../libraries/jquery/jquery-1.10.1.min.js"></script>
-        
-        <script>
-            $(document).ready(function() {
-                
-                $('#protocol, #domain, #directory').on('input load', function() {
-                    var protocol = $('#protocol').val();
-                    var domain = $('#domain').val();
-                    var directory = $('#directory').val();
-                    $('#address').val(protocol + domain + directory);
-                });
-                
-                $('.btn.setup_mode').click(function() {
-                    var mode = $(this).attr('data-setup');
-                    $('.mode#'+mode).show();
-                    $('.mode:not(#'+mode+')').hide();
-                });
-                
-            });
-        </script>
-        
-        <style>
-        
-            body {
-                background: #eee;
-            }
-            
-            #main {
-                background: #fff;
-                padding: 40px;
-                width: 744px;
-                margin: 40px auto;
-                -moz-border-radius: 8px;
-                -webkit-border-radius: 8px;
-                border-radius: 8px;
-                border: 1px solid #ccc;
-            }
-            
-            .mode#by_hand {
-                display: none;   
-            }
-            
-            h2 {
-                margin: 40px 0;   
-            }
-            
-            p {
-                margin: 15px 0;   
-            }
-            
-            form {
-                display: block;
-                
-            }
-            
-            form label {
-                font-weight: bold;   
-            }
-            
-        </style>
-        
-    </head>
-    
-    <body>
-    
-        <div id="main">
-            
-            <?php
-
-                if(!empty($_POST['setup'])):
-                    
-                    $settings = file_get_contents('../core/settings-default.php');
-                    $settings = preg_replace("#define\('SYSTEM_DEFAULT_PROTOCOL', '(.+)?'\)#", "define('SYSTEM_DEFAULT_PROTOCOL', '".$_POST['protocol']."')", $settings);
-                    $settings = preg_replace("#define\('SERVER_DOMAIN', '(.+)?'\)#", "define('SERVER_DOMAIN', '".$_POST['domain']."')", $settings);
-                    $settings = preg_replace("#define\('SYSTEM_DIRECTORY_PATH', '(.+)?'\)#", "define('SYSTEM_DIRECTORY_PATH', '".$_POST['directory']."')", $settings);
-                    $settings = preg_replace("#define\('SYSTEM_TIMEZONE', '(.+)?'\)#", "define('SYSTEM_TIMEZONE', '".$_POST['timezone']."')", $settings);
-                    $settings = preg_replace("#define\('SESSION_CRYPT', '(.+)?'\)#", "define('SESSION_CRYPT', '".sha1(uniqid('sess_'))."')", $settings);
-                    $settings = preg_replace("#define\('TOKEN_SALT', '(.+)?'\)#", "define('TOKEN_SALT', '".sha1(uniqid('tok_'))."')", $settings);
-                    $settings = preg_replace("#define\('COOKIE_CRYPT', '(.+)?'\)#", "define('COOKIE_CRYPT', '".sha1(uniqid('cook_'))."')", $settings);
-                    file_put_contents('../core/settings.php', $settings);
-
-
-                    $htaccess = file_get_contents('../.htaccess.default');
-                    $htaccess = str_replace('__WOK_DIR__', $_POST['directory'], $htaccess);
-                    file_put_contents('../.htaccess', $htaccess);
-
-                    //unlink('setup.php');
-                    
-            ?>
-            
-                <h2 class="text-center">Setup completed</h2>
-            
-                <p class="text-center">
-                    WOK Framework is now working fine. <br />
-                    Here begin your job. Enjoy !
-                </p>
-            
-                <a href="<?php echo $_POST['protocol'].$_POST['domain'].$_POST['directory']; ?>" class="btn btn-success btn-block btn-large">Start using WOK !</a>
-            
-            <?php else: ?>
-            
-                <h2 class="text-center">Welcome in WOK Setup</h2>
-                
-                <div class="mode" id="by_hand">
-            
-                    <div class="alert">
-                        <button type="button" class="btn btn-mini btn-primary pull-right setup_mode" data-setup="by_form">Setup by form</button>
-                        We inform you that the form could be a better solution to configure WOK Framework.
-                    </div>
-                    
-                    <p>
-                        There are the configuration to do step by step :
-                    </p>
-                    
-                    <ul>
-                        <li>Duplicate /core/settings-default.php and rename it settings.php</li>
-                        <li>Define configuration constants (See comments' help)</li>
-                        <li>Deplucate .htaccess.default and rename it .htaccess</li>
-                        <li>Replace __WOK_DIR__ by the WOK directory in .htaccess (eg. /wok)</li>
-                        <li>Remove setup.php file (could be a security flaw)</li>
-                    </ul>
-                    
-                    <p class="text-center">
-                        You're done !
-                    </p>
-                    
-                </div>
-                
-                <form action="setup.php" method="post" class="mode" id="by_form">
-                        
-                    <div class="alert alert-info">
-                        <button type="button" class="btn btn-mini btn-info pull-right setup_mode" data-setup="by_hand">Setup by hand</button>
-                        The following form will help you to configure WOK framework.
-                    </div>
-                    
-                    <h3>Required informations</h3>
-                    
-                    <label for="protocol">Default protocol</label>
-                    <input class="input-block-level" type="text" name="protocol" id="protocol" value="http://" placeholder="http://" required>
-                    
-                    
-                    <label for="domain">Server domain</label>
-                    <input class="input-block-level" type="text" name="domain" id="domain" value="<?php echo $_SERVER['SERVER_NAME']; ?>" placeholder="http://localhost/wok" required>
-                    
-
-                    <label for="directory">WOK directory</label>
-                    <input class="input-block-level" type="text" name="directory" id="directory" value="/<?php echo str_replace($_SERVER['DOCUMENT_ROOT'], '', SYSTEM_ROOT); ?>" placeholder="/wok">
-                    
-                    
-                    <label for="address">System address</label>
-                    <input class="input-block-level" type="url" name="address" id="address" value="http://<?php echo $_SERVER['SERVER_NAME'].'/'.str_replace($_SERVER['DOCUMENT_ROOT'], '', SYSTEM_ROOT); ?>" placeholder="http://localhost/wok" required disabled>
-                    
-                    
-                    
-                    <label for="timezone">System timezone</label>
-                    <select name="timezone" class="pull-right input-block-level" required>
-                        <option value="">System timezone</option>
-                        <?php 
-                            include_once('core/timezones.php'); 
-                            
-                            foreach(get_timezones() as $area => $cities) {
-                                
-                                echo '<optgroup label="'.$area.'">';
-                                
-                                foreach($cities as $i => $name) {
-                                    
-                                    if($area.'/'.$name == date_default_timezone_get()):
-                                        echo '<option value="'.$area.'/'.$name.'" selected="selected">'.$area.'/'.$name.'</option>';
-                                    else:
-                                        echo '<option value="'.$area.'/'.$name.'">'.$area.'/'.$name.'</option>';
-                                    endif;
-                                }
-                                
-                                echo '</optgroup>';
-                                
-                            }
-                        ?>
-                    </select>
-                    
-                    <?php
-                        
-                        if(@is_writable(SYSTEM_ROOT) && @is_writable(SYSTEM_ROOT.'/core/')):
-                    ?>
-                    
-                        <input type="submit" class="btn btn-success btn-block btn-large" name="setup" value="Setup" />
-                    
-                    <?php else: ?>
-
-                        <div class="alert alert-error">
-                    
-                            Write permissions are not available : setup.php need them to generate configuration files. 
-                            
-                        </div>
-                    
-                    <?php endif; ?>
-                </form>
-            
-            <?php endif; ?>
-            
-        </div>
-        
-    </body>
-    
-</html>

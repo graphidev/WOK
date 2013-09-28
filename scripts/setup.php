@@ -85,7 +85,7 @@
         $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
         $protocol = ($input_protocol != '://' ? $input_protocol.'://' : $protocol);
         $domain = (!empty($input_domain) ? $input_domain : $domain);
-        $directory = $input_directory;
+        $directory = (!empty($input_directory) ? $input_directory : '/');
     
     endif;
 
@@ -140,13 +140,27 @@
 
     file_put_contents(ACCESS_PATH.PATH_VAR.'/settings.php', $settings);
 
-    echo "\nCreate languages folders (if necessary) ...\n";
+    echo "\nCreate locales folders (if necessary) ...\n";
     foreach($languages as $i => $language) {
         if(@mkdir(ACCESS_PATH.PATH_LOCALES."/$language"))
             echo "-- /languages/$language\n";
     }
+    
     echo "\n";
-
+    
+    /**
+     * Generate .htaccess file
+    **/
+    $htaccess = file_get_contents(ACCESS_PATH.'/.htaccess.default');
+    $htaccess = str_replace('__WOK_DIR__', ($directory != '/' ? $directory : null), $htaccess);
+     if(!file_exists(ACCESS_PATH.'/.htaccess')):
+        $file = fopen(ACCESS_PATH.'/.htaccess', 'w+');
+        fclose($file);
+    endif;
+    file_put_contents(ACCESS_PATH.'/.htaccess', $htaccess);
+    echo "Generate .htaccess file ...\n";
+    
+    echo "\n";
 
     /**
      * End of WOK setup

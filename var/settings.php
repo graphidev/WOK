@@ -16,11 +16,11 @@
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
     const SERVER_DOMAIN                     = 'wok.loc'; // Server domain name or IP address
-    const SYSTEM_DIRECTORY_PATH             = ''; // Relative system directory path
+    const SYSTEM_DIRECTORY_PATH             = '/'; // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     
 	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
-    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN,fr_FR'; // System accepted languages
+    const SYSTEM_ACCEPT_LANGUAGES           = 'fr_FR'; // System accepted languages
     $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
     define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
 
@@ -28,8 +28,8 @@
      *	Security constants
      * You can use it to add salt in sessions, tokens or cookies' name/value
     **/
-    const SESSION_CRYPT             = '1eca304156306396a85875ba9b96124335a5614a'; // sha1(uniqid('sess_', true));
-    const TOKEN_SALT                = '1a61969b002ab8a3ee2a050ebd8d28c5a043a17b'; // sha1(uniqid('tok_', true));
-    const COOKIE_CRYPT              = '3e400e8c954584628a156305cf79b9886a0fcafb';  // sha1(uniqid('cook_', true));
+    const SESSION_CRYPT             = 'e574ff35e03bd263b27a1b17374fcec06872b3fa'; // sha1(uniqid('sess_', true));
+    const TOKEN_SALT                = '186bca2f948a5658f9c2abbcc6601e2b99b33797'; // sha1(uniqid('tok_', true));
+    const COOKIE_CRYPT              = '09a72ddfbdf4b9f00e1de79202f99136cba5e381';  // sha1(uniqid('cook_', true));
 	
 ?>

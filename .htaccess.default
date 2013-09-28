@@ -5,7 +5,7 @@
 # Uncomment the second rewrite condition to allow them
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase __WOK_DIR__
+    RewriteBase __WOK_DIR__/
     RewriteCond %{REQUEST_FILENAME} !-f
     #RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . __WOK_DIR__/index.php [L]

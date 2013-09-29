@@ -36,7 +36,7 @@ Which method would you like to use ? The longer or shorter ?
 
 Launch the setup CLI script (in /scripts/setup.php) like this (terminal/console) and follow the instructions.
 
-    php scripts/setups.php
+    php scripts/setup.php
 
 
 **The longer**

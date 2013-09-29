@@ -4,7 +4,7 @@ Web Operational Kit (WOK)
 This project is a framework made to develop website or web tools easier. That's what we call a "Framework", you're right. 
 But unlike to big and famous frameworks, this one only offer a quick base of developpement. 
 The main idea is to have not to take care about compatibility nor where to place files. 
-Everything is preconfigured structure and settings. For example, every string is treated as UTF-8.
+Everything is preconfigured : structure and settings. For example, every string is treated as UTF-8.
 
 Furthermore, this framework is structured to be easily updatable. without making trouble with your project.
 

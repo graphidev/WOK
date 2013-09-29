@@ -14,7 +14,10 @@
         private $URI;
         private $response;
         private $infos;
-                
+        
+        /**
+         * Predefined options
+        **/
         private $options = array(
             CURLINFO_HEADER_OUT         => true,
             CURLOPT_RETURNTRANSFER      => true,
@@ -34,7 +37,7 @@
         );
         
         /**
-         * 
+         * cURL methods 
         **/
         const METHOD_GET        = 'GET';
         const METHOD_POST       = 'POST';

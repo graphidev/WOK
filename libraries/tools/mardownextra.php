@@ -10,12 +10,12 @@
 # Copyright (c) 2004-2006 John Gruber  
 # <http://daringfireball.net/projects/markdown/>
 #
-namespace Michelf;
+namespace Tools;
 
 
 # Just force Michelf/Markdown.php to load. This is needed to load
 # the temporary implementation class. See below for details.
-\Michelf\Markdown::MARKDOWNLIB_VERSION;
+\Tools\Markdown::MARKDOWNLIB_VERSION;
 
 #
 # Markdown Extra Parser Class

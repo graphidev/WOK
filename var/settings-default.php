@@ -20,7 +20,7 @@
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     
 	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
-    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN,fr_FR'; // System accepted languages
+    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN'; // System accepted languages
     $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
     define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
 

@@ -15,6 +15,8 @@
  * under the License.
  */
 
+namespace Social;
+
 require_once "base_facebook.php";
 
 /**

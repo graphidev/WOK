@@ -10,7 +10,7 @@
 # Copyright (c) 2004-2006 John Gruber  
 # <http://daringfireball.net/projects/markdown/>
 #
-namespace Michelf;
+namespace Tools;
 
 
 #
@@ -1524,7 +1524,7 @@ class Markdown {
 # one.
 #
 
-class _MarkdownExtra_TmpImpl extends \Michelf\Markdown {
+class _MarkdownExtra_TmpImpl extends \Tools\Markdown {
 
 	### Configuration Variables ###
 
@@ -3092,5 +3092,9 @@ class _MarkdownExtra_TmpImpl extends \Michelf\Markdown {
 
 }
 
+
+function markdown($string) {     
+    return \Tools\Markdown::defaultTransform($string);
+}
 
 ?>

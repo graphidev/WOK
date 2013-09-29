@@ -34,7 +34,7 @@
             self::$logs[] = array(
                 'date'      => date('Y-m-d'),
                 'time'      => date('H:i:s'),
-                'type'      => $type,
+                'type'      => strtoupper($type),
                 'log'       => $log,
                 'fatal'     => $exit
             );

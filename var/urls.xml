@@ -15,7 +15,7 @@
                 - type (optional) : predefined parameter type (number, string, file, json, ...)
                 - required (optional) : is the parameter required or not (default: true, no|0|false = false) 
 
-            /!\ Parameters must be in the same order than in the request 'url' attribute
+            /!\ URI Parameters must be in the same order than in the request 'url' attribute
 
 
         In the following example, the URI request which looks like 'posts/1234/edit' and where 
@@ -23,20 +23,10 @@
         to update a specific post.
     
     --><!--
-    <request url="posts/:id/edit" method="post" action="posts:update">
+    <request url="posts/:id/edit" domain="~" method="post" action="posts:update">
         <param name="id" regexp="[0-9]+" />
         <param name="data" type="json" />
     </request>
     -->
-    
-    <request url="posts/:name-:id" action="posts:update">
-        <param name="name" type="string" />
-        <param name="id" regexp="[0-9]+" />
-        <param name="test" type="string" required="no" />
-    </request>
-    
-    <request domain="static.~" url=":path" action="resource:call">
-        <param name="path" type="string" regexp="[a-z0-9/_-]+" />
-    </request>
     
 </access>

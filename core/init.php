@@ -9,9 +9,9 @@
     **/
     
 	const WOK_MAJOR_VERSION        = 0; // Major version
-	const WOK_MINOR_VERSION        = 5; // Minor version
+	const WOK_MINOR_VERSION        = 6; // Minor version
 	const WOK_RELEASE_VERSION      = 0; // Release version
-	const WOK_EXTRA_RELEASE        = 'building'; // Extra version
+	const WOK_EXTRA_RELEASE        = 'alpha'; // Extra version
     
     // Define full WOK version (without extra release)
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);
@@ -69,7 +69,7 @@
          * Additional libraries auto loader
         **/
         spl_autoload_register(function($name) {
-            $path = str_replace('\\', DIRECTORY_SEPARATOR, $name);
+            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
             if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES . "/$path.php"))
                 require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.php";
         });

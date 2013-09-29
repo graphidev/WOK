@@ -152,6 +152,9 @@
 		return urlencode($string);
 	}
 
-
+    function is_divisible($number, $by) {
+        if($by == 0) return false;
+        return ($number % $by == 0 ? true : false);
+    }
 
 ?>

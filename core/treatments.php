@@ -1,7 +1,7 @@
 <?php
 
     /**
-     * This file contains all the compatiblities functions for PHP
+     * This file contains all the treatments functions for PHP
     **/
 
 

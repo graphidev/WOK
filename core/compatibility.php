@@ -3,24 +3,8 @@
     /**
      * This file contains all the compatiblities functions for PHP
     **/
-
-
-    /**
-     * Remove magic_quotes from a string or an array
-    **/
-	function strip_magic_quotes($str) {
-		if(get_magic_quotes_gpc()):
-			if(is_array($str)):
-				foreach($str as $key => $value) {
-					$str[$key] = stripslashes($value);
-				}
-			else:
-				$str = stripslashes($str);
-			endif;
-		endif;
-	
-		return $str;
-	}
+    
+    namespace Compatibility;
 
     /**
      * Return the MIME type of a file
@@ -31,7 +15,7 @@
 			$finfo = finfo_open($const);
 				return finfo_file($finfo, $filepath);
 			finfo_close($finfo);
-			
+    
 		elseif(function_exists('mime_content_type')):
 			return mime_content_type($filepath);
 			
@@ -45,19 +29,28 @@
 		    return $mime;
 		endif;
 	}
+    
 
     /**
-     * compatible function for strstr($haystack, $needle, true)
+     * The unicode compatible function of str_split
     **/
-    function strstr_before($haystack, $needle) {
-	
-		if(PHP_MAJOR_VERSION >= 5 && PHP_MINOR_VERSION >= 3):
-			return strstr($haystack, $needle, true);
-		else:
-			$after = strstr($haystack, $needle);
-			return str_replace($after, '', $haystack);
-		endif;
-	
-	}
+    function str_split($string, $split_length = 0) {
+        if ($split_length > 0) {
+            $characters = array();
+            $length = mb_strlen($string, "UTF-8");
+            for ($i = 0; $i < $len; $i += $split_length) {
+                $characters[] = mb_substr($string, $i, $split_length, "UTF-8");
+            }
+            return $charaters;
+        }
+        return preg_split("//u", $string, -1, PREG_SPLIT_NO_EMPTY);
+    }
 
+    /**
+     * The unicode compatible function of strrev
+    **/
+    function strrev($string) {
+        $characters = str_split($string);
+        return implode('', array_reverse($characters));
+    }
 ?>

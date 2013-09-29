@@ -3,79 +3,81 @@
 	/**
      * Initialize WOK
     **/
-	require_once "core/init.php";
+	require_once 'core/init.php';
 
 
-	/**
-     * Define page url request
-	**/
-	$query = strip_system_root($_SERVER['REQUEST_URI']);
-	$static = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
-	$additional = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
+    /**
+     * Foremost, we'll check if all the folders which must be writable are writable
+    **/
 
-	define('url', path($static));
-
-	$GLOBALS['_GET']['REQUEST'] = str_replace(path(), '', url);
-	$GLOBALS['_GET']['PARAMETERS'] = array();
-	foreach(explode('&', $additional) as $i => $parameter) {
-		@list($name, $value) = explode('=', $parameter);
-		$GLOBALS['_GET']['PARAMETERS'][$name] = urldecode($value);
-	}
-
-
-	if(isset($_POST)):
-		$GLOBALS['_POST'] = $_POST;
-	endif;	
+    if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS)) || !@is_writable(root(PATH_FILES)) || !@is_writable(root(PATH_TMP_FILES))):
+        Response::Type('html', 503);
+        Response::view('503');
+        Console::fatal('Bootstrap : not writable system folders');
+    endif;
     
-	require_once SYSTEM_ROOT.PATH_CORE."/templates.php";
-	
     /**
-     * Preload
+     * Init the Request
+     * Init session
     **/
-    if(file_exists(root('preload.php')))
-        require_once(root('preload.php'));
+    new Request;
+    Session::start();
+
 
     /**
-     * Special views
+     * Set Custom controllers
     **/
-    if(function_exists('controller') && controller()): 
+    if(file_exists(root('/manifest.php')))
+        require_once(root('/manifest.php'));    
 
-	/**
-     * Statics pages
-	**/
-	elseif(!empty($GLOBALS['_GET']['REQUEST'])):
+    /**
+     * Set default homepage controller
+    **/
+    Controller::assign(function($query) {
+        return empty($query);
+    }, 
+    function() {
+        Response::view('homepage');
+    }, true);
+    
 
+    /**
+     * Set static pages controller
+    **/
+    Controller::assign(true, function($query) {
         /**
          * Directory, check the file with the same name in this directory
         **/
-        if(is_dir(root(PATH_TEMPLATE.'/'.substr($GLOBALS['_GET']['REQUEST'], 0, -1)))):
-             
-			$dirname = dirname($GLOBALS['_GET']['REQUEST']);
-
-            if(substr($GLOBALS['_GET']['REQUEST'], -1) == '/'):
-                 $filename = str_replace($dirname, '', substr($GLOBALS['_GET']['REQUEST'], 0, -1));
+        if(is_dir(root(PATH_TEMPLATES.'/'.substr($query, 0, -1)))):         
+            $dirname = dirname($query);
+    
+            if(substr(Request::$URI, -1) == '/'):
+                 $filename = str_replace($dirname, '', substr($query, 0, -1));
             else:
-                $filename = str_replace($dirname, '', $GLOBALS['_GET']['REQUEST']);
+                $filename = str_replace($dirname, '', $query);
             endif;
-        
-            tpl_static_page(str_replace('//', '/', $GLOBALS['_GET']['REQUEST'].$filename));
-        
+            
+            Response::view(str_replace('//', '/', $query.$filename));
+            
         /**
          * File, check the filename
         **/
-		else:
-
-			tpl_static_page($GLOBALS['_GET']['REQUEST']);
-
-		endif;
+        else:   
+            Response::view($query);
     
-	/**
-     * Homepage
-	**/
-	elseif(empty($GLOBALS['_GET']['REQUEST'])):
-		tpl_static_page('homepage');
-	else:
-		tpl_static_page($GLOBALS['_GET']['REQUEST']);
-	endif;
-	
+        endif;
+    }, true);
+    
+
+    /**
+     * Invoke the controller queue
+    **/
+    Controller::invoke(Request::$URI);
+
+
+    /**
+     * Register console
+    **/
+    Console::register();
+
 ?>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<access>
+    
+    <!-- Use the following structure -->
+    <!-- 
+        request
+            - domain (optional) : The domain access (~ corresponds to the default domain)
+            - url (required) : the URI access, add a colon before parameters
+            - method (default=get) : the access method (get, post head, put, ...)
+            - action (recommended) : string for the action that should be called (null by default)
+
+            param (optional, recommended for URI parameters)
+                - name (required) : just the param name
+                - regexp (optional) : how full value should be (regexp)
+                - type (optional) : predefined parameter type (number, string, file, json, ...)
+                - required (optional) : is the parameter required or not (default: true, no|0|false = false) 
+
+            /!\ URI Parameters must be in the same order than in the request 'url' attribute
+
+
+        In the following example, the URI request which looks like 'posts/1234/edit' and where 
+        somes datas will be send as a JSON format with the POST method will call the action 
+        to update a specific post.
+    
+    --><!--
+    <request url="posts/:id/edit" domain="~" method="post" action="posts:update">
+        <param name="id" regexp="[0-9]+" />
+        <param name="data" type="json" />
+    </request>
+    -->
+    
+</access>

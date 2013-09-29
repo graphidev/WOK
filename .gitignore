@@ -1,2 +1,7 @@
 .DS_Store
-template/tests/*
+var/settings.php
+resources/*
+files/tmp/*
+files/*
+templates/*
+var/tmp/*

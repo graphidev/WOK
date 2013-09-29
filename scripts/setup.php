@@ -85,7 +85,7 @@
         $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
         $protocol = ($input_protocol != '://' ? $input_protocol.'://' : $protocol);
         $domain = (!empty($input_domain) ? $input_domain : $domain);
-        $directory = (!empty($input_directory) ? $input_directory : '/');
+        $directory = (!empty($input_directory) ? $input_directory : null);
     
     endif;
 
@@ -152,7 +152,7 @@
      * Generate .htaccess file
     **/
     $htaccess = file_get_contents(ACCESS_PATH.'/.htaccess.default');
-    $htaccess = str_replace('__WOK_DIR__', ($directory != '/' ? $directory : null), $htaccess);
+    $htaccess = str_replace('__WOK_DIR__', $directory, $htaccess);
      if(!file_exists(ACCESS_PATH.'/.htaccess')):
         $file = fopen(ACCESS_PATH.'/.htaccess', 'w+');
         fclose($file);
@@ -166,7 +166,7 @@
      * End of WOK setup
     **/
     echo "* We are happy yo say that the configuration is done (if no errors appears).\n";
-    echo "* We really hope that you will like WOK and use it for many of your projects. \n";
+    echo "* We really hope that you will love WOK and use it for many of your projects. \n";
 
     exit("[/Setup WOK " . WOK_VERSION . "]\n\n");
 ?>

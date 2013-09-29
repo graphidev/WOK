@@ -16,7 +16,7 @@
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
     const SERVER_DOMAIN                     = 'wok.loc'; // Server domain name or IP address
-    const SYSTEM_DIRECTORY_PATH             = '/'; // Relative system directory path
+    const SYSTEM_DIRECTORY_PATH             = ''; // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     
 	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
@@ -28,8 +28,8 @@
      *	Security constants
      * You can use it to add salt in sessions, tokens or cookies' name/value
     **/
-    const SESSION_CRYPT             = 'e574ff35e03bd263b27a1b17374fcec06872b3fa'; // sha1(uniqid('sess_', true));
-    const TOKEN_SALT                = '186bca2f948a5658f9c2abbcc6601e2b99b33797'; // sha1(uniqid('tok_', true));
-    const COOKIE_CRYPT              = '09a72ddfbdf4b9f00e1de79202f99136cba5e381';  // sha1(uniqid('cook_', true));
+    const SESSION_CRYPT             = 'f94e7a3e4a909479f42efff836a6a955ddc83ecb'; // sha1(uniqid('sess_', true));
+    const TOKEN_SALT                = 'b7d34494e4435ee2e54e2ea419726de0903ebfdb'; // sha1(uniqid('tok_', true));
+    const COOKIE_CRYPT              = 'b932ee8624a872c8c505678e68e11cae17d5ecb5';  // sha1(uniqid('cook_', true));
 	
 ?>

@@ -3,7 +3,7 @@
     class  Response extends Request {
         
         private static $base = '/';
-        public static $data = array();
+        protected static $data = array();
         private static $codes = array(
             100 => "Continue", 
             101 => "Switching Protocols", 
@@ -85,9 +85,9 @@
          * Redirect permanently or not
         **/
         public function redirect($target, $permanent = true) {
-            $code = ($permanet ? 301 : 302);
+            $code = ($permanent ? 301 : 302);
             $message = ($permanet ? 'Moved permanently' : 'Moved Temporarily');
-            header("HTTP/1.1 $code $message", false, $code);
+            header("HTTP/1.1 $code ".self::$codes[$code], false, $code);
             header("Location: $target");
             exit();
         }
@@ -95,12 +95,12 @@
         /**
          * Call a view file
         **/
-        public static function view($name) {
-            self::$base = dirname(PATH_TEMPLATES."/$name");
+        public static function view($template) {
+            self::$base = dirname(PATH_TEMPLATES."/$template");
             
-            if(file_exists(root(PATH_TEMPLATES."/$name.php"))):
+            if(file_exists(root(PATH_TEMPLATES."/$template.php"))):
                 Response::type('html', 200);
-                include_once(root(PATH_TEMPLATES."/$name.php"));
+                include_once(root(PATH_TEMPLATES."/$template.php"));
                 
             
             else:
@@ -110,8 +110,11 @@
                     include_once(root(PATH_TEMPLATES."/404.php"));
             
                 else:
-                    exit("404 Document not found");
-
+                    if($template != '503')
+                        Console::log("$template template does not exists", Console::LOG_WARNING, true);
+                    else
+                        Console::log("$template template does not exists", Console::LOG_ERROR);
+            
                 endif;
             
             endif;

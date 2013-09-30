@@ -3,14 +3,13 @@
     <head>
         <title>{$title}</title>
         
-        {inc "inc/headers"}
+        {zone "inc/headers"}
         
     </head>
     
     <body>
         
         <div id="main" >
-            {inc "inc/navbar"}
                         
             <div class="content">
                 {*

@@ -58,6 +58,11 @@
 			
         }
         
+        public function reset() {
+            self::set('uniqid', uniqid());
+            self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];
+        }
+        
         public static function set($name, $value, $bruteforce = true) {
             $_SESSION['sess_'.SESSION_CRYPT][$name] = $value;
         }

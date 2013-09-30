@@ -1,6 +1,6 @@
-<link href="<?php echo path(PATH_TEMPLATES."/css/default.css"); ?>" rel="stylesheet" type="text/css">
-<link href="<?php echo path(PATH_RESOURCES."/css/bootstrap.min.css"); ?>" rel="stylesheet" type="text/css">
-<link href="<?php echo path(PATH_RESOURCES."/css/bootstrap-responsive.min.css"); ?>" rel="stylesheet" type="text/css">
+<link href="{":template/css/default.css" $config.urls}" rel="stylesheet" type="text/css">
+<link href="{":template/css/bootstrap.min.css" $config.urls}" rel="stylesheet" type="text/css">
+<link href="{":template/css/bootstrap-responsive.min.css" $config.urls}" rel="stylesheet" type="text/css">
 
-<script src="<?php echo path(PATH_RESOURCES.'/js/jquery-1.10.2.js'); ?>"></script>
-<script src="<?php echo path(PATH_RESOURCES.'/js/bootstrap.min.js'); ?>"></script>
+<script src="{":template/js/jquery-1.10.2.js" $config.urls}"></script>
+<script src="{":template/js/bootstrap.min.js" $config.urls}"></script>

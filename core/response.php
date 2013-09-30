@@ -3,7 +3,7 @@
     class  Response extends Request {
         
         private static $base = '/';
-        protected static $data = array();
+        public static $data = array();
         private static $codes = array(
             100 => "Continue", 
             101 => "Switching Protocols", 
@@ -78,7 +78,7 @@
             511 => "Network Authentication Required", 
             598 => "Network read timeout error", 
             599 => "Network connect timeout error"
-        );
+        );  
         
         
         /**
@@ -92,13 +92,16 @@
             exit();
         }
         
+        
         /**
          * Call a view file
         **/
-        public static function view($template) {
+        public static function view($template, $cache = false) {
             self::$base = dirname(PATH_TEMPLATES."/$template");
             
-            if(file_exists(root(PATH_TEMPLATES."/$template.php"))):
+            ob_start();
+            
+            if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):
                 Response::type('html', 200);
                 include_once(root(PATH_TEMPLATES."/$template.php"));
                 
@@ -118,7 +121,16 @@
                 endif;
             
             endif;
+            
+            $buffer = &ob_get_flush();
+            if(ob_end_clean()):
+                echo Template::generate($buffer, $template);
+            else:
+                ob_end_flush();
+                Console::warning("The buffer view haven't been destroyed properly for '$template'");
+            endif;
         }
+        
         
         /**
          * Call a static file
@@ -157,13 +169,14 @@
             header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
         }
         
+        
         /**
          * Return custom datas
          * Working with custom response type
         **/
         public static function assign($data, $object = false) {
             if(is_array($data) && $object)
-                self::$data = json_decode(json_encode($data), false);
+                self::$data = json_decode(json_encode($data), true);
             else
                 self::$data = $data;
         }
@@ -182,7 +195,11 @@
         }
         
     }
-
+    
+    
+    /**
+     * Locales functions
+    **/
     function _e($path, $data = array()) {
         return Locales::_e($path, $data);
     }

@@ -10,7 +10,7 @@
      * Return absolute URL path to the string parameter
     **/
 	function path($string = null, $protocol = SYSTEM_DEFAULT_PROTOCOL) {
-		if(preg_match('#^/(.)*$#', $string)):
+		if(substr($string, 0, 1) == '/'):
 			return $protocol.SYSTEM_ADDR."$string";
 		else :
 			return $protocol.SYSTEM_ADDR."/$string";

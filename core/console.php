@@ -18,6 +18,7 @@
         const LOG_NOTICE        = 'NOTICE';
         const LOG_DEPRECATED    = 'DEPRECATED';
         const LOG_DEBUG         = 'DEBUG';
+        const LOG_TEMPLATE      = 'TEMPLATE';
         
         
         /**
@@ -41,8 +42,7 @@
             
             if($exit):
                 Console::register();
-                Response::type('text', 503);
-                Response::view('503');
+                Response::view('503', 503);
                 exit();
             endif;
         }
@@ -106,7 +106,7 @@
                 if(!is_dir(root(PATH_LOGS . "/$date")))
                     mkdir(root(PATH_LOGS . "/$date"), 0755, true);
                 
-                $types = array('default', 'deprecated', 'debug', 'error', 'fatal');
+                $types = array('default', 'deprecated', 'debug', 'error', 'fatal', 'template');
                 
                 foreach($types as $i => $type) {
                     $files[$type] = fopen(root(PATH_LOGS . "/$date/$type.log"), 'a+');    

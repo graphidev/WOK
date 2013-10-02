@@ -9,12 +9,13 @@
         public static $HTTP_USER_AGENT;
         public static $HTTP_ACCEPT_LANGUAGE;
         public static $functions = array();
+        public static $lifetime = 2678400;
         
 		public static function start() {
+            self::$lifetime = (ini_get('session.cookie_lifetime') ? ini_get('session.cookie_lifetime') : ini_get('session.maxlifetime'));
+                
             // Define session cookie parameters
-            $lifetime = ini_get('session.cookie_lifetime');
-            $secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
-            session_set_cookie_params(($lifetime ? $lifetime : ini_get('session.maxlifetime')), '/', null, $secure, true);
+            session_set_cookie_params(self::$lifetime, '/', null, Request::$secured, true);
             
             session_start(); // Start sessions
             
@@ -61,11 +62,6 @@
 			self::$HTTP_ACCEPT_LANGUAGE =   $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			
         }
-                
-        public function reset() {
-            self::set('uniqid', uniqid());
-            self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];
-        }
         
         public static function set($name, $value, $bruteforce = true) {
             $_SESSION['sess_'.SESSION_CRYPT][$name] = $value;
@@ -76,6 +72,32 @@
                 return $_SESSION['sess_'.SESSION_CRYPT][$name];
             else
                 return false;
+        }
+        
+        
+        public function login($session, $cookie = false) {
+            self::set('session', $session); 
+            self::set('is_logged', true);
+            
+            if($cookie) // Keep user logged 31 days
+                setcookie('session', $cookie, time()+2678400, '/', null, Request::$secured, false);
+        }
+        
+        public function is_logged() {
+            if(self::get('is_logged') || !empty($_COOKIE['session']))
+                return true;
+            else
+                return false;
+        }
+        
+        public function logout() {
+            session_destroy();
+            setcookie('session', null, time(), '/', null, Request::$secured, false);
+        }
+        
+        public function reset() {
+            self::set('uniqid', uniqid());
+            self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];
         }
         
 		public static function language($set = null) {

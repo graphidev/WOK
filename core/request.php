@@ -17,7 +17,7 @@
         public static $globales     = array();
                 
         public function __construct() {
-            $query          = strip_system_root($_SERVER['REQUEST_URI']);
+            $query          = str_replace(SYSTEM_DIRECTORY_PATH, '', $_SERVER['REQUEST_URI']);
             $static         = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
             

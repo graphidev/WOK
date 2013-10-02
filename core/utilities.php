@@ -83,6 +83,25 @@
 	}
 
 
+    /**
+     * Parse an array to XML
+    **/
+    function xml_encode($array, $xml){
+        if(!is_object($xml))
+            $xml = new SimpleXMLElement("<$xml/>");
+        
+        foreach($array as $key => $value) {
+            if(is_array($value)):
+                toXML($value, $xml->addChild($key));
+            else:
+                $xml->xml_encode($key, $value);
+            endif;
+        }
+
+        return $xml->asXML();
+    }
+
+
 
 // -----------------------------------------------------------	
 	
@@ -156,5 +175,7 @@
         if($by == 0) return false;
         return ($number % $by == 0 ? true : false);
     }
+
+
 
 ?>

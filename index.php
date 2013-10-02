@@ -11,8 +11,7 @@
     **/
 
     if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS)) || !@is_writable(root(PATH_FILES)) || !@is_writable(root(PATH_TMP_FILES))):
-        Response::Type('html', 503);
-        Response::view('503');
+        Response::view('503', 503);
         Console::fatal('Bootstrap : not writable system folders');
     endif;
     

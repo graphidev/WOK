@@ -1,9 +1,9 @@
 <html>
     
     <head>
-        <title>{locale "errors:e404.title"}</title>
+        <title>{@errors:e404.title}</title>
         
-        {inc "inc/headers"}        
+        {zone "inc/headers"}        
     </head>
     
     <body>
@@ -12,11 +12,11 @@
                         
             <div class="content text-center">
                 
-                <h1>{locale "errors:e404.code"}</h1>
+                <h1>{@errors:e404.code}</h1>
             
-                <h2>{locale "errors:e404.message"}</h2>
+                <h2>{@errors:e404.message}</h2>
                 
-                <p>{locale "errors:e404.custom"}</p>
+                <p>{@errors:e404.custom}</p>
             
             </div>
            

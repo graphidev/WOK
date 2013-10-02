@@ -34,6 +34,7 @@
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
     const PATH_FILES            = '/files'; // Files' directory
     const PATH_TMP_FILES        = '/files/tmp'; // Temporary files' directory
+    const PATH_CACHE            = '/cache'; // Cache directory
 
     const PATH_DATA             = '/data'; // Data's directory path
     const PATH_RESOURCES        = '/resources'; // Resources' directory

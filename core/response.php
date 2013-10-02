@@ -2,7 +2,6 @@
     
     class  Response {
         private static $data = array();
-        private static $cachefile = false;
         
         private static $types = array(
             'default'   => 'text/html; charset=utf-8',
@@ -157,10 +156,7 @@
                 
                 $date = new DateTime(date('r', time()+$time));
                 $date->setTimezone(new DateTimeZone('GMT'));
-                header("Expires: ".$date->format('r'), true);$cache = fopen(root(PATH_CACHE.'/'.self::$cachefile), 'w+');
-            @fwrite($cache, $data);
-            @fclose($cache);
-            @chmod(root(PATH_CACHE.'/'.self::$cachefile), 0600);
+                header("Expires: ".$date->format('r'), true);
             endif;
             
             // Send headers
@@ -196,31 +192,31 @@
         /**
          * Call a view file
         **/
-        public static function view($template, $status = 200) {        
+        public static function view($template, $status = 200) {  
             extract(self::$data);
             ob_start();
-            
+                
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
                 self::status('html', $status);
                 include_once(root(PATH_TEMPLATES."/$template.php"));
+                    
                 
-            
             else:
                 self::status('html', 404);
-            
+                
                 if(file_exists(root(PATH_TEMPLATES."/404.php"))):
                     include_once(root(PATH_TEMPLATES."/404.php"));
-            
+                
                 else:
                     if($template != '503')
                         Console::log("$template template does not exists", Console::LOG_WARNING, true);
                     else
                         Console::log("$template template does not exists", Console::LOG_ERROR);
-            
+                
                 endif;
-            
+                
             endif;
-            
+                
             // Generate output
             $buffer = ob_get_flush();
             if(ob_end_clean()):

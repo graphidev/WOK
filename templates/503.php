@@ -3,7 +3,7 @@
     <head>
         <title>{@errors:e503.title}</title>
         
-        {inc "inc/headers"}        
+        {zone "inc/headers"}        
     </head>
     
     <body>

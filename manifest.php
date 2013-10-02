@@ -3,20 +3,44 @@
     /**
      * This is the preload file. 
      * It allow you to do anything you want before calling templates
-    **/
+    **/    
     
     /**
      * Data for template dev
     **/
-    Response::assign(array(
-        'config' => array(
-            'urls' => array(
-                'template' => path(PATH_TEMPLATES)
+    Controller::assign(true, function() {
+        
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED);
+                
+        $data = array(
+            'config' => array(
+                'urls' => array(
+                    'template' => path(PATH_TEMPLATES)
+                ),
+                'zones' => array(
+                    'headers' => 'headers'
+                ),
+            ),
+            'session' => array(
+                'is_logged' => true,
+                   'account' => array(
+                    'username' => 'Sebasalex',
+                    'publicname' => 'Sébastien ALEXANDRE',
+                    'firstname' => 'Sébastien',
+                    'lastname' => 'ALEXANDRE',
+                )
+            ),
+            'page' => array (
+                'title' => 'Page title',
+            ),
+            'locales' => array(
+                'test' => 'blabla'
             )
-        ),
-        'try' => array('test'=> 'my variable value'),
-        'array' => array('a','b', 'c', '...'),
-        'title' => 'Pagetitle',
-    ), true);
+        );
+            
+        Response::assign($data);
+        Response::view('homepage', 200);        
+        
+    },true);
     
 ?>

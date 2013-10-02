@@ -1,48 +1,26 @@
 <?php
 
-    class Template extends Response {
-        private static $callback = null;
-        private static $cache = false;
-        private static $php = false;
-        private static $unsafe = array(
-            'exec', 'system', 'popen', 'shell_exec', 
-            'include', 'require', 'include_once', 'require_once'
-        );
+    class Template  {
         
-        
-        public function __construct($callback, $cache = false, $php = false) {
-            self::$callback = $callback;
-            self::$cache = $cache;
-            self::$php = $php;
-        }
+        private static $parse;
         
         
         /**
-         * Generate template output
+         * Importe a new template
         **/
-        public static function generate($buffer, $template){
-            if(!empty(self::$callback)):
-                if(is_callable(self::$callback)):
-                    $parser = self::$callback;
-                    return $parser($buffer, $template);
-                else:
-                    return self::parse($buffer);
-                endif;
-            else:
-                return $buffer;
-            endif;
+        public function __construct($template) {
+                   
         }
         
         /**
          * Default template parser
         **/
-        protected static function parse($buffer) {
+        protected static function parse($buffer) {        
             // Includes
             $buffer = self::comments($buffer); // Comments
             $buffer = self::comments(self::zones($buffer)); // Includes
             $buffer = self::loops($buffer); // Loops
             $buffer = self::jumps($buffer); // Jumps (for)
-            $buffer = self::conditions($buffer); // Conditions
             $buffer = self::variables($buffer); // Variables
             $buffer = self::locales($buffer); // Locales
             $buffer = self::constants($buffer); // Constants
@@ -60,36 +38,36 @@
         }
         
         /**
-         * Include parser
+         * Zones parser
          * {inc "path/to/file"}
         **/
         protected static function zones($buffer) {
              return preg_replace_callback('#\{zone "(.+)"\}#isU', function($matches) {
-                // Bug with parent::$base /!\
-                //$path = str_replace('~', parent::$base, $matches[1]);
-                $path = PATH_TEMPLATES . '/' . $matches[1] . '.php';
+                $path = preg_replace_callback('#\$([a-z0-9\._]+)#is', function($matches) {
+                    $path = implode("']['", explode('.', $matches[1]));
+                    @eval('$var = &Response::$data[\''.$path.'\'];');
+                    return  (!empty($var) ? $var : $matches[0]);                                                                     
+                }, $matches[1]);
+                $path = PATH_TEMPLATES . "/$path".(TEMPLATE_ALLOW_PHP ? '.php' : '.html');
                 
-                if(file_exists(root($path))):
-                    ob_start();
-                    include(root($path));
-                    $include = ob_get_contents();
-                    ob_end_clean();
-                    return $include;
-                else:
-                    Console::error("Template parser : can't include zone '$path'");
-                endif;
+                if(file_exists(root($path)))
+                    return file_get_contents(root($path));
+                else
+                    Console::log("Template parser : can't include zone '$path'", Console::LOG_TEMPLATE);
                  
             }, $buffer);
         }
+        
         
         /**
          * Loops parser
          *  {loop $array} {$key} : {$value} {/loop}
         **/
         protected static function loops($buffer) {
-            return preg_replace_callback('#\{loop \$([a-z0-9\._]+)\}(.+)\{/loop}#isU', function($matches) {
+            $data = self::$data;
+            return preg_replace_callback('#\{loop \$([a-z0-9\._]+)\}(.+)\{/loop}#isU', function($matches) use($data) {
                 $path = implode("']['", explode('.', $matches[1]));
-                @eval('$var = &Response::$data[\''.$path.'\'];');
+                @eval('$var = $data[\''.$path.'\'];');
                 $output = null;
                 
                 if(!empty($var) && is_array($var)):
@@ -111,7 +89,7 @@
                     }
                     return $output;
                 else:
-                    Console::warning("Template parser : variable $var can't be used in a loop (not an array)");
+                    Console::log("Variable $var can't be used in a loop (not an array)", Console::LOG_TEMPLATE);
                 endif;
             }, $buffer);
         }
@@ -151,9 +129,10 @@
          * Data replacement parsers
         **/
         protected static function replacements($buffer) {
-            return preg_replace_callback('#\{"(.+)" \$([a-z0-9\._]+)\}#isU', function($matches) {
+            $data = self::$data;
+            return preg_replace_callback('#\{"(.+)" \$([a-z0-9\._]+)\}#isU', function($matches) use($data) {
                 $path = implode("']['", explode('.', $matches[2]));
-                @eval('$array = &Response::$data[\''.$path.'\'];');
+                @eval('$array = $data[\''.$path.'\'];');
                 if(!empty($array) && is_array($array)):
                     $output = $matches[1];
                     foreach($array as $index => $value) {
@@ -161,7 +140,7 @@
                     }
                     return $output;
                 else:
-                    Console::warning("Template parser : Variable '\$".$matches[2]."' is not an array");
+                    Console::log("Variable '\$".$matches[2]."' is not an array", Console::LOG_TEMPLATE);
                 endif;
                 
             }, $buffer);
@@ -173,14 +152,15 @@
          * {$variable}
         **/
         protected static function variables($buffer) {
-            return preg_replace_callback('#\{\$([a-z0-9\._]+)\}#isU', function($matches) {
+            $data = self::$data;
+            return preg_replace_callback('#\{\$([a-z0-9\._]+)\}#isU', function($matches) use($data) {
                 $path = implode("']['", explode('.', $matches[1]));
-                @eval('$var = &Response::$data[\''.$path.'\'];');
+                @eval('$var = $data[\''.$path.'\'];');
                 
                 if(!empty($var) && is_string($var))
                     return $var;
                 else
-                    Console::warning("Template parser : variable ".$matches[1]." not found");
+                    Console::log("Variable ".$matches[1]." not found", Console::LOG_TEMPLATE);
             }, $buffer);
         }
         
@@ -194,7 +174,7 @@
                 if(defined($matches[1]))
                     return constant($matches[1]);
                 else
-                    Console::warning('Template parser : constant '.$matches[1].' not defined');
+                    Console::log('Constant '.$matches[1].' not defined', Console::LOG_TEMPLATE);
             }, $buffer);
         }
         
@@ -205,11 +185,12 @@
          * {@file:array.item $data}
         **/
         protected static function locales($buffer) {
-            return preg_replace_callback('#\{@(.+)( \$([a-z0-9\._]+))?\}#isU', function($matches) {
+            $data = self::$data;
+            return preg_replace_callback('#\{@(.+)( \$([a-z0-9\._]+))?\}#isU', function($matches) use($data) {
                 @eval('$locale = $matches[1];');
                 if(!empty($matches[3])):
                     $path = implode("']['", explode('.', $matches[3]));
-                    @eval('$var = &Response::$data[\''.$path.'\'];');
+                    @eval('$var = $data[\''.$path.'\'];');
                     return (is_array($var) ? Locales::_e($locale, $var) : null);
                 else:
                     return Locales::_e($locale);
@@ -221,21 +202,14 @@
         
         /**
          * Conditions parser;
-         * {if $conditions} {/endif}
-         * {if $conditions} {/if}
+         * {if $conditions} {else} {/endif}
+         * {if $conditions} {elseif $conditions} {/if}
         **/
+        /* [Disallowed]
         protected static function conditions($buffer) {
-            $variables = function($string) {
-                return self::variables($string, false);
-            };
-            
-            $constants = function($string) {
-                return self::constants($string, false);
-            };
-            
-            return preg_replace_callback('#\{if (.+)\}(.+)\{(/if|endif)\}#isU', function($matches) {
+            return preg_replace_callback('#\{if (.+)\}(.+)(\{(else|elseif (.+))\}(.+))?\{(/if|endif)\}#isU', function($matches) {
                 // [Security] To do : check unsafe functions
-
+                
                 $conditions = preg_replace_callback('#\$([a-z0-9\._]+)#is', function($m) {
                     $path = implode("']['", explode('.', $m[1]));
                     return 'Response::$data[\''.$path.'\']';
@@ -245,24 +219,33 @@
                     return 'constant("'.$m[1].'")';
                 }, $conditions);
                 
-                //echo('$assertion = ('.$conditions.');');
                 @eval('$assertion = ('.$conditions.');');
                 
                 if($assertion):
                     return $matches[2];
+                else:
+                    if($matches[4] == 'else'):
+                        return $matches[6];
+                    else:
+                        $conditions = preg_replace_callback('#\$([a-z0-9\._]+)#is', function($m) {
+                            $path = implode("']['", explode('.', $m[1]));
+                            return 'Response::$data[\''.$path.'\']';
+                        }, $matches[5]);
+                        
+                        $conditions = preg_replace_callback('#\#([a-z0-9_]+)#is', function($m) {
+                            return 'constant("'.$m[1].'")';
+                        }, $conditions);
+                        @eval('$assertion = ('.$conditions.');');
+                
+                        if($assertion):
+                            return $matches[6];
+                        endif;
+                    endif;
                 endif;
             }, $buffer);
         }
+        //*/
         
     }
-
-
-    //*
-    new Template(function($buffer, $template) {
-        return str_replace('Hello', "Good night", $buffer);
-    });
-    //*/
-
-    new Template(true);
 
 ?>

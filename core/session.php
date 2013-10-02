@@ -11,6 +11,10 @@
         public static $functions = array();
         
 		public static function start() {
+            // Define session cookie parameters
+            $lifetime = ini_get('session.cookie_lifetime');
+            $secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
+            session_set_cookie_params(($lifetime ? $lifetime : ini_get('session.maxlifetime')), '/', null, $secure, true);
             
             session_start(); // Start sessions
             
@@ -19,7 +23,7 @@
                 self::set('uniqid', uniqid());
             endif;
             
-            self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];
+            self::$uniqid = self::get('uniqid');
             
             // Definse session language
             if(!empty($_SERVER["HTTP_CLIENT_IP"])):
@@ -44,7 +48,7 @@
                 endif;
     
                 if(empty(self::$language))
-                    self::$language = $accepted_languages[0];
+                    self::$language = SYSTEM_DEFAULT_LANGUAGE;
                 
                 self::set('language', self::$language);
             
@@ -57,7 +61,7 @@
 			self::$HTTP_ACCEPT_LANGUAGE =   $_SERVER['HTTP_ACCEPT_LANGUAGE'];
 			
         }
-        
+                
         public function reset() {
             self::set('uniqid', uniqid());
             self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];

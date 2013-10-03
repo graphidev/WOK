@@ -74,22 +74,30 @@
                 return false;
         }
         
-        
+        /**
+         * Send login informations & cookie
+        **/
         public function login($session, $cookie = false) {
             self::set('session', $session); 
-            self::set('is_logged', true);
+            self::set(SESSION_CRYPT, true);
             
             if($cookie) // Keep user logged 31 days
                 setcookie('session', $cookie, time()+2678400, '/', null, Request::$secured, false);
         }
         
+        /**
+         * Check login session / cookie
+        **/
         public function is_logged() {
-            if(self::get('is_logged') || !empty($_COOKIE['session']))
+            if(self::get(SESSION_CRYPT) || !empty($_COOKIE['session']))
                 return true;
             else
                 return false;
         }
         
+        /**
+         * Destroy session and cookie
+        **/
         public function logout() {
             session_destroy();
             setcookie('session', null, time(), '/', null, Request::$secured, false);
@@ -99,6 +107,7 @@
             self::set('uniqid', uniqid());
             self::$uniqid = $_SESSION['sess_'.SESSION_CRYPT]['uniqid'];
         }
+        
         
 		public static function language($set = null) {
             if(!empty($set)):

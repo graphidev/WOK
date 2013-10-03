@@ -2,6 +2,7 @@
     
     class  Response {
         private static $data = array();
+        private static $template;
         
         private static $types = array(
             'default'   => 'text/html; charset=utf-8',
@@ -89,6 +90,9 @@
             599 => "Network connect timeout error"
         );  
         
+        /**
+         * Cache constants
+        **/
         const CACHE_PUBLIC          = 'PUBLIC'; // Cache public
         const CACHE_PROTECTED       = 'PROTECTED'; // Cache for autheticaed only
         const CACHE_PRIVATE         = 'PRIVATE'; // Cache private
@@ -96,6 +100,12 @@
         const CACHETIME_LOW         = 1800; // 5 minutes
         const CACHETIME_MEDIUM      = 2592000; // 12 hours
         const CACHETIME_LONG        = 5184000; // 1 day
+        
+        /**
+         * Frame constants
+        **/
+        const FRAME_DENY            = 'DENY';
+        const FRAME_ORIGIN          = 'SAMEORIGIN';
         
         
         /**
@@ -122,6 +132,27 @@
             
             header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
             header("Content-type: $type", true, $code);
+        }
+        
+        /**
+         * Secure headers response
+        **/
+        public static function secure(){
+            self::headers(array(
+                'X-Content-Type-Options' =>     'nosniff',
+                'Strict-Transport-Security' =>  'max-age=31536000',
+                'X-XSS-Protection' =>           '1; mode=block'
+            ));
+        }
+        
+        /**
+         * Iframe response configuration
+        **/
+        public static function frame($status = self::FRAME_ORIGIN) {
+            if(is_array($status))
+                header('X-Frame-Options: ALLOW-FROM '.implode(' ', $status));
+            else
+                header("X-Frame-Options : $status");
         }
         
         /**

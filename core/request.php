@@ -11,6 +11,7 @@
         public static $URI;
         public static $domain;
         public static $secured;
+        public static $port;
         private static $action;
         private static $params       = array();
         private static $config       = array();
@@ -26,6 +27,7 @@
             self::$method       = strtoupper($_SERVER['REQUEST_METHOD']);
             self::$URI          = str_replace(path(), '', path($static));
             self::$secured      = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
+            self::$port         = $_SERVER['SERVER_PORT'];
             
             
             /**

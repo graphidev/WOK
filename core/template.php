@@ -1,39 +1,45 @@
 <?php
 
     class Template  {
-        
-        private static $parse;
-        
-        
+        private $buffer;
+        private $options = array();
+                
         /**
-         * Importe a new template
+         * Generate a new template object
         **/
-        public function __construct($template) {
-                   
+        public function __construct(&$buffer) {
+            $this->buffer = $buffer;
         }
         
         /**
-         * Default template parser
+         * Configure template object
         **/
-        protected static function parse($buffer) {        
-            // Includes
-            $buffer = self::comments($buffer); // Comments
-            $buffer = self::comments(self::zones($buffer)); // Includes
-            $buffer = self::loops($buffer); // Loops
-            $buffer = self::jumps($buffer); // Jumps (for)
-            $buffer = self::variables($buffer); // Variables
-            $buffer = self::locales($buffer); // Locales
-            $buffer = self::constants($buffer); // Constants
-            $buffer = self::replacements($buffer); // Replacements
+        public function configure($options) {
+            $this->options = $options;
+        }
+        
+        /**
+         * 
+        **/
+        public function parse(&$data, $options = array()) {
+            $output = $this->comments($this->buffer); // Comments
+            $output = $this->comments($this->zones($output, $data)); // Zones
+            $output = $this->loops($output, $data); // Loops
+            $output = $this->jumps($output, $data); // Jumps (for)
+            $output = $this->variables($output, $data); // Variables
+            $output = $this->locales($output, $data); // Locales
+            $output = $this->constants($output); // Constants
+            $output = $this->replacements($output, $data); // Replacements
             
-            return $buffer;
+            return $output; // Output
         }
+        
         
         /**
          * Comments parser
          * {* this text will not be viewed *}
         **/
-        protected static function comments($buffer) {
+        protected function comments($buffer) {
             return preg_replace('#\{\*(.+)\*\}#isU', null, $buffer);
         }
         
@@ -41,14 +47,14 @@
          * Zones parser
          * {inc "path/to/file"}
         **/
-        protected static function zones($buffer) {
-             return preg_replace_callback('#\{zone "(.+)"\}#isU', function($matches) {
-                $path = preg_replace_callback('#\$([a-z0-9\._]+)#is', function($matches) {
+        protected function zones($buffer, &$data) {
+             return preg_replace_callback('#\{zone "(.+)"\}#isU', function($matches) use($data) {
+                $path = preg_replace_callback('#\$([a-z0-9\._]+)#is', function($matches) use($data) {
                     $path = implode("']['", explode('.', $matches[1]));
-                    @eval('$var = &Response::$data[\''.$path.'\'];');
+                    @eval('$var = $data[\''.$path.'\'];');
                     return  (!empty($var) ? $var : $matches[0]);                                                                     
                 }, $matches[1]);
-                $path = PATH_TEMPLATES . "/$path".(TEMPLATE_ALLOW_PHP ? '.php' : '.html');
+                $path = PATH_TEMPLATES . "/$path.php";
                 
                 if(file_exists(root($path)))
                     return file_get_contents(root($path));
@@ -63,8 +69,7 @@
          * Loops parser
          *  {loop $array} {$key} : {$value} {/loop}
         **/
-        protected static function loops($buffer) {
-            $data = self::$data;
+        protected function loops($buffer, &$data) {
             return preg_replace_callback('#\{loop \$([a-z0-9\._]+)\}(.+)\{/loop}#isU', function($matches) use($data) {
                 $path = implode("']['", explode('.', $matches[1]));
                 @eval('$var = $data[\''.$path.'\'];');
@@ -75,9 +80,9 @@
                         $new = str_replace('{$key}', $key, $matches[2]);
                         
                         if(is_array($value)):
-                            $new = preg_replace_callback('#\{\$value(\..+)\}#isU', function($matches) {
+                            $new = preg_replace_callback('#\{\$value(\..+)\}#isU', function($matches) use($data) {
                                 $path = implode("']['", explode('.', $matches[1]));
-                                @eval('$var = Response::$data[\''.$path.'\'];');
+                                @eval('$var = $data[\''.$path.'\'];');
                                 return $var;
                             }, $new);
                             
@@ -100,8 +105,8 @@
          * {jump 12 => 1234 / 5} {$step} / {$i} {/jump}
          * {jump 0 => 123 [/ 1]} {$step} {$i} {/jump}
         **/
-        protected static function jumps($buffer) {
-            return preg_replace_callback('#\{jump ([0-9]+) ?=> ?([0-9]+) ?(/ ?([0-9]+))?\}(.+)\{/jump}#isU', function($matches) {
+        protected function jumps($buffer, &$data) {
+            return preg_replace_callback('#\{jump ([0-9]+) ?=> ?([0-9]+) ?(/ ?([0-9]+))?\}(.+)\{/jump}#isU', function($matches) use($data) {
                 $start = floatval(trim($matches[1]));
                 $stop = floatval(trim($matches[2]));
                 $jump = trim($matches[4]);
@@ -128,8 +133,7 @@
         /**
          * Data replacement parsers
         **/
-        protected static function replacements($buffer) {
-            $data = self::$data;
+        protected function replacements($buffer, &$data) {
             return preg_replace_callback('#\{"(.+)" \$([a-z0-9\._]+)\}#isU', function($matches) use($data) {
                 $path = implode("']['", explode('.', $matches[2]));
                 @eval('$array = $data[\''.$path.'\'];');
@@ -151,8 +155,7 @@
          * Variables parser
          * {$variable}
         **/
-        protected static function variables($buffer) {
-            $data = self::$data;
+        protected function variables($buffer, &$data) {
             return preg_replace_callback('#\{\$([a-z0-9\._]+)\}#isU', function($matches) use($data) {
                 $path = implode("']['", explode('.', $matches[1]));
                 @eval('$var = $data[\''.$path.'\'];');
@@ -169,7 +172,7 @@
          * Constants parser
          * {#CONSTANT}
         **/
-        protected static function constants($buffer) {
+        protected function constants($buffer) {
             return preg_replace_callback('#\{\#([a-z0-9\\_]+)\}#isU', function($matches) {
                 if(defined($matches[1]))
                     return constant($matches[1]);
@@ -184,8 +187,7 @@
          * {@file:array.item}
          * {@file:array.item $data}
         **/
-        protected static function locales($buffer) {
-            $data = self::$data;
+        protected function locales($buffer, &$data) {
             return preg_replace_callback('#\{@(.+)( \$([a-z0-9\._]+))?\}#isU', function($matches) use($data) {
                 @eval('$locale = $matches[1];');
                 if(!empty($matches[3])):

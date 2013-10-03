@@ -2,7 +2,6 @@
     
     class  Response {
         private static $data = array();
-        private static $template;
         
         private static $types = array(
             'default'   => 'text/html; charset=utf-8',
@@ -11,7 +10,6 @@
             'json'      => 'application/json; charset=utf-8',
             'xml'       => 'application/xml; charset=utf-8',
             'binary'    => 'application/octet-stream',
-            
         );
         
         private static $codes = array(
@@ -204,8 +202,7 @@
                 self::$data = array_merge(self::$data, $data);
             else
                 self::$data = $data;
-        }
-        
+        }        
         
         /**
          * Redirect permanently or not (exit script)
@@ -223,7 +220,7 @@
         /**
          * Call a view file
         **/
-        public static function view($template, $status = 200) {  
+        public static function view($template, $status = 200, &$parser = null) {  
             extract(self::$data);
             ob_start();
                 
@@ -251,7 +248,7 @@
             // Generate output
             $buffer = ob_get_flush();
             if(ob_end_clean()):
-                echo $buffer;
+                echo (!empty($parser) && @is_callable($parser) ? $parser($buffer, self::$data) : $buffer);
             else:
                 ob_end_flush();
                 Console::warning("The buffer view haven't been destroyed properly for '$template'");

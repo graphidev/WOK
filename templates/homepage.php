@@ -1,7 +1,17 @@
 <html>
     
     <head>
-        <title>{$page.title}</title>
+        <title><?php echo $page['title']; ?></title>
+        
+        <?php /*
+            Here are three examples of how to 
+            include global headers in your page
+            We suggest to use PHP methods, of course.
+        */ ?>
+        
+        <?php $headers(); ?>
+        
+        <?php $zone('inc/headers'); ?>
         
         {zone "inc/headers"}
         

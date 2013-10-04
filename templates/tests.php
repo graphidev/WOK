@@ -14,7 +14,7 @@
                 <p>{$data.string}</p>
                 
                 {noparse}
-                    Are you a {$junky} ? 
+                    Are you a {$do.not.parse.this} ? 
                 {/noparse}
                 
                 <ul>

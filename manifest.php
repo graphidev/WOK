@@ -36,7 +36,7 @@
      * This is the bad template engine method : PHP is still a template engine, prefer assign some functions !
     **/
     $parser = function($buffer, $data) {
-        $tpl = new Template($buffer);  
+        $tpl = new \Tools\Template($buffer);  
         return $tpl->parse($data);
     };
     

@@ -21,8 +21,17 @@
         /**
          * 
         **/
-        public function parse(&$data, $options = array()) {
-            $output = $this->comments($this->buffer); // Comments
+        public function parse(&$data, $options = array()) {        
+            $output = $this->buffer;
+            $boundary = '--'.sha1(uniqid(microtime(), true)).'--';
+            
+            // noparse;
+            $output = preg_replace_callback('#\{noparse\}(.+)\{/noparse\}#isU', function($matches) use($boundary) {
+                $escaped = str_replace(array('{', '}'), array("<!--[$boundary", "$boundary]-->"), $matches[1]);
+                return "{noparse}$escaped{/noparse}";
+            }, $output);
+            
+            $output = $this->comments($output); // Comments
             $output = $this->comments($this->zones($output, $data)); // Zones
             $output = $this->loops($output, $data); // Loops
             $output = $this->jumps($output, $data); // Jumps (for)
@@ -30,6 +39,11 @@
             $output = $this->locales($output, $data); // Locales
             $output = $this->constants($output); // Constants
             $output = $this->replacements($output, $data); // Replacements
+            
+             // noparse;
+            $output = preg_replace_callback("#\{noparse\}(.+)\{/noparse\}#isU", function($matches) use($boundary) {
+                return str_replace(array("<!--[$boundary", "$boundary]-->"), array('{', '}'), $matches[1]);
+            }, $output);
             
             return $output; // Output
         }
@@ -59,7 +73,7 @@
                 if(file_exists(root($path)))
                     return file_get_contents(root($path));
                 else
-                    Console::log("Template parser : can't include zone '$path'", Console::LOG_TEMPLATE);
+                    Console::log("Can't include zone '$path'", Console::LOG_TEMPLATE);
                  
             }, $buffer);
         }
@@ -94,7 +108,7 @@
                     }
                     return $output;
                 else:
-                    Console::log("Variable $var can't be used in a loop (not an array)", Console::LOG_TEMPLATE);
+                    Console::log("Variable \$".$matches[1]." can't be used in a loop (not an array)", Console::LOG_TEMPLATE);
                 endif;
             }, $buffer);
         }
@@ -129,6 +143,7 @@
                 
             }, $buffer);
         }
+        
         
         /**
          * Data replacement parsers

@@ -1,5 +1,7 @@
 <?php
 
+    namespace Tools;
+
     class Template  {
         private $buffer;
         private $options = array();

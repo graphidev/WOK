@@ -41,7 +41,7 @@
     
 
     /**
-     * Set static pages controller
+     * Set default static pages controller
     **/
     Controller::assign(true, function($query) {
         /**

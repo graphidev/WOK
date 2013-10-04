@@ -17,7 +17,7 @@
         else
             Console::log("Can't call zone '$zone'", Console::LOG_TEMPLATE);
     };
-    Response::assign(array(
+    $functions = array(
         'zone' => $zone,
         'headers' => function() use($zone) {
             $zone('inc/headers');
@@ -28,7 +28,7 @@
         'sidebar' => function() use($zone) {
             $zone('inc/sidebar');
         }
-    ));
+    );
 
     
     /**
@@ -44,41 +44,29 @@
     /**
      * Try it on homepage
     **/
-    Controller::assign(true, function() use($parser) {
+    Controller::assign(function($request) { return empty($request); }, function() use($functions) {
         
         Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED);
-                
-        $data = array(
-            'config' => array(
-                'urls' => array(
-                    'template' => path(PATH_TEMPLATES)
-                ),
-                'zones' => array(
-                    'headers' => 'headers'
-                ),
-            ),
-            'session' => array(
-                'is_logged' => true,
-                'account' => array(
-                    'username' => 'Sebasalex',
-                    'publicname' => 'Sébastien ALEXANDRE',
-                    'firstname' => 'Sébastien',
-                    'lastname' => 'ALEXANDRE',
-                )
-            ),
-            'page' => array (
-                'title' => 'Page title',
-            ),
-            'locales' => array(
-                'test' => 'blabla'
-            )
-        );
+        
+        $controller = new \Controllers\HelloWorld;  
+
+        $data = array('page' => $controller->homepage());
         
         
-            
+        Response::assign($functions);   
         Response::assign($data);
         Response::view('homepage', 200, $parser);        
         
     },true);
+
+    /**
+     * Other pages
+    **/
+Controller::assign(true, function() use($functions, $parser) {
+    $controller = new \Controllers\HelloWorld;  
+    Response::assign($controller->data());
+    Response::assign($functions);
+    Response::view(Request::$URI, 200, $parser);
+}, true);
     
 ?>

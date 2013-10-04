@@ -3,17 +3,7 @@
     <head>
         <title><?php echo $page['title']; ?></title>
         
-        <?php /*
-            Here are three examples of how to 
-            include global headers in your page
-            We suggest to use PHP methods, of course.
-        */ ?>
-        
         <?php $headers(); ?>
-        
-        <?php $zone('inc/headers'); ?>
-        
-        {zone "inc/headers"}
         
     </head>
     
@@ -21,28 +11,7 @@
         
         <div id="main" >                        
             <div class="content">
-                    
-                <h1>This is a loop ...</h1>
-                {loop $session.account}
-                    <p>{$key} => {$value}</p>
-                {/loop}
-                
-                <p>
-                    jump :
-                    <select name="year">
-                        {jump 1990 => 2015 / 1}
-                            <option value="{$step}">{$step}</option>
-                        {/jump}
-                    </select>
-                </p>
-               
-                
-                
-                <p>Variable : {$page.title}</p>
-                
-                <p>Locale : {@default:test $locales} / <?php echo _e('timezones:Africa:Africa'); ?></p>
-                
-                
+                <p><?php echo $page['content']; ?></p>         
             </div>
            
             

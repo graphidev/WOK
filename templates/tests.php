@@ -33,7 +33,7 @@
                             / 2%
                             / (i2%)
                         -->
-                        {jump 1990 => 2013}
+                        {jump <?php echo date('Y')-18; ?> => <?php echo date('Y'); ?>}
                             <option value="{$step}">{$step}</option>
                         {/jump}
                     </select>

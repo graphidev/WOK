@@ -122,7 +122,7 @@
          * {jump 0 => 123 [/ 1]} {$step} {$i} {/jump}
         **/
         protected function jumps($buffer, &$data) {
-            return preg_replace_callback('#\{jump ([0-9]+) ?=> ?([0-9]+) ?(/ ?([0-9]+))?\}(.+)\{/jump}#isU', function($matches) use($data) {
+            return preg_replace_callback('#\{jump ([0-9\.]+) ?=> ?([0-9\.]+) ?(/ ?([0-9\.]+))?\}(.+)\{/jump}#isU', function($matches) use($data) {
                 $start = floatval(trim($matches[1]));
                 $stop = floatval(trim($matches[2]));
                 $jump = trim($matches[4]);

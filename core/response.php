@@ -247,10 +247,10 @@
                 
             // Generate output
             $buffer = ob_get_flush();
-            if(ob_end_clean()):
+            if(ob_clean()):
                 echo (!empty($parser) && @is_callable($parser) ? $parser($buffer, self::$data) : $buffer);
             else:
-                ob_end_flush();
+                ob_flush();
                 Console::warning("The buffer view haven't been destroyed properly for '$template'");
             endif;
         }

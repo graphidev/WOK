@@ -72,10 +72,16 @@
                 }, $matches[1]);
                 $path = PATH_TEMPLATES . "/$path.php";
                 
-                if(file_exists(root($path)))
-                    return file_get_contents(root($path));
-                else
+                if(file_exists(root($path))):
+                    ob_start();
+                    include(root($path));
+                    $zone = ob_get_flush();
+                    ob_clean();
+                    $template = new Template($zone);
+                    return $template->parse($data);
+                else:
                     Console::log("Can't include zone '$path'", Console::LOG_TEMPLATE);
+                 endif;
                  
             }, $buffer);
         }

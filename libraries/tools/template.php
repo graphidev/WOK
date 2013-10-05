@@ -74,6 +74,7 @@
                 
                 if(file_exists(root($path))):
                     ob_start();
+                    extract($data);
                     include(root($path));
                     $zone = ob_get_flush();
                     ob_clean();

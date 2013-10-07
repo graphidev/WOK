@@ -143,7 +143,7 @@
                     endfor;
                 else:
                     for($i = $start; $i<=$stop;):
-                        $output .= str_replace(array('{$i}', '{$step}'), $i, $matches[5]);
+                        $output .= str_replace(array('{$i}', '{$step}', '{$this}'), $i, $matches[5]);
                         @eval("\$i = \$i +  $jump;");
                     endfor;
                 endif;

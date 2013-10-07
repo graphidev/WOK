@@ -90,6 +90,7 @@
                         parent::$language = $backup;
                     else:
                         return $path;
+                        Console::log("Locales : '$path' not found", Conseole::LOG_NOTICE);
                     endif;
                 endif;
                 

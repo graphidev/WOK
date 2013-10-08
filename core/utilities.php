@@ -54,6 +54,8 @@
      *
 	**/
 	function tree($dir) {
+        if(!file_exists($dir)) return false;
+        
 	    $handle = opendir($dir);
 	    $array = array();
 	    

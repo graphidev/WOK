@@ -1,1 +1,0 @@
-<iframe srcdoc="<p>This is a zone. Not necessary an iframe</p>"></iframe>

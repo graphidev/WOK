@@ -10,7 +10,7 @@
      * Return absolute URL path to the string parameter
     **/
 	function path($string = null, $protocol = SYSTEM_DEFAULT_PROTOCOL) {
-		if(preg_match('#^/(.)*$#', $string)):
+		if(substr($string, 0, 1) == '/'):
 			return $protocol.SYSTEM_ADDR."$string";
 		else :
 			return $protocol.SYSTEM_ADDR."/$string";
@@ -54,6 +54,8 @@
      *
 	**/
 	function tree($dir) {
+        if(!file_exists($dir)) return false;
+        
 	    $handle = opendir($dir);
 	    $array = array();
 	    
@@ -81,6 +83,25 @@
 	    
 	    return $array;
 	}
+
+
+    /**
+     * Parse an array to XML
+    **/
+    function xml_encode($array, $xml){
+        if(!is_object($xml))
+            $xml = new SimpleXMLElement("<$xml/>");
+        
+        foreach($array as $key => $value) {
+            if(is_array($value)):
+                toXML($value, $xml->addChild($key));
+            else:
+                $xml->xml_encode($key, $value);
+            endif;
+        }
+
+        return $xml->asXML();
+    }
 
 
 

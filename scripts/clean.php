@@ -3,11 +3,9 @@
     /**
      * Clean all temporary files
     **/
-    define('ACCESS_PATH', dirname(dirname(__FILE__)));
 
-    require_once ACCESS_PATH . "/core/init.php";
-    
-    $options = $argv;
+    if(!defined('ACCESS_PATH'))
+        exit("* Call as : php cli.php [script] [args]");
 
     function remove($tmp, $path) {
         
@@ -26,33 +24,23 @@
         }
     }
 
-    function input($string) {
-        echo $string;
-        $handle = fopen("php://stdin","r");
-        $data = trim(fgets($handle));
-        if($data == 'exit')
-            exit;
-        else
-            return $data;
-    }
-
     echo "\n[WOK cleaner]\n";
 
     /**
      * Ask for an option
     **/
-    if(count($options) == 1):
+    if(empty($_opts)):
         $input = input("Which folders (separate with a space) ?  [all|(tmp|logs|uploads)] :");
         $folders = explode(' ', $input);
         foreach($folders as $i => $folder) {
-            $options[] = "-$folder";
+            $_opts[] = "-$folder";
         }
     endif;
     
     /**
      * Clean tmp folder
     **/
-    if(in_array('-tmp', $options) || in_array('-all', $options)): 
+    if(in_array('-tmp', $_opts) || in_array('-all', $_opts)): 
         $tmp = tree(ACCESS_PATH.PATH_TMP);
     
         if(!empty($tmp)):
@@ -67,7 +55,7 @@
     /**
      * Clean cache folder
     **/
-    if(in_array('-cache', $options) || in_array('-all', $options)): 
+    if(in_array('-cache', $_opts) || in_array('-all', $_opts)): 
         $tmp = tree(ACCESS_PATH.PATH_CACHE);
     
         if(!empty($tmp)):
@@ -81,7 +69,7 @@
     /**
      * Clean tmp folder
     **/
-    if(in_array('-logs', $options) || in_array('-all', $options)): 
+    if(in_array('-logs', $_opts) || in_array('-all', $_opts)): 
         
         $tmp = tree(ACCESS_PATH.PATH_LOGS);
     
@@ -98,7 +86,7 @@
     /**
      * Clean uploads folder
     **/
-    if(in_array('-uploads', $options) || in_array('-all', $options)): 
+    if(in_array('-uploads', $_opts) || in_array('-all', $_opts)): 
         
         $tmp = tree(ACCESS_PATH.PATH_TMP_FILES);
     

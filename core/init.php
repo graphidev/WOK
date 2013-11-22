@@ -9,8 +9,8 @@
     **/
     
 	const WOK_MAJOR_VERSION        = 0; // Major version
-	const WOK_MINOR_VERSION        = 6; // Minor version
-	const WOK_RELEASE_VERSION      = 2; // Release version
+	const WOK_MINOR_VERSION        = 8; // Minor version
+	const WOK_RELEASE_VERSION      = 0; // Release version
 	const WOK_EXTRA_RELEASE        = 'alpha'; // Extra version
     
     // Define full WOK version (without extra release)
@@ -29,6 +29,7 @@
     const PATH_VAR              = '/var'; // Config path
     const PATH_TMP              = '/var/tmp'; // Temporary directory path
     const PATH_LOGS             = '/var/logs'; // PHP logs directory
+    const PATH_CONTROLLERS      = '/controllers'; // Controllers' directory
 	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_LOCALES          = '/locales'; // Languages' files directory
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
@@ -65,12 +66,23 @@
             if(file_exists(SYSTEM_ROOT.PATH_CORE . "/$name.php"))
                 require_once SYSTEM_ROOT.PATH_CORE . "/$name.php";
         });
+        
+        /**
+         * Controllers libraries auto loader
+        **/
+        spl_autoload_register(function($name) {
+            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
+            $path = str_replace('controllers/', '', $path);
+            
+            if(file_exists(SYSTEM_ROOT.PATH_CONTROLLERS . "/$path.ctrl.php"))
+                require_once SYSTEM_ROOT.PATH_CONTROLLERS . "/$path.ctrl.php";
+        });
 
         /**
          * Additional libraries auto loader
         **/
         spl_autoload_register(function($name) {
-            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
+            $path = str_replace('\\', DIRECTORY_SEPARATOR, $name);
             if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES . "/$path.php"))
                 require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.php";
         });

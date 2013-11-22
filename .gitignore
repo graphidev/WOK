@@ -1,4 +1,4 @@
 .DS_Store
 var/settings.php
-resources/*
 var/tmp/*
+controllers/*

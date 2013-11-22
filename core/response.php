@@ -1,13 +1,14 @@
 <?php
     
-    class  Response {
-        private static $data = array();
+    class Response extends \Request {
+        protected $data = array();
         
         private static $types = array(
             'default'   => 'text/html; charset=utf-8',
             'text'      => 'text/plain; charset=utf-8',
             'html'      => 'text/html; charset=utf-8',
             'json'      => 'application/json; charset=utf-8',
+            'js'        => 'application/javascript; charset=utf-8',
             'xml'       => 'application/xml; charset=utf-8',
             'binary'    => 'application/octet-stream',
         );
@@ -88,13 +89,18 @@
             599 => "Network connect timeout error"
         );  
         
+        private static $mimes = array(
+            'css' => 'text/css', 
+            'js' => 'application/javascript'
+        );
+        
         /**
          * Cache constants
         **/
         const CACHE_PUBLIC          = 'PUBLIC'; // Cache public
         const CACHE_PROTECTED       = 'PROTECTED'; // Cache for autheticaed only
         const CACHE_PRIVATE         = 'PRIVATE'; // Cache private
-        const CACHETIME_NEVER       = 0; // Do not cache
+        const CACHETIME_NULL        = 0; // Do not cache
         const CACHETIME_LOW         = 1800; // 5 minutes
         const CACHETIME_MEDIUM      = 2592000; // 12 hours
         const CACHETIME_LONG        = 5184000; // 1 day
@@ -107,10 +113,26 @@
         
         
         /**
+         * Generate default reponse settings
+        **/
+        public function __construct($data = array()) {
+            if(parent::$query->secured):
+                $this->headers(array(
+                    'X-Content-Type-Options' =>     'nosniff',
+                    'Strict-Transport-Security' =>  'max-age=31536000',
+                    'X-XSS-Protection' =>           '1; mode=block'
+                ));
+            endif;
+            
+            $this->cache();
+            $this->assign($data);
+        }
+        
+        /**
          * Send custom headers
          * Custom headers must begin with X-
         **/
-        public static function headers($headers) {
+        public function headers($headers) {
             foreach($headers as $name => $value) {
                 @header("$name: $value", true);
             }
@@ -119,34 +141,17 @@
         /**
          * Define response status
         **/
-        public static function status($type, $code) {
-            if(!empty($types[$type]))
-                $type = $types[$type];
-            else
-                $type = (!empty($type) ? $type : $types['default']);
-            
-            if($type == 'binary')
-                header('Content-Transfer-Encoding: binary');
-            
+        public function status($type, $code) {
             header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
-            header("Content-type: $type", true, $code);
-        }
-        
-        /**
-         * Secure headers response
-        **/
-        public static function secure(){
-            self::headers(array(
-                'X-Content-Type-Options' =>     'nosniff',
-                'Strict-Transport-Security' =>  'max-age=31536000',
-                'X-XSS-Protection' =>           '1; mode=block'
-            ));
+            
+            if(!empty(self::$types[$type]))           
+                header("Content-type: ".self::$types[$type], true, $code);
         }
         
         /**
          * Iframe response configuration
         **/
-        public static function frame($status = self::FRAME_ORIGIN) {
+        public function frame($status = self::FRAME_ORIGIN) {
             if(is_array($status))
                 header('X-Frame-Options: ALLOW-FROM '.implode(' ', $status));
             else
@@ -156,7 +161,7 @@
         /**
          * Send Cache headers
         **/
-        public static function cache($time = self::CACHETIME_LOW, $status = self::CACHE_PROTECTED) {
+        public function cache($time = self::CACHETIME_LOW, $status = self::CACHE_PROTECTED) {
             // Private cache : do not cache
             if(!$time || $status == self::CACHE_PRIVATE):
                 $arguments = array(
@@ -167,7 +172,7 @@
                     'proxy-revalidate', // Always Check resource, even middle proxys
                     
                 );
-                header("Pragma: no-cache");
+                header("Pragma: no-cache", true);
             
             // Protected or public cache
             elseif($time):
@@ -177,10 +182,10 @@
                 );
                 if($status == self::CACHE_PROTECTED):
                     $arguments[] = 'public, no-cache, must-revalidate';
-                    header("Pragma: no-cache");
+                    header("Pragma: no-cache", true);
                 else:
                     $arguments[] = 'public';
-                    header("Pragma: cache");
+                    header("Pragma: cache", true);
                 endif;
                 
                 $date = new DateTime(date('r', time()+$time));
@@ -193,16 +198,6 @@
             header('Cache-Control: '.implode(', ', $arguments), true);
         }
         
-        
-        /**
-         * define datas
-        **/
-        public static function assign($data) {
-            if(is_array($data))
-                self::$data = array_merge(self::$data, $data);
-            else
-                self::$data = $data;
-        }        
         
         /**
          * Redirect permanently or not (exit script)
@@ -218,26 +213,38 @@
         
         
         /**
+         * define datas
+         * Working only with view method
+        **/
+        public function assign($data) {
+            if(is_array($data))
+                $this->data = array_merge($this->data, $data);
+            else
+                $this->data = $data;
+        }
+        
+        /**
          * Call a view file
         **/
-        public static function view($template, $status = 200, &$parser = null) {  
-            extract(self::$data);
-            ob_start();
+        public function view($template, $status = 200, $parser = null) {
+            $this->assign(array('request' => parent::$query));
+            
+            extract($this->data);
+            ob_start(@is_callable($parser) ? $parser : null);
                 
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
-                self::status('html', $status);
+                $this->status('html', $status);
                 include_once(root(PATH_TEMPLATES."/$template.php"));
-                    
                 
             else:
-                self::status('html', 404);
+                $this->status('html', 404);
                 
                 if(file_exists(root(PATH_TEMPLATES."/404.php"))):
                     include_once(root(PATH_TEMPLATES."/404.php"));
                 
                 else:
                     if($template != '503')
-                        Console::log("$template template does not exists", Console::LOG_WARNING, true);
+                        trigger_error("$template template does not exists", E_USER_WARNING);
                     else
                         Console::log("$template template does not exists", Console::LOG_ERROR);
                 
@@ -246,21 +253,15 @@
             endif;
                 
             // Generate output
-            $buffer = ob_get_flush();
-            if(ob_clean()):
-                echo (!empty($parser) && @is_callable($parser) ? $parser($buffer, self::$data) : $buffer);
-            else:
-                ob_flush();
-                Console::warning("The buffer view haven't been destroyed properly for '$template'");
-            endif;
+            ob_end_flush();
         }
         
         
         /**
          * Send JSON data
         **/
-        public static function json($data = null, $status = 200) {
-            self::status('json', $status);
+        public function json($data = null, $status = 200) {
+            $this->status('json', $status);
             echo json_encode(!empty($data) ? $data : self::$data);
         }
         
@@ -268,8 +269,8 @@
         /**
          * Send XML data
         **/
-        public static function xml($data = null, $status = 200) {
-            self::status('xml', $status);
+        public function xml($data = null, $status = 200) {
+            $this->status('xml', $status);
             echo xml_encode(!empty($data) ? $data : self::$data, 'document');
         }
         
@@ -278,7 +279,7 @@
          * Send text
         **/
         public function text($string, $status = 200) {
-            self::status('text', $status);
+            $this->status('text', $status);
             echo $string;
         }
         
@@ -286,18 +287,43 @@
         /**
          * Send a file (also can be downloaded)
         **/
-        public static function file($path, $download = false, $status = 200) {
+        public function file($path, $download = false, $status = 200) {
             if(file_exists(root("/$path"))):
-                $mime = \Compatibility\get_mime_type(root("/$path"));
-                self::status($mime, $status);
+                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : \Compatibility\get_mime_type(root("/$path"));
             
-                if($download)
+                $this->status($mime, $status);
+            
+                if($download):
                     header('Content-Disposition: attachment; filename="'.basename($path).'"');
+                    $this->headers(array(
+                        'Pragma' => 'public',
+                        'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0'
+                    ));
+                endif;
+                
+                if($this->query('range')):
+                    set_time_limit(0);
+                    $file = @fopen(root("/$path"), "rb");
+                    while(!feof($file)):
+                        print(@fread($file, 1024*8));
+                        ob_flush();
+                        flush();
+                    endwhile;
+                else:
+                    $this->status(null, 416);
+                endif;
+                /*
+                if(parent::$request->range):
                     
-                readfile(root("/$path"));
+            
+                else:
+                    readfile(root("/$path"));
+                endif;
+                */
             
             else:
-                self::view('404', 404);
+                $this->view('404', 404);
             endif;            
         }
         
@@ -305,8 +331,8 @@
         /**
          * Send binary datas
         **/
-        public static function binary($data, $status = 200) {
-            self::status('binary', $status);
+        public function binary($data, $status = 200) {
+            $this->status('binary', $status);
             echo $data;
         }
         

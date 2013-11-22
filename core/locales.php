@@ -1,30 +1,29 @@
 <?php
 
-    class Locales extends Session {
+    class Locales {
         
+        private static $language = null;
         private static $locales = array();
         private static $formats = array();
-        
-        public function __construct() {}
         
         /**
          * Get a locale file
         **/
-        private static function load($locale) {
-            $source = root(PATH_LOCALES.'/'.parent::$language."/$locale.properties");
-            $parsed = root(PATH_TMP.'/'.parent::$language.".$locale.json");
+        private static function load($locale) {        
+            $source = root(PATH_LOCALES.'/'.self::$language."/$locale.properties");
+            $parsed = root(PATH_TMP.'/'.self::$language.".$locale.json");
             if(file_exists($parsed)):
                 if(file_exists($source) && filemtime($source) > filemtime($parsed)):
                     self::generate($locale);
                 else:
-                    self::$locales[parent::$language][$locale] = json_decode(file_get_contents($parsed), true);
+                    self::$locales[self::$language][$locale] = json_decode(file_get_contents($parsed), true);
                 endif;
             
             elseif(file_exists($source)):
                 self::generate($locale);
             
             else:
-                self::$locales[parent::$language][$locale] = array();
+                self::$locales[self::$language][$locale] = array();
             endif;
         }
         
@@ -32,7 +31,7 @@
          * Generate JSON locale
         **/
         private static function generate($locale) {
-            $handle = fopen(root(PATH_LOCALES.'/'.parent::$language."/$locale.properties"), 'r');
+            $handle = fopen(root(PATH_LOCALES.'/'.self::$language."/$locale.properties"), 'r');
             if($handle):
                 while(!feof($handle)):
                     $line = trim(fgets($handle));
@@ -53,7 +52,7 @@
                 fclose($handle);
             endif;
             
-            $json = fopen(root(PATH_TMP.'/'.parent::$language.".$locale.json"), 'w+');
+            $json = fopen(root(PATH_TMP.'/'.self::$language.".$locale.json"), 'w+');
             fwrite($json, json_encode(self::$locales[self::$language][$locale]));
             fclose($json);
         }
@@ -61,8 +60,15 @@
         /**
          * Get a locale translation
         **/
-        public static function _e($path, $data = array()) {
-            setLocale(LC_ALL, parent::$language);
+        public static function _e($path, $data = array(), $language = null) {
+            if(empty($language)):
+                if(empty(self::$language))
+                    self::$language = (\Request::get('language') !== false ? \Request::get('language') : SYSTEM_DEFAULT_LANGUAGE);
+            
+                $language = self::$language;
+            endif;
+                        
+            setLocale(LC_ALL, $language);
             $locale = strstr($path, ':', true);
             
             if(empty($locale)): // locale by default
@@ -73,21 +79,18 @@
             endif;
             
             // Load locale if it isn't.
-            if(!isset(self::$locales[parent::$language][$locale]))
+            if(!isset(self::$locales[$language][$locale]))
                 self::load($locale);
-                    
+                                
             // Return the finale node value
-            $translation = self::$locales[parent::$language][$locale];
+            $translation = self::$locales[$language][$locale];
 
             foreach($nodes as $i => $node) {
                 if(is_array($translation) && isset($translation[$node])):
                     $translation = $translation[$node];
                 else: // Try to get the default locale
-                    if(parent::$language != SYSTEM_DEFAULT_LANGUAGE):
-                        $backup = parent::$language;
-                        parent::$language = SYSTEM_DEFAULT_LANGUAGE;
-                        $translation = self::_e($path);
-                        parent::$language = $backup;
+                    if($language != SYSTEM_DEFAULT_LANGUAGE):
+                        $translation = self::_e($path, $data, SYSTEM_DEFAULT_LANGUAGE);
                     else:
                         return $path;
                         Console::log("Locales : '$path' not found", Conseole::LOG_NOTICE);
@@ -160,8 +163,7 @@
             endif;
             
             // Replace with an other translation
-            $language = parent::$language; // $this allowed in anonymous functions with PHP 5.4 and newer
-            $translation = preg_replace_callback("#&\[(.+)\]#isU", function($matches) use (&$language, &$locale){
+            $translation = preg_replace_callback("#&\[(.+)\]#isU", function($matches) use (&$locale){
                 return Locales::_e(str_replace('~', $locale, $matches[1]));
             }, $translation);
             

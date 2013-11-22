@@ -2,67 +2,71 @@
 
     /**
      * This is the controller class
-     * All it's methods are statics
     **/
 
     class Controller {
+        private static $queue;
+        private static $state = true;        
         
-        private static $queue       = array();
-        private static $state       = true;
+        /**
+         * Call a controller action
+        **/
+        public function call($controller, $action = null) {
+            $controller = "\\Controllers\\$controller";
+            $controller = new $controller;
+            
+            if(!empty($action))
+                return $controller->$action();
+        }
         
-        public static function assign($conditions, $action, $strict = false) {
+        /**
+         * Assign a controller (function)
+        **/
+        public function assign($conditions, $action, $strict = false) {
             self::$queue[] = array($conditions, $action, $strict);
         }
         
-        public static function inc($library, $once = true) {
-            if(file_exists(root(PATH_LIBRARIES."/$library.php"))):
-                if($once)
-                    require_once root(PATH_LIBRARIES."/$library.php");
-                else
-                    include root(PATH_LIBRARIES."/$library.php");
-                return true;
-            else:
-                return false;
-            endif;
+        /**
+         * Invoke the queue
+        **/
+        public function invoke() {
+            foreach(self::$queue as $index => $value){
+                if(self::$state):
+                    list($conditions, $action, $strict) = $value;
+                    self::$state = !$this->execute($conditions, $action, $strict);
+                endif;
+            }
         }
-         
-        private static function execute($conditions, $action, $query, $strict = false) {
+        
+        /** 
+         * Execute an assigned controller
+        **/
+        private function execute($conditions, $action, $strict = false) {
              if(is_bool($conditions)):
                 if($conditions): 
-                    return $action($query) or $strict; 
+                    return $action(Request::get('URI')) or $strict; 
                 endif;
             
             elseif(is_string($conditions)):
-                if($conditions == $query):
-                    return $action($query) or $strict;
+                if($conditions == Request::get('URI')):
+                    return $action(Request::get('URI')) or $strict;
                 endif;
             
             elseif(is_callable($conditions)):
-                if($conditions($query)):
-                    return $action($query) or $strict;
+                if($conditions(Request::get('URI'))):
+                    return $action(Request::get('URI')) or $strict;
                 endif;
             
             elseif(is_array($conditions)):
                 $end = false;
                 foreach($conditions as $index => $value ) {
-                    $end = self::execute($value, $action, $query);
+                    $end = $this->execute($value, $action, Request::get('URI'));
                 }
                 return $end;
-            
+                        
             endif;
         }
         
-        public static function invoke(&$request) {            
-            foreach(self::$queue as $index => $value){
-                if(self::$state):
-                    list($conditions, $action, $strict) = $value;
-                    self::$state = !self::execute($conditions, $action, $request, $strict);
-                endif;
-            
-            }
-            
-        }
-                
     }
 
 ?>

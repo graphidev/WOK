@@ -8,7 +8,7 @@
         const PDO_PGSQL = 'pgsql:host=%s';
         const PDO_SQLTE = 'sqlite:%s'; 
         
-        public function __construct($host, $username, $password, $options = array(), $driver = Database::PD0_MYSQL) {
+        public function login($host, $username, $password, $options = array(), $driver = Database::PD0_MYSQL) {
             try {
                 $dsn = sprintf($driver, $host);
                 self::$interface = new PDO($dsn, $username, $password, $options);
@@ -19,7 +19,7 @@
             }
         }
         
-        public static function target($database) {
+        public function target($database) {
             try {
                 self::exec("USE $database");
             } catch(Exception $e) {

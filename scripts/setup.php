@@ -1,18 +1,7 @@
 <?php
     
-    define('ACCESS_PATH', dirname(dirname(__FILE__)));
-
-    require ACCESS_PATH . "/core/init.php";
-
-    function input($string) {
-        echo $string;
-        $handle = fopen("php://stdin","r");
-        $data = trim(fgets($handle));
-        if($data == 'exit')
-            exit("[WOK setup aborted]\n\n");
-        else
-            return $data;
-    }
+    if(!defined('ACCESS_PATH'))
+        exit("* Call as : php cli.php [script] [args]\n");
 
     function setSetting($name, $value, $settings) {
         $settings = preg_replace("#const $name (.+)?= '(.+)?';#", "const $name $1= '$value';", $settings);
@@ -33,10 +22,7 @@
      \/  \/   \____/|_|\_\      
     \n";
 
-
-    echo "\n[Setup WOK " . WOK_VERSION . "]\n";
-    echo "* The following program will help you to configure WOK\n";
-    echo "* Please type 'exit' in any time if you want to stop it\n\n";
+    echo "\nUsing WOK " . WOK_VERSION . "\n\n";
 
     /**
      * Check PHP version
@@ -62,59 +48,68 @@
     endif;
 
     /**
-     * Try to calculate default settings
+     * Calculate default settings
     **/
     $protocol = 'http://';
     $domain = php_uname('n');
     $directory = str_replace(dirname(SYSTEM_ROOT), '', SYSTEM_ROOT);
     $timezone = @date_default_timezone_get();
-
-    /**
-     * Customize settings
-    **/
-    $manual = strtoupper(input("Would you customize your setup ? (Y/N) : "));
-    if(empty($manual) || $manual == 'Y'):
-        
-        echo "* Press enter (empty value) to get the calculated value\n";
-        
-        $input_protocol = input("-- Default access protocol [http/https] > ").'://';
-        $input_domain = input("-- Default access domain [$domain] > ");
-        $input_directory = input("-- Default access subdirectory [$directory] > ");
-        $input_timezone = input("-- Server timezone [$timezone] > ");   
-        
-        $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
-        $protocol = ($input_protocol != '://' ? $input_protocol.'://' : $protocol);
-        $domain = (!empty($input_domain) ? $input_domain : $domain);
-        $directory = (!empty($input_directory) ? $input_directory : '/');
-    
-    endif;
-
+    $languages = array('en_EN');
     $url = $protocol.$domain.$directory;
     
-    echo "\n";
-    
-
-
-    /**
-     * Configure languages
-    **/
-    echo "Which languages are supported in your project ?\n";
-    echo "* The languages codes must correspond to the ISO 639 norm (country_LANGUAGE)\n";
-    echo "* The program will ask you a new language until you press Enter (empty value)\n";
-    echo "* If you won't define any language, the 'en_EN' code will be applied\n";
+    // Customize configuration
+    if(!in_array('-auto', $_opts)):
         
-    $languages = array();
-    $new = true;
-    while(strtolower($new) != '') {
-        $new = input("-- Add language > ");
-        if(!empty($new))
-            $languages[] = $new;
-    }
-    if(count($languages) == 0)
-        $languages = array('en_EN');
+        echo "* The following program will help you to configure WOK\n";
+        echo "* Please type 'exit' in any time if you want to stop it\n\n";
+        
+        /**
+         * Customize settings
+        **/
+        $manual = strtoupper(input("Would you customize your setup ? (Y/N) : "));
+        if(empty($manual) || $manual == 'Y'):
+            
+            echo "* Press enter (empty value) to get the calculated value\n";
+            
+            $input_protocol = input("-- Default access protocol [http/https] > ").'://';
+            $input_domain = input("-- Default access domain [$domain] > ");
+            $input_directory = input("-- Default access subdirectory [$directory] > ");
+            $input_timezone = input("-- Server timezone [$timezone] > ");   
+            
+            $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
+            $protocol = ($input_protocol != '://' ? $input_protocol.'://' : $protocol);
+            $domain = (!empty($input_domain) ? $input_domain : $domain);
+            $directory = (!empty($input_directory) ? $input_directory : null);
+        
+        endif;
     
-    echo "\n";
+        $url = $protocol.$domain.$directory;
+        
+        echo "\n";
+        
     
+    
+        /**
+         * Configure languages
+        **/
+        echo "Which languages are supported in your project ?\n";
+        echo "* The languages codes must correspond to the ISO 639 norm (country_LANGUAGE)\n";
+        echo "* The program will ask you a new language until you press Enter (empty value)\n";
+        echo "* If you won't define any language, the 'en_EN' code will be applied\n";
+            
+        $languages = array();
+        $new = true;
+        while(strtolower($new) != '') {
+            $new = input("-- Add language > ");
+            if(!empty($new))
+                $languages[] = $new;
+        }
+        if(count($languages) == 0)
+            $languages = array('en_EN');
+        
+        echo "\n";
+    
+    endif;
 
     /**
      * Save configuration
@@ -152,7 +147,7 @@
      * Generate .htaccess file
     **/
     $htaccess = file_get_contents(ACCESS_PATH.'/.htaccess.default');
-    $htaccess = str_replace('__WOK_DIR__', ($directory != '/' ? $directory : null), $htaccess);
+    $htaccess = str_replace('__WOK_DIR__', $directory, $htaccess);
      if(!file_exists(ACCESS_PATH.'/.htaccess')):
         $file = fopen(ACCESS_PATH.'/.htaccess', 'w+');
         fclose($file);
@@ -166,7 +161,5 @@
      * End of WOK setup
     **/
     echo "* We are happy yo say that the configuration is done (if no errors appears).\n";
-    echo "* We really hope that you will like WOK and use it for many of your projects. \n";
-
-    exit("[/Setup WOK " . WOK_VERSION . "]\n\n");
+    echo "* We really hope that you will love WOK and use it for many of your projects. \n";
 ?>

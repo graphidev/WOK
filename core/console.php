@@ -1,13 +1,10 @@
 <?php
 
     class Console {
-        private static $session;
-        private static $request;
-        private static $headers;
-        
+        /**
+         * Logs array (saved on register)
+        **/
         private static $logs        = array();
-        private static $format      = '[:time] [:type] :log';
-        private static $emails      = array();
         
         /**
          * Logs types
@@ -23,27 +20,53 @@
         /**
          * Redefine logs format
         **/
-        public function __construct($emails = array()) {
-            self::$emails = $emails; 
+        public function __construct() {
+            if(CONSOLE_HANDLER_LEVEL !== false):
+                error_reporting(CONSOLE_HANDLER_LEVEL);
+                set_error_handler('Console::handler');
+            endif;
+        }
+        
+        public static function handler($type, $message, $file, $line){
+            if(!(error_reporting() & $type)) return;
+            
+            switch ($type) {
+                case E_USER_ERROR:
+                    Console::fatal("$message in $file : line $line");
+                    break;
+                            
+                case E_USER_WARNING:
+                    Console::warning("$message in $file : line $line");
+                    break;
+                    
+                case E_USER_NOTICE:
+                    Console::notice("$message in $file : line $line");
+                    break;
+
+                default:
+                    Console::log("$message in $file : line $line", Console::LOG_ERROR);
+            }
+            
+            return true;
         }
         
         /**
          * Add a log
         **/
-        public static function log($log, $type = self::LOG_DEFAULT, $exit = false) {
+        public static function log($message, $type = self::LOG_DEFAULT, $exit = false) {
             self::$logs[] = array(
                 'date'      => date('Y-m-d'),
                 'time'      => date('H:i:s'),
                 'type'      => strtoupper($type),
-                'log'       => $log,
+                'message'   => $message,
                 'fatal'     => $exit
             );
             
             if($exit):
                 Console::register();
-                Response::type('text', 503);
-                Response::view('503');
-                exit();
+                $response = new Response;
+                $response->view('503', 503);
+                exit;
             endif;
         }
         
@@ -51,47 +74,44 @@
         /**
          * Add a debug log
         **/
-        public static function debug($log, $exit = false) {
-            self::log($log, Console::LOG_DEBUG, $exit);
+        public static function debug($message, $exit = false) {
+            self::log($message, Console::LOG_DEBUG, $exit);
         }
         
         
         /**
          * Add a notice log
         **/
-        public static function notice($log) {
-            self::log($log, Console::LOG_NOTICE);
+        public static function notice($message) {
+            self::log($message, Console::LOG_NOTICE);
         }
-        
         
         /**
          * Add a warning log
         **/
-        public static function warning($log) {
-            self::log($log, Console::LOG_WARNING);
+        public static function warning($message) {
+            self::log($message, Console::LOG_WARNING);
         }
-        
         
         /**
          * Add a deprecated log
         **/
-        public static function deprecated($log) {
-            self::log($log, Console::LOG_DEPRECATED);
+        public static function deprecated($message) {
+            self::log($message, Console::LOG_DEPRECATED);
         }
-        
         
         /**
          * Add an error log
         **/
-        public static function error($log) {
-           self::log($log, Console::LOG_ERROR); 
+        public static function error($message) {
+           self::log($message, Console::LOG_ERROR); 
         }
         
         /**
          * Add a fatal error log
         **/
-        public static function fatal($log) {
-            self::log($log, Console::LOG_ERROR, true);
+        public static function fatal($message) {
+            self::log($message, Console::LOG_ERROR, true);
         }
         
         /**
@@ -114,7 +134,7 @@
                 
                 foreach(self::$logs as $i => $log) {
                                 
-                    $row = self::$format . "\r\n";
+                    $row = CONSOLE_LOG_FORMAT . "\r\n";
                     foreach($log as $param => $value) {                            
                         $row = str_replace(":$param", $value, $row);
                     }
@@ -141,12 +161,12 @@
             /**
              * Send fatal errors by e-mail
             **/
-            if(!empty($fatals) && !empty(self::$emails)):
-                $from = 'debug@'.SERVER_DOMAIN;
+            if(!empty($fatals) && defined(CONSOLE_FATAL_EMAILS) && CONSOLE_FATAL_EMAILS != null):
+                $emails = explode(' ', CONSOLE_FATAL_EMAILS);
                 $mail = new mail('['.SERVER_DOMAIN.'] Fatal error (log)');
                 $mail->from('debug@'.SERVER_DOMAIN, 'Debug', 'Automatic email. Do not respond.');
-                $mail->to(self::$emails[0]);
-                $mail->Cc(self::$emails);
+                $mail->to($emails[0]);
+                $mail->Cc($emails);
                 $mail->content($fatals);
                 $mail->send();
             endif;

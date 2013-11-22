@@ -9,11 +9,11 @@
 	/**
      * Return absolute URL path to the string parameter
     **/
-	function path($string = null, $protocol = SYSTEM_DEFAULT_PROTOCOL) {
+	function path($string = null, $cdomain = false) {
 		if(substr($string, 0, 1) == '/'):
-			return $protocol.SYSTEM_ADDR."$string";
-		else :
-			return $protocol.SYSTEM_ADDR."/$string";
+			return SYSTEM_DEFAULT_PROTOCOL.SYSTEM_ADDR."$string";
+		else:
+			return SYSTEM_DEFAULT_PROTOCOL.SYSTEM_ADDR."/$string";
 		endif;
 	}
 	
@@ -83,6 +83,28 @@
 	    
 	    return $array;
 	}
+
+    
+    /**
+     * Order array by $index
+    **/
+    function array_ksort($array, $index, $ascending = false) {
+        $ordered = array();
+        foreach($array as $key => $item){
+            $ordered[$item['date'].$key] = $item;
+        }
+        ksort($ordered);
+        
+        $array = array();
+        foreach($ordered as $item){
+            $array[]= $item;
+        }
+        
+        if($ascending) 
+            $array = array_reverse($array);
+        
+        return $array;
+    }
 
 
     /**

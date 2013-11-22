@@ -16,11 +16,12 @@
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
     const SERVER_DOMAIN                     = 'domain.tld'; // Server domain name or IP address
+    const SERVER_DOMAIN_ALIAS               = '172.0.0.1'; // Server alias domains (separate with spaces)
     const SYSTEM_DIRECTORY_PATH             = '/wok'; // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     
 	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
-    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN'; // System accepted languages
+    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN'; // System accepted languages (separate with commas)
     $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
     define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
 

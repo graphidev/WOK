@@ -16,6 +16,7 @@
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
     const SERVER_DOMAIN                     = 'wok.loc'; // Server domain name or IP address
+    const SERVER_DOMAIN_ALIAS               = '172.0.0.1'; // Server alias domains (separate with spaces)
     const SYSTEM_DIRECTORY_PATH             = ''; // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     
@@ -23,6 +24,18 @@
     const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN'; // System accepted languages
     $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
     define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
+    
+    /**
+     * Cookies & session
+    **/
+    const MAX_COOKIES_LIFETIME          = 15552000; // Max cookies life time
+
+    /**
+     * Console settings (logs)
+    **/
+    const CONSOLE_LOG_FORMAT            = '[:time] [:type] :message'; // Can contains : time, type, message, file, line
+    const CONSOLE_FATAL_EMAILS          = 'sebastien@graphidev.fr'; // Separate e-mails with spaces
+    const CONSOLE_HANDLER_LEVEL         = E_ALL; // Errors that must be handled (default: E_ALL, false to disallow handling)
 
     /**
      *	Security constants

@@ -41,8 +41,10 @@
             Cookie::set('language', self::get('language'));
             
             // Id
-            if(!self::has('uniqid'))
-                self::set('uniqid', uniqid('id_', true));
+            if(!self::has('uniqid')):
+                self::set('uniqid', Cookie::exists('uniqid') ? Cookie::get('uniqid') : uniqid('id_', true));
+                Cookie::set('uniqid', self::get('uniqid'));
+            endif;
             
         }
         
@@ -53,7 +55,7 @@
             if(!self::isLogged()):
                 self::set('id', !empty($id) ? id : uniqid());
                 if($persistant)
-                    Cookie::set('session', self::get('id'), true);
+                    Cookie::set('session', self::get('id'), null, true, true);
             endif;
         }
         
@@ -77,6 +79,8 @@
          * Log out user
         **/ 
         public static function logout() {
+            Cookie::destroy('session');
+            self::delete('id');
             session_unset();
             session_destroy();
         }
@@ -125,7 +129,7 @@
          * Delete a session information 
         **/
         public static function delete($parameter) {
-            unset($_SESSION[$parameter]);  
+            unset($_SESSION[$parameter]);
         }
         
         

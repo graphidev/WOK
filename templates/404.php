@@ -1,1 +1,1 @@
-404
+<?php echo _e('errors:e404.title'); ?>

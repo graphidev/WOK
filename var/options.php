@@ -5,4 +5,10 @@
      * It allow you to add some configuration constants and functions
     **/
     
+
+    function _e($path, $data = array()) {
+        return Locales::_e($path, $data);
+    }
+
+
 ?>

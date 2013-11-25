@@ -1,7 +1,6 @@
 .DS_Store
 var/settings.php
 files/tmp/*
-files/*
 templates/*
 var/tmp/*
 var/logs/*

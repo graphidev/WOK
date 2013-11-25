@@ -4,4 +4,5 @@ files/tmp/*
 files/*
 templates/*
 var/tmp/*
+var/logs/*
 controllers/*

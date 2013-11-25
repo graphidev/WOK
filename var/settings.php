@@ -15,9 +15,9 @@
      * This informations are required for some functions and other conditions.
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
-    const SERVER_DOMAIN                     = 'wok.loc'; // Server domain name or IP address
-    const SERVER_DOMAIN_ALIAS               = '172.0.0.1'; // Server alias domains (separate with spaces)
-    const SYSTEM_DIRECTORY_PATH             = ''; // Relative system directory path
+    const SERVER_DOMAIN                     = 'localhost'; // Server domain name or IP address
+    const SERVER_DOMAIN_ALIAS               = '172.0.0.1 wok.loc'; // Server alias domains (separate with spaces)
+    const SYSTEM_DIRECTORY_PATH             = '/wok'; // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     
 	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone

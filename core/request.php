@@ -32,40 +32,7 @@
                 self::$query->ajax          = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
                 self::$query->range         = (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);
                 self::$query->format        = pathinfo($static, PATHINFO_EXTENSION);
-                            
-                /**
-                 * Define session and cookie informations
-                **/
-                $lifetime = (ini_get('session.cookie_lifetime') ? ini_get('session.cookie_lifetime') : ini_get('session.maxlifetime'));
-                session_set_cookie_params($lifetime, '/', null, self::$query->secured, true);
-                session_start(); // Start sessions
-            
-                /**
-                 * Define request language
-                **/
-                $accepted_languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
-                if(Session::language() != false):
-                    self::$query->language = Session::get('language');
-                                
-                
-                elseif(!empty($_SERVER['HTTP_ACCEPT_LANGUAGE'])):
-                    $languages = explode(',', $_SERVER['HTTP_ACCEPT_LANGUAGE']);
-                    foreach($languages as $i => $language) {
-                        $code = str_replace('-', '_', $language);
-                        if(in_array($code, $accepted_languages)):
-                            self::$query->language = $code;
-                            break;
-                        else:
-                            self::$query->language = SYSTEM_DEFAULT_LANGUAGE;
-                        endif;
-                    }
-                    Session::language(self::$language);
-                endif;
-                
-                if(empty(self::$language)):
-                    self::$query->language = SYSTEM_DEFAULT_LANGUAGE;
-                endif;
-                            
+                    
                 /**
                  * Define request parameters
                 **/

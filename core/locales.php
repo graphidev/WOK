@@ -63,7 +63,7 @@
         public static function _e($path, $data = array(), $language = null) {
             if(empty($language)):
                 if(empty(self::$language))
-                    self::$language = (\Request::get('language') !== false ? \Request::get('language') : SYSTEM_DEFAULT_LANGUAGE);
+                    self::$language = (\Session::get('language') !== false ? \Session::get('language') : SYSTEM_DEFAULT_LANGUAGE);
             
                 $language = self::$language;
             endif;

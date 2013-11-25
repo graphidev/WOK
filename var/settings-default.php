@@ -11,7 +11,7 @@
 
 
     /**
-     * Sytem informations
+     * System informations
      * This informations are required for some functions and other conditions.
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
@@ -24,6 +24,19 @@
     const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN'; // System accepted languages (separate with commas)
     $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
     define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
+    
+     /**
+     * Cookies & session
+    **/
+    const MAX_COOKIES_LIFETIME          = 15552000; // Max cookies life time
+
+    /**
+     * Console settings (logs)
+    **/
+    const CONSOLE_LOG_FORMAT            = '[:time] [:type] :message'; // Can contains : time, type, message, file, line
+    const CONSOLE_FATAL_EMAILS          = 'debug@domain.tld'; // Separate e-mails with spaces
+    const CONSOLE_HANDLER_LEVEL         = E_ALL; // Errors that must be handled (default: E_ALL, false to disallow handling)
+
 
     /**
      *	Security constants

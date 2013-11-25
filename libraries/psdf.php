@@ -22,14 +22,27 @@
         public static function richtext($input) {
             if(!empty(self::$parsers['richtext']))
                 return self::$parsers['richtext']($input);
-
+            
+            /**
+             * italic {abcd} <i>abcd</i> i{abcd} 
+             * bold *{abcd}*
+             * underscored _{abcd}_
+             * striked -{abcd}-
+             * exp ^{abcd}^
+             * sub  \{abcd}\
+             * link [text=>link(title)] [text=>link] [link]
+             * link [http://graphidev.fr/a-propos "This is a link to my website"]
+             * quote "abcd" / «abcd»
+             * mark #{abcd}# !{abcd}!
+            **/
+            
             $input = preg_replace('#("|«)(.+)(»|")#isU', '<q>$2</q>', $input); // quote "abdc"
             
-            $input = preg_replace('#\[(.+)=>(.+) \((.+)\)\]#isU', ' <a href="$2" title="$3">$1</a> ', $input); // Full link (+title)
-            $input = preg_replace('#\[(.+)=>(.+)\]#isU', ' <a href="$2">$1</a> ', $input); // Normal link (address + legend)
-            $input = preg_replace('#\[([a-z]{3,}://(.+))\]#isU', ' <a href="$1">$1</a> ', $input); // Default link (address as legend)
+            $input = preg_replace('#\[(.+)=>(.+) \((.+)\)\]#isU', ' <a href="$2" title="$3">$1</a> ', $input); // lien complet)
+            $input = preg_replace('#\[(.+)=>(.+)\]#isU', ' <a href="$2">$1</a> ', $input); // lien avec texte
+            $input = preg_replace('#\[([a-z]{3,}://(.+))\]#isU', ' <a href="$1">$1</a> ', $input); // lien seul
     
-            $input = preg_replace('# ([a-z]{3,}://(.+)) #isU', ' <a href="$1">$1</a> ', $input); // Parse alone links
+            $input = preg_replace('# ([a-z]{3,}://(.+)) #isU', ' <a href="$1">$1</a> ', $input); // lien seul
             
             $input = preg_replace("#<i>(.+)</i>#isU", '<em>$1</em>', $input); // italic //abcd// 
             $input = preg_replace('#<b>(.+)</b>#isU', '<strong>$1</strong>', $input); // bold **abcd** 
@@ -37,6 +50,7 @@
             $input = preg_replace('#<s>(.+)</s>#isU', '<del>$1</del>', $input); // striked
             
             $input = preg_replace('#{(.+)}#isU', '<mark>$1</mark>', $input); // marked {abcd}
+            
             
             $input = preg_replace('#\^/(.+) #isU', '<sup>$1</sup> ', $input); // exp ^{abcd}
             $input = preg_replace('#_/(.+) #isU', '<sub>$1</sub> ', $input); // ind _{abcd}

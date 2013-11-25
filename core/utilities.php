@@ -91,7 +91,7 @@
     function array_ksort($array, $index, $ascending = false) {
         $ordered = array();
         foreach($array as $key => $item){
-            $ordered[$item['date'].$key] = $item;
+            $ordered[$item[$index].$key] = $item;
         }
         ksort($ordered);
         
@@ -199,7 +199,5 @@
         if($by == 0) return false;
         return ($number % $by == 0 ? true : false);
     }
-
-
 
 ?>

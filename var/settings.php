@@ -15,8 +15,9 @@
      * This informations are required for some functions and other conditions.
     **/
     const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
-    const SERVER_DOMAIN                     = 'locahost'; // Server domain name or IP address
-    const SERVER_DOMAIN_ALIAS               = ''; // Server alias domains (separate with spaces)
+
+    const SERVER_DOMAIN                     = 'localhost'; // Server domain name or IP address
+    const SERVER_DOMAIN_ALIAS               = '172.0.0.1 wok.loc'; // Server alias domains (separate with spaces)
     const SYSTEM_DIRECTORY_PATH             = '/wok'; // Relative system directory path
 	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
     

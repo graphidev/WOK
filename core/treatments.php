@@ -77,7 +77,7 @@
      * Remove Javascript actions in a string
     **/
     function strip_scripts($string, $exceptions = array()) {
-		$events = array('onabort', 'onblur', 'onchange', 'onclick', 'ondblclick', 'ondrapdrop', 'onerror', 'onfocus', 'onkeydown', 'onkeypress', 'onkeyup', 'onload', 'onmouseover', 'onmouseout', 'onreset', 'onresize', 'onselect', 'onsubmit', 'onunload');
+		$events = array('onabort', 'onblur', 'onchange', 'onclick', 'ondblclick', 'ondragdrop', 'onerror', 'onfocus', 'onkeydown', 'onkeypress', 'onkeyup', 'onload', 'onmouseover', 'onmouseout', 'onreset', 'onresize', 'onselect', 'onsubmit', 'onunload');
 		
 		foreach($events as $i => $name) {
 			if(in_array($name, $exceptions)):

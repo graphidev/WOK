@@ -92,7 +92,7 @@
             if(empty($this->response)):
                 if(empty($this->options[CURLOPT_USERAGENT])):
                     $curl = curl_version();
-                    $this->options[CURLOPT_USERAGENT] = 'WOK/'.WOK_VERSION.' cURL/'.$curl['version'] . ' ('.php_uname('s').' '.php_uname('r').' '.php_uname('m').')' . ' PHP/'.PHP_VERSION;
+                    $this->options[CURLOPT_USERAGENT] = 'cURL/'.$curl['version'] . ' ('.php_uname('s').' '.php_uname('r').' '.php_uname('m').')' . ' PHP/'.PHP_VERSION;
                 endif;
             
                 curl_setopt_array($this->interface, $this->options);

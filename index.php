@@ -9,7 +9,7 @@
     /**
      * Foremost, we'll check if all the folders which must be writable are writable
     **/
-    if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS)) || !@is_writable(root(PATH_FILES)) || !@is_writable(root(PATH_TMP_FILES))):
+    if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS))):
         $response = new Response;
         $response->view('503', 503);
         trigger_error('Bootstrap : not writable system folders', E_USER_ERROR);

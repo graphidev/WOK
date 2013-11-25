@@ -42,7 +42,7 @@
             
             // Id
             if(!self::has('uniqid')):
-                self::set('uniqid', Cookie::exists('uniqid') ? Cookie::get('uniqid') : uniqid('id_', true));
+                self::set('uniqid', Cookie::exists('uniqid') ? Cookie::get('uniqid') : uniqid(sha1(time())));
                 Cookie::set('uniqid', self::get('uniqid'));
             endif;
             

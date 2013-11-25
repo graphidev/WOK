@@ -1,18 +1,16 @@
 <?php
-
+    
     class Token {
         
         /**
          * Generate a token
         **/
         public static function generate($name) {
-            $token = uniqid(rand());
-			Session::set('tokens', array(
-                $name => array(
-                    'key' => $token,
-                    'time' => time()
-                )
-            ));
+            $token = uniqid(sha1(time()));
+			$_SESSION['tokens'][$name] = array(
+                'key' => $token,
+                'time' => time()
+            );
 			return $token;
         }
         
@@ -34,7 +32,7 @@
          * Destroy token
         **/
         public static function destroy($name) {
-            
+            unset($_SESSION['tokens'][$name]);
         }
         
         /**
@@ -42,7 +40,7 @@
         **/
         private static function _get($name) {
             $tokens = Session::has('tokens') ? Session::get('tokens') : array();
-            
+                        
             if(!empty($tokens[$name]))
                 return $tokens[$name];
             else

@@ -38,7 +38,11 @@
                 }
             endif;
                 
-            Cookie::set('language', self::get('language'));            
+            Cookie::set('language', self::get('language'));
+            
+            // Id
+            if(!self::has('uniqid'))
+                self::set('uniqid', uniqid('id_', true));
             
         }
         
@@ -46,9 +50,11 @@
          * Set user as logged in
         **/
         public static function login($id = null, $persistant = true) {
-            self::set('id', !empty($id) ? id : uniqid());
-            if($persistant)
-                Cookie::set('session', self::get('id'), true);
+            if(!self::isLogged()):
+                self::set('id', !empty($id) ? id : uniqid());
+                if($persistant)
+                    Cookie::set('session', self::get('id'), true);
+            endif;
         }
         
         /**
@@ -104,7 +110,7 @@
             if(self::has('id', true)):
                 return self::get('id'); 
             else:
-                
+                return self::get('uniqid');
             endif;
         }
         

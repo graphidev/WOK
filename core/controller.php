@@ -11,7 +11,7 @@
         /**
          * Call a controller action
         **/
-        public function call($controller, $action = null) {
+        public static function call($controller, $action = null) {
             $controller = "\\Controllers\\$controller";
             $controller = new $controller;
             
@@ -22,18 +22,18 @@
         /**
          * Assign a controller (function)
         **/
-        public function assign($conditions, $action, $strict = false) {
+        public static function assign($conditions, $action, $strict = false) {
             self::$queue[] = array($conditions, $action, $strict);
         }
         
         /**
          * Invoke the queue
         **/
-        public function invoke() {
+        public static function invoke() {
             foreach(self::$queue as $index => $value){
                 if(self::$state):
                     list($conditions, $action, $strict) = $value;
-                    self::$state = !$this->execute($conditions, $action, $strict);
+                    self::$state = !self::execute($conditions, $action, $strict);
                 endif;
             }
         }
@@ -41,7 +41,7 @@
         /** 
          * Execute an assigned controller
         **/
-        private function execute($conditions, $action, $strict = false) {
+        private static function execute($conditions, $action, $strict = false) {
              if(is_bool($conditions)):
                 if($conditions): 
                     return $action(Request::get('URI')) or $strict; 
@@ -60,7 +60,7 @@
             elseif(is_array($conditions)):
                 $end = false;
                 foreach($conditions as $index => $value ) {
-                    $end = $this->execute($value, $action, Request::get('URI'));
+                    $end = self::execute($value, $action, Request::get('URI'));
                 }
                 return $end;
                         

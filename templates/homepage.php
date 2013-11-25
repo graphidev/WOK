@@ -1,3 +1,5 @@
+[<?php echo path(); ?>]
+
 It works !
 
 <?php 

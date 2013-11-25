@@ -5,3 +5,4 @@ templates/*
 var/tmp/*
 var/logs/*
 controllers/*
+locales/*

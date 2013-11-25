@@ -9,14 +9,13 @@
         
         protected static $query         = false;
         protected static $parameters    = array();
-        protected static $language      = SYSTEM_DEFAULT_LANGUAGE;
         
         /**
          * Build request
         **/
         public static function init() {
             if(!self::$query):
-                $query          = str_replace(SYSTEM_DIRECTORY_PATH, '', $_SERVER['REQUEST_URI']);
+                $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
                 $static         = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
                 $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
                 
@@ -58,7 +57,7 @@
                 **/            
                 foreach(parent::$manifest as $i => $request) {
                     if(preg_match('#^'.$request['url'].'$#isU', self::$query->URI) 
-                       && ($request['domain'] == self::$query->domain || (self::$query->domain != SERVER_DOMAIN && in_array($request['domain'], explode(' ', SERVER_DOMAIN_ALIAS))))):
+                       && ($request['domain'] == self::$query->domain || (self::$query->domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))):
                         $break = (count($request['parameters']) ? false : true);
                         foreach($request['parameters'] as $name => $param) {
                             if($param['type'] == 'string' && in_array(self::get('method'), array('GET', 'POST'))):

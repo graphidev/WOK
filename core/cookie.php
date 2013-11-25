@@ -9,7 +9,10 @@
             if($secured)
                 $value = self::_encrypt($value);
             
-            setcookie($name, $value, time()+MAX_COOKIES_LIFETIME, '/', '.', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'), !$public);
+            if(empty($duration)) // Set default cookie lifetime
+                $duration = COOKIES_LIFETIME;
+            
+            setcookie($name, $value, time()+$duration, '/', '.', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'), !$public);
         }
                 
         /**

@@ -40,7 +40,7 @@
                 
                 foreach($requests as $case) {
                     $url = $case->getAttribute('url');
-                    $domain = ($case->hasAttribute('domain') ? str_replace('~', str_replace('www.', '', SERVER_DOMAIN), $case->getAttribute('domain')) : SERVER_DOMAIN);
+                    $domain = ($case->hasAttribute('domain') ? str_replace('~', str_replace('www.', '', SYSTEM_DOMAIN), $case->getAttribute('domain')) : SYSTEM_DOMAIN);
                     $method = ($case->hasAttribute('method') ? strtoupper($case->getAttribute('method')) : 'GET');
                     $action = ($case->hasAttribute('action') ? $case->getAttribute('action') : null);
                     $count = 1;

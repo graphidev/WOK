@@ -163,8 +163,8 @@
             **/
             if(!empty($fatals) && defined(CONSOLE_FATAL_EMAILS) && CONSOLE_FATAL_EMAILS != null):
                 $emails = explode(' ', CONSOLE_FATAL_EMAILS);
-                $mail = new mail('['.SERVER_DOMAIN.'] Fatal error (log)');
-                $mail->from('debug@'.SERVER_DOMAIN, 'Debug', 'Automatic email. Do not respond.');
+                $mail = new mail('['.SYSTEM_DOMAIN.'] Fatal error (log)');
+                $mail->from('debug@'.SYSTEM_DOMAIN, 'Debug', 'Automatic email. Do not respond.');
                 $mail->to($emails[0]);
                 $mail->Cc($emails);
                 $mail->content($fatals);

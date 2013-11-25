@@ -66,46 +66,44 @@
         /**
          * Customize settings
         **/
-        $manual = strtoupper(input("Would you customize your setup ? (Y/N) : "));
+        $manual = strtoupper(input("Would you want to customize your setup ? (Y/N) : "));
         if(empty($manual) || $manual == 'Y'):
             
             echo "* Press enter (empty value) to get the calculated value\n";
             
-            $input_protocol = input("-- Default access protocol [http/https] > ").'://';
+            $input_protocol = input("-- Default access protocol [http/https] > ");
             $input_domain = input("-- Default access domain [$domain] > ");
             $input_directory = input("-- Default access subdirectory [$directory] > ");
             $input_timezone = input("-- Server timezone [$timezone] > ");   
             
             $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
-            $protocol = ($input_protocol != '://' ? $input_protocol.'://' : $protocol);
+            $protocol = (!empty($input_protocol) ? $input_protocol.'://' : $protocol);
             $domain = (!empty($input_domain) ? $input_domain : $domain);
             $directory = (!empty($input_directory) ? $input_directory : null);
-        
+            
+            /**
+             * Configure languages
+            **/
+            echo "Which languages are supported in your project ?\n";
+            echo "* The languages codes must correspond to the ISO 639 norm (country_LANGUAGE)\n";
+            echo "* The program will ask you a new language until you press Enter (empty value)\n";
+            echo "* If you won't define any language, the 'en_EN' code will be applied\n";
+                
+            $languages = array();
+            $new = true;
+            while(strtolower($new) != '') {
+                $new = input("-- Add language > ");
+                if(!empty($new))
+                    $languages[] = $new;
+            }
+            if(count($languages) == 0)
+                $languages = array('en_EN');
+            
+            echo "\n";
+
         endif;
     
         $url = $protocol.$domain.$directory;
-        
-        echo "\n";
-        
-    
-    
-        /**
-         * Configure languages
-        **/
-        echo "Which languages are supported in your project ?\n";
-        echo "* The languages codes must correspond to the ISO 639 norm (country_LANGUAGE)\n";
-        echo "* The program will ask you a new language until you press Enter (empty value)\n";
-        echo "* If you won't define any language, the 'en_EN' code will be applied\n";
-            
-        $languages = array();
-        $new = true;
-        while(strtolower($new) != '') {
-            $new = input("-- Add language > ");
-            if(!empty($new))
-                $languages[] = $new;
-        }
-        if(count($languages) == 0)
-            $languages = array('en_EN');
         
         echo "\n";
     
@@ -117,16 +115,16 @@
     echo "Generate configuration file ...\n";
     $settings = file_get_contents(ACCESS_PATH.PATH_VAR.'/settings-default.php');
 
-    $settings = setSetting('SYSTEM_DEFAULT_PROTOCOL', $protocol, $settings);
-    $settings = setSetting('SERVER_DOMAIN', $domain, $settings);
-    $settings = setSetting('SYSTEM_DIRECTORY_PATH', $directory, $settings);
+    $settings = setSetting('SYSTEM_PROTOCOL', $protocol, $settings);
+    $settings = setSetting('SYSTEM_DOMAIN', $domain, $settings);
+    $settings = setSetting('SYSTEM_DIRECTORY', $directory, $settings);
     $settings = setSetting('SYSTEM_TIMEZONE', $timezone, $settings);
-    $settings = setSetting('SYSTEM_ACCEPT_LANGUAGES', implode(',', $languages), $settings);
+    $settings = setSetting('SYSTEM_LANGUAGES', implode(' ', $languages), $settings);
+    $settings = setSetting('SYSTEM_DEFAULT_LANGUAGES', $languages[0], $settings);
 
-    echo "\nGenerate crypt salts ...\n";
-    $settings = setSetting('SESSION_CRYPT', sha1(uniqid('sess_')), $settings);
-    $settings = setSetting('TOKEN_SALT', sha1(uniqid('tok_')), $settings);
-    $settings = setSetting('COOKIE_CRYPT', sha1(uniqid('cook_')), $settings);
+    $settings = setSetting('SESSIONS_SALT', sha1(uniqid('sess_')), $settings);
+    $settings = setSetting('TOKENS_SALT', sha1(uniqid('tok_')), $settings);
+    $settings = setSetting('COOKIES_SALT', sha1(uniqid('cook_')), $settings);
     
     if(!file_exists(ACCESS_PATH.PATH_VAR.'/settings.php')):
         $file = fopen(ACCESS_PATH.PATH_VAR.'/settings.php', 'w+');
@@ -135,14 +133,12 @@
 
     file_put_contents(ACCESS_PATH.PATH_VAR.'/settings.php', $settings);
 
-    echo "\nCreate locales folders (if necessary) ...\n";
+    echo "\nGenerate required files and folders ...\n";
     foreach($languages as $i => $language) {
         if(@mkdir(ACCESS_PATH.PATH_LOCALES."/$language"))
-            echo "-- /languages/$language\n";
+            echo "-- -- /locales/$language\n";
     }
-    
-    echo "\n";
-    
+        
     /**
      * Generate .htaccess file
     **/
@@ -153,13 +149,13 @@
         fclose($file);
     endif;
     file_put_contents(ACCESS_PATH.'/.htaccess', $htaccess);
-    echo "Generate .htaccess file ...\n";
+    echo "-- -- /.htaccess\n";
     
     echo "\n";
 
     /**
      * End of WOK setup
     **/
-    echo "* We are happy yo say that the configuration is done (if no errors appears).\n";
-    echo "* We really hope that you will love WOK and use it for many of your projects. \n";
+    echo "* The configuration is now ready.\n";
+    echo "* Thank you for considering WOK power. \n\n\n";
 ?>

@@ -22,6 +22,9 @@
             $token = self::_get($name);
             if(!$token) return false;
             
+            if(empty($lifetime))
+                $lifetime = TOKENS_LIFETIME;
+            
             $elapsed = time() - $token['time'];
             
             return ($key == $token['key'] && $elapsed <= $lifetime) ? true : false;

@@ -55,7 +55,7 @@
             if(!self::isLogged()):
                 self::set('id', !empty($id) ? id : uniqid());
                 if($persistant)
-                    Cookie::set('session', self::get('id'), null, true, true);
+                    Cookie::set('session', self::get('id'), SESSIONS_LIFETIME, true, true);
             endif;
         }
         

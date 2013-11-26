@@ -1,3 +1,18 @@
+<?php
+    $result = Cookie::set('blabla', uniqid(), null, true, false);
+    echo $result ? 'Cookie sent' : 'Error'; 
+    echo '<br />';
+    //setcookie('test', 'tralala', time()+3600);
+    if(Cookie::exists('blabla'))
+        echo Cookie::get('blabla', true); 
+    else
+        echo 'Cookie doesn\'t exists';
+?>
+
+
+
+<?php exit; ?>
+
 [<?php echo path(); ?>]
 
 It works !

@@ -79,7 +79,7 @@
             $timezone = (!empty($input_timezone) ? $input_timezone : $timezone);
             $protocol = (!empty($input_protocol) ? $input_protocol.'://' : $protocol);
             $domain = (!empty($input_domain) ? $input_domain : $domain);
-            $directory = (!empty($input_directory) ? $input_directory : null);
+            $directory = (!empty($input_directory) ? $input_directory : $directory);
             
             /**
              * Configure languages
@@ -122,9 +122,9 @@
     $settings = setSetting('SYSTEM_LANGUAGES', implode(' ', $languages), $settings);
     $settings = setSetting('SYSTEM_DEFAULT_LANGUAGES', $languages[0], $settings);
 
-    $settings = setSetting('SESSIONS_SALT', sha1(uniqid('sess_')), $settings);
-    $settings = setSetting('TOKENS_SALT', sha1(uniqid('tok_')), $settings);
-    $settings = setSetting('COOKIES_SALT', sha1(uniqid('cook_')), $settings);
+    $settings = setSetting('SESSIONS_SALT', substr(sha1(uniqid('sess_')), -20), $settings);
+    $settings = setSetting('TOKENS_SALT', substr(sha1(uniqid('tok_')), -20), $settings);
+    $settings = setSetting('COOKIES_SALT', substr(sha1(uniqid('cook_')), -20), $settings);
     
     if(!file_exists(ACCESS_PATH.PATH_VAR.'/settings.php')):
         $file = fopen(ACCESS_PATH.PATH_VAR.'/settings.php', 'w+');

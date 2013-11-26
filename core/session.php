@@ -15,10 +15,9 @@
             
             // Is secured request
             self::$secured = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
-
-
+            
             // Language
-            $accepted_languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
+            $accepted_languages = explode(',', SYSTEM_LANGUAGES);
             if(self::has('language') && in_array(self::get('language'), $accepted_languages)):
                 self::language(self::get('language'));
             
@@ -134,7 +133,7 @@
         
         
         public static function language($set = null) {
-            if(!empty($set)):
+            if(!empty($set)):   
                 self::set('language', $set);
                 Cookie::set('language', $set);
             else:

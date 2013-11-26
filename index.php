@@ -35,7 +35,7 @@
     /**
      * Set predefined controllers
     **/
-    Controller::assign(Request::get('action') ? true : false, function() use($controller) {
+    Controller::assign(Request::get('action') ? true : false, function() {
         list($name, $action) = explode(':', Request::get('action'));
         if(file_exists(root(PATH_CONTROLLERS."/$name.ctrl.php"))):
             return Controller::call($name, $action);

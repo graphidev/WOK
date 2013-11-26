@@ -2,6 +2,7 @@
     
     class Token {
         
+        
         /**
          * Generate a token
         **/
@@ -38,6 +39,7 @@
             unset($_SESSION['tokens'][$name]);
         }
         
+        
         /**
          * Get token
         **/
@@ -49,6 +51,7 @@
             else
                 return false;
         }
+        
         
     }
 

@@ -35,21 +35,21 @@
     /**
      * Tokens configuration
     **/
-    const TOKENS_LIFETIME           = 18000; // Max cookies lifetime (default: 5 minutes [18000])
+    const TOKENS_LIFETIME           = 300; // Max cookies lifetime (default: 5 minutes [18000])
     const TOKENS_SALT               = '9605db0b9613d7294811ce17b1abfefdb2661de6'; // sha1(uniqid('tok_', true)); 
 
 
     /**
      * Sessions configuration
     **/
-    const SESSIONS_LIFETIME         = 77760000; // Max sessions lifetime (default: 15 days [77760000])
+    const SESSIONS_LIFETIME         = 1296000; // Max sessions lifetime (default: 15 days [77760000])
     const SESSIONS_SALT             = 'bcbab5b629248f5078c82efa04f1b1e955b0dd51'; // sha1(uniqid('sess_', true));
 
 
     /**
      * Cookies configuration
     **/
-    const COOKIES_LIFETIME          = 964224000; // Max cookies lifetime (default: 6 months [964224000])
+    const COOKIES_LIFETIME          = 13392000; // Max cookies lifetime (default: 6 months [964224000])
     const COOKIES_SALT              = '0a778af1988aa9861bba90be07e815dc22adb324';  // sha1(uniqid('cook_', true));
 	
 

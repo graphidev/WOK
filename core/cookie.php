@@ -49,7 +49,6 @@
         **/
         private static function _encrypt($value) {
             return strrev($value);
-            //return $value;
         }
         
         /**

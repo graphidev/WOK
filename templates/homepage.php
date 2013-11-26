@@ -1,5 +1,5 @@
 <?php
-    $result = Cookie::set('blabla', uniqid(), null, true, false);
+    $result = Cookie::set('blabla', 'lalala', null, true, false);
     echo $result ? 'Cookie sent' : 'Error'; 
     echo '<br />';
     //setcookie('test', 'tralala', time()+3600);
@@ -8,7 +8,6 @@
     else
         echo 'Cookie doesn\'t exists';
 ?>
-
 
 
 <?php exit; ?>

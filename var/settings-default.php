@@ -53,6 +53,5 @@
     const COOKIES_SALT                  = '1b44fd3dc1b69ecc4db8';  // Encryption key
     const COOKIES_CRYPT_MODE            = MCRYPT_MODE_CBC; // Encription mode
     const COOKIES_CRYPT_ALGORITHM       = MCRYPT_RIJNDAEL_256; // Encription algorithm
-    define('COOKIES_CRYPT_IV', substr(sha1(COOKIES_SALT), -mcrypt_get_iv_size(COOKIES_CRYPT_ALGORITHM, COOKIES_CRYPT_MODE)));	
 
 ?>

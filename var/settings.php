@@ -16,7 +16,7 @@
     **/
     const SYSTEM_PROTOCOL               = 'http://'; // System default protocol
     const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address
-    const SYSTEM_DOMAIN_ALIAS           = 'wok.loc'; // Server alias domains (separate with spaces)
+    const SYSTEM_DOMAIN_ALIAS           = ''; // Server alias domains (separate with spaces)
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
 
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
@@ -52,8 +52,6 @@
     const COOKIES_LIFETIME              = 13392000; // Max cookies lifetime (default: 6 months [964224000])
     const COOKIES_SALT                  = '7b0dff4c1df29468f29c';  // Encryption key
     const COOKIES_CRYPT_MODE            = MCRYPT_MODE_CBC; // Encription mode
-    const COOKIES_CRYPT_ALGORITHM       = MCRYPT_RIJNDAEL_256; // Encription algorithm
-    define('COOKIES_CRYPT_IV', substr(sha1(COOKIES_SALT), -mcrypt_get_iv_size(COOKIES_CRYPT_ALGORITHM, COOKIES_CRYPT_MODE)));
-	
+    const COOKIES_CRYPT_ALGORITHM       = MCRYPT_RIJNDAEL_256; // Encription algorithm	
 
 ?>

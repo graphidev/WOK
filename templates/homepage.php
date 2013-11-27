@@ -1,8 +1,38 @@
 <?php
-    $result = Cookie::set('blabla', 'lalala', null, true, false);
+    
+    $data = array('a', 'b', 'c');
+    $data = array(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), date('Y-m-d H:i:s'));
+
+    $loop = new loop($data);
+    
+    if($loop->have_entries()) echo $loop->date('d/m/Y').'<br>';
+    
+    while($loop->have_entries()):
+
+        echo '['.$loop->index(true).'/'.$loop->total().'] '.$loop->entry().'<br />';
+
+        $loop->next_entry();
+
+    endwhile; 
+
+?>
+
+
+
+<?php 
+    exit;
+    Session::logout();
+    Session::login(null, true);
+
+    echo Session::id();
+
+?>
+
+<?php
+    exit;
+    $result = Cookie::set('blabla', 'lalala', null, true);
     echo $result ? 'Cookie sent' : 'Error'; 
     echo '<br />';
-    //setcookie('test', 'tralala', time()+3600);
     if(Cookie::exists('blabla'))
         echo Cookie::get('blabla', true); 
     else

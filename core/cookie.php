@@ -5,8 +5,7 @@
         /**
          * Define a cookie        
         **/
-        public static function set($name, $value, $duration = COOKIES_LIFETIME, $secured = false, $public = true) {
-            
+        public static function set($name, $value, $duration = COOKIES_LIFETIME, $secured = false) {
                                     
             if(empty($duration))
                 $duration = COOKIES_LIFETIME;
@@ -21,10 +20,10 @@
             
             $alias = explode(' ', SYSTEM_DOMAIN_ALIAS);
             foreach($alias as $i => $domain) {
-                setcookie($name, $value, $expire, $directory, $domain, $https, !$public);
+                setcookie($name, $value, $expire, $directory, $domain, $https, $secured);
             }
             
-            return setcookie($name, $value, $expire, $directory, SYSTEM_DOMAIN, $https, !$public);
+            return setcookie($name, $value, $expire, $directory, SYSTEM_DOMAIN, $https, $secured);
         }
                 
         /**
@@ -52,7 +51,15 @@
          * Delete a cookie
         **/
         public static function destroy($name) {
-            setcookie($name, null, time(), '/', '.', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on'), true);
+            $https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
+            $directory = SYSTEM_DIRECTORY != '' ? SYSTEM_DIRECTORY : '/'; 
+                        
+            $alias = explode(' ', SYSTEM_DOMAIN_ALIAS);
+            foreach($alias as $i => $domain) {
+                setcookie($name, '', time(), $directory, $domain, $https);
+            }
+            
+            return setcookie($name, '', time(), $directory, SYSTEM_DOMAIN, $https);
         }
         
         

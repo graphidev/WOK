@@ -1,8 +1,11 @@
 <?php
-
+    
     class Loop {
         
-        private $options = array();
+        private $options = array(
+            'recursive' => false,
+            'parser' => false
+        );
         private $entries = array();
         public $position = 0;
         public $total = 0;
@@ -42,7 +45,10 @@
          * Return the current entry
         **/
         public function entry() {
-            return $this->entries[$this->position];   
+            if($this->options['recursive'] && is_array($this->entries[$this->position]))
+                return new Loop($this->entries[$this->position], $this->options);
+            else
+                return $this->_parse($this->entries[$this->position]);   
         }
         
         /**
@@ -61,8 +67,9 @@
         
         
         /**
-         * Return a formated date/time 
-         * Require a formated datetime (e.g: YYYY-MM-DD)
+         * Return a formated date/time
+         * Require a pre-formated datetime (e.g: YYYY-MM-DD)
+         * Timestamp not allowed
         **/
         public function date($format = 'Y-m-d H:i:s', $field = null) {
             $time = (!empty($field) ? $this->field($field) : $this->entry());
@@ -76,8 +83,20 @@
          * Return a field of the current entry
         **/
         public function field($name) {
-            return $this->entries[$this->position][$name];   
+            return $this->_parse($this->entries[$this->position][$name]);   
         }
+        
+        /**
+         * Parse data according to parser option
+        **/
+        private function _parse($data) {
+            if(!empty($this->options['parser']) && is_callable($this->options['parser'], false))
+                return $this->options['parser']($data);
+                
+            else
+                return $data;
+        }
+        
    
     }
 

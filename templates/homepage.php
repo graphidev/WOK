@@ -1,19 +1,40 @@
 <?php
-    
+
     $data = array('a', 'b', 'c');
     $data = array(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), date('Y-m-d H:i:s'));
-
-    $loop = new loop($data);
     
-    if($loop->have_entries()) echo $loop->date('d/m/Y').'<br>';
+    $data = array(
+        $data,
+        $data,
+        $data
+    );
+
+    $options = array(
+        'recursive' => true ,
+        'parser' => function($data) {
+            return $data;   
+        }
+    );
+
+    $loop = new loop($data, $options);
+    
+    //if($loop->have_entries()) echo $loop->date('d/m/Y').'<br>';
     
     while($loop->have_entries()):
+        
+        $data = $loop->entry(); 
+        while($data->have_entries()):
+            echo '['.$data->index(true).'/'.$data->total().'] '.$data->entry().'<br />';
+            $data->next_entry();
 
-        echo '['.$loop->index(true).'/'.$loop->total().'] '.$loop->entry().'<br />';
+        endwhile;
+        echo '<br><br>';
+
+        
 
         $loop->next_entry();
 
-    endwhile; 
+    endwhile;
 
 ?>
 

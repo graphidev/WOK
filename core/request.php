@@ -53,50 +53,63 @@
                 endif;
                 
                 /**
-                 * Add URI parameters
-                **/            
+                 * Add URI parameters and action
+                **/
                 foreach(parent::$manifest as $i => $request) {
-                    if(preg_match('#^'.$request['url'].'$#isU', self::$query->URI) 
+
+                    if(($request['url'] == self::$query->URI || preg_match('#^'.$request['url'].'$#isU', self::$query->URI)) 
+                       && in_array(self::$query->method, $request['methods'])
                        && ($request['domain'] == self::$query->domain || (self::$query->domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))):
+                    
                         $break = (count($request['parameters']) ? false : true);
+                        $index = 1; // URI parameter index
+                        
+                        
                         foreach($request['parameters'] as $name => $param) {
-                            if($param['type'] == 'string' && in_array(self::get('method'), array('GET', 'POST'))):
-                                self::$parameters['URI'][$name] = preg_replace('#^'.$request['url'].'$#isU', '$'.$param['position'], self::get('URI'));
-                                if(!$param['optional']): 
-                                    $break = true; 
-                                else:
-                                    $break = false;
-                                endif;
-                            else:                                
-                                switch($request['method']) {
-                                    case 'POST':
-                                        if(!isset($_POST[$name]) && !$param['optional']):
-                                            $break = false;
-                                        else:
-                                            self::$parameters[$request['method']][$name] = $_POST[$name];
-                                            $break = true;
-                                        endif;
-                                    
-                                        break;
-                                    case 'GET':
-                                        if(!isset($_GET[$name]) && !$param['optional'])
-                                            $break = false;
-                                        else
-                                            self::$parameters[$request['method']][$name] = $_GET[$name];
-                                            $break = true;
-                                        break;
-                                    case 'FILES':
-                                        if(!isset($_FILES[$name]) && !$param['optional'])
-                                            $break = false;
-                                        else
-                                            self::$parameters[$request['method']][$name] = $_FILES[$name];
-                                            $break= true;
-                                        break;
-                                    default:
+                            switch($param['type']) {
+                                case 'URI':
+                                    $value = preg_replace('#^'.$request['url'].'$#isU', '$'.$index, self::get('URI'));
+                                    if(preg_match('#^'.$param['regexp'].'$#isU', $value))
+                                        $break = true;
+                                    else
                                         $break = false;
-                                }
-                            endif;
+                                
+                                    $index++;
+                                
+                                    break;
+                                
+                                case 'POST':
+                                    
+                                    if(isset(self::$parameters['POST'][$name]) 
+                                       && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$name]))
+                                        $break = true;
+                                    else
+                                        $break = false;
+                                
+                                    break;
+                                
+                                case 'GET':
+                                
+                                    if(isset(self::$parameters['GET'][$name])
+                                      && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['GET'][$name]))
+                                        $break = true;
+                                    else
+                                        $break = false;
+                                
+                                    break;
+                                    
+                                case 'FILE':
+                                
+                                    if(isset(self::$parameters['FILES'][$name]))
+                                        $break = true;
+                                    else
+                                        $break = false;
+                                
+                                    break;
+                            }
+                            
                         }
+                    
                         if($break):
                             self::$query->action = $request['action'];
                             break;
@@ -104,7 +117,7 @@
                     
                     endif;
                 }
-                            
+                        
             endif;                     
             
         }     

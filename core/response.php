@@ -208,7 +208,7 @@
             header("Location: $target");
             
             Console::register(); // Register logs before exit
-            exit;
+            exit; // Prevent following script execution
         }
         
         

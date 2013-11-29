@@ -51,21 +51,6 @@
         
     endif;
 
-
-    /**
-     * Clean cache folder
-    **/
-    if(in_array('-cache', $_opts) || in_array('-all', $_opts)): 
-        $tmp = tree(ACCESS_PATH.PATH_CACHE);
-    
-        if(!empty($tmp)):
-            echo "Clean ".PATH_CACHE." :\n";
-            remove($tmp, ACCESS_PATH.PATH_CACHE);
-            echo "\n\n";
-        endif;
-        
-    endif;
-
     /**
      * Clean tmp folder
     **/

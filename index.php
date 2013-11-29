@@ -10,8 +10,8 @@
      * Foremost, we'll check if all the folders which must be writable are writable
     **/
     if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS))):
-        $response = new Response;
-        $response->view('503', 503);
+        new Response;
+        Response::view('503', 503);
         trigger_error('Bootstrap : not writable system folders', E_USER_ERROR);
     endif;
 
@@ -49,7 +49,7 @@
      * Set static pages controller
     **/
     Controller::assign(Request::get('URI') ? true : false, function() {
-        $response = new Response;
+        new Response;
         
         if(is_dir(root(PATH_TEMPLATES.'/'.substr(Request::get('URI'), 0, -1)))):         
             $dirname = dirname(Request::get('URI'));
@@ -60,10 +60,10 @@
                 $filename = str_replace($dirname, '', Request::get('URI'));
             endif;
             
-            $response->view(str_replace('//', '/', Request::get('URI').$filename));
+            Response::view(str_replace('//', '/', Request::get('URI').$filename));
 
         else:   
-           $response->view(Request::get('URI'));
+           Response::view(Request::get('URI'));
     
         endif;
     }, true);
@@ -73,8 +73,8 @@
      * Set default homepage controller
     **/
     Controller::assign(Request::get('URI') == '' ? true : false, function() {
-        $response = new Response;
-        $response->view('homepage', 200);
+        new Response;
+        Response::view('homepage', 200);
     }, true);
 
 

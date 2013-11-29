@@ -1,7 +1,7 @@
 <?php
     
     class Response extends \Request {
-        protected $data = array();
+        protected static $data = array();
         
         private static $types = array(
             'default'   => 'text/html; charset=utf-8',
@@ -117,22 +117,22 @@
         **/
         public function __construct($data = array()) {
             if(parent::$query->secured):
-                $this->headers(array(
+                self::headers(array(
                     'X-Content-Type-Options' =>     'nosniff',
                     'Strict-Transport-Security' =>  'max-age=31536000',
                     'X-XSS-Protection' =>           '1; mode=block'
                 ));
             endif;
             
-            $this->cache();
-            $this->assign($data);
+            self::cache();
+            self::assign($data);
         }
         
         /**
          * Send custom headers
          * Custom headers must begin with X-
         **/
-        public function headers($headers) {
+        public static function headers($headers) {
             foreach($headers as $name => $value) {
                 @header("$name: $value", true);
             }
@@ -141,7 +141,7 @@
         /**
          * Define response status
         **/
-        public function status($type, $code) {
+        public static function status($type, $code) {
             header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
             
             if(!empty(self::$types[$type]))           
@@ -151,7 +151,7 @@
         /**
          * Iframe response configuration
         **/
-        public function frame($status = self::FRAME_ORIGIN) {
+        public static function frame($status = self::FRAME_ORIGIN) {
             if(is_array($status))
                 header('X-Frame-Options: ALLOW-FROM '.implode(' ', $status));
             else
@@ -161,7 +161,7 @@
         /**
          * Send Cache headers
         **/
-        public function cache($time = self::CACHETIME_LOW, $status = self::CACHE_PROTECTED) {
+        public static function cache($time = self::CACHETIME_LOW, $status = self::CACHE_PROTECTED) {
             // Private cache : do not cache
             if(!$time || $status == self::CACHE_PRIVATE):
                 $arguments = array(
@@ -216,28 +216,29 @@
          * define datas
          * Working only with view method
         **/
-        public function assign($data) {
+        public static function assign($data) {
             if(is_array($data))
-                $this->data = array_merge($this->data, $data);
+                self::$data = array_merge(self::$data, $data);
             else
-                $this->data = $data;
+                self::$data = $data;
         }
+        
         
         /**
          * Call a view file
         **/
-        public function view($template, $status = 200, $parser = null) {
-            $this->assign(array('request' => parent::$query));
+        public static function view($template, $status = 200, $parser = null) {
+            self::assign(array('request' => parent::$query));
             
-            extract($this->data);
+            extract(self::$data);
             ob_start(@is_callable($parser) ? $parser : null);
                 
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
-                $this->status('html', $status);
+                self::status('html', $status);
                 include_once(root(PATH_TEMPLATES."/$template.php"));
                 
             else:
-                $this->status('html', 404);
+                self::status('html', 404);
                 
                 if(file_exists(root(PATH_TEMPLATES."/404.php"))):
                     include_once(root(PATH_TEMPLATES."/404.php"));
@@ -260,8 +261,8 @@
         /**
          * Send JSON data
         **/
-        public function json($data = null, $status = 200) {
-            $this->status('json', $status);
+        public static function json($data = null, $status = 200) {
+            self::status('json', $status);
             echo json_encode(!empty($data) ? $data : self::$data);
         }
         
@@ -269,8 +270,8 @@
         /**
          * Send XML data
         **/
-        public function xml($data = null, $status = 200) {
-            $this->status('xml', $status);
+        public static function xml($data = null, $status = 200) {
+            self::status('xml', $status);
             echo xml_encode(!empty($data) ? $data : self::$data, 'document');
         }
         
@@ -278,8 +279,8 @@
         /**
          * Send text
         **/
-        public function text($string, $status = 200) {
-            $this->status('text', $status);
+        public static function text($string, $status = 200) {
+            self::status('text', $status);
             echo $string;
         }
         
@@ -287,22 +288,22 @@
         /**
          * Send a file (also can be downloaded)
         **/
-        public function file($path, $download = false, $status = 200) {
+        public static function file($path, $download = false, $status = 200) {
             if(file_exists(root("/$path"))):
                 $extension = pathinfo($path, PATHINFO_EXTENSION);
                 $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : \Compatibility\get_mime_type(root("/$path"));
             
-                $this->status($mime, $status);
+                self::status($mime, $status);
             
                 if($download):
                     header('Content-Disposition: attachment; filename="'.basename($path).'"');
-                    $this->headers(array(
+                    self::headers(array(
                         'Pragma' => 'public',
                         'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0'
                     ));
                 endif;
                 
-                if($this->query('range')):
+                if(Request::get('range')):
                     set_time_limit(0);
                     $file = @fopen(root("/$path"), "rb");
                     while(!feof($file)):
@@ -311,19 +312,11 @@
                         flush();
                     endwhile;
                 else:
-                    $this->status(null, 416);
+                    self::status(null, 416);
                 endif;
-                /*
-                if(parent::$request->range):
-                    
-            
-                else:
-                    readfile(root("/$path"));
-                endif;
-                */
             
             else:
-                $this->view('404', 404);
+                self::view('404', 404);
             endif;            
         }
         
@@ -331,8 +324,8 @@
         /**
          * Send binary datas
         **/
-        public function binary($data, $status = 200) {
-            $this->status('binary', $status);
+        public static function binary($data, $status = 200) {
+            self::status('binary', $status);
             echo $data;
         }
         

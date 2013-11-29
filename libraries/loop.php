@@ -39,32 +39,7 @@
         public function next_entry() {
             $this->position++;   
         }
-        
-        
-        /**
-         * Return the current entry
-        **/
-        public function entry() {
-            if($this->options['recursive'] && is_array($this->entries[$this->position]))
-                return new Loop($this->entries[$this->position], $this->options);
-            else
-                return $this->_parse($this->entries[$this->position]);   
-        }
-        
-        /**
-         * Return the current position index
-        **/
-        public function index($increment = false) {
-            return $increment ? $this->position+1 : $this->position;   
-        }
-        
-        /**
-         * Return total number of entries
-        **/
-        public function total() {
-            return $this->total;   
-        }
-        
+
         
         /**
          * Return a formated date/time
@@ -77,6 +52,16 @@
             $datetime = new DateTime(intval($time), $timezone);
             return $datetime->format($format);           
         }
+        
+        /**
+         * Return the current entry
+        **/
+        public function entry() {
+            if($this->options['recursive'] && is_array($this->entries[$this->position]))
+                return new Loop($this->entries[$this->position], $this->options);
+            else
+                return $this->_parse($this->entries[$this->position]);   
+        }
          
         
         /**
@@ -85,6 +70,23 @@
         public function field($name) {
             return $this->_parse($this->entries[$this->position][$name]);   
         }
+        
+        
+        /**
+         * Return the current position index
+        **/
+        public function index($increment = false) {
+            return $increment ? $this->position+1 : $this->position;   
+        }
+        
+        
+        /**
+         * Return total number of entries
+        **/
+        public function total() {
+            return $this->total;   
+        }
+        
         
         /**
          * Parse data according to parser option

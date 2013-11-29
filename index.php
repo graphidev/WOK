@@ -40,7 +40,7 @@
         if(file_exists(root(PATH_CONTROLLERS."/$name.ctrl.php"))):
             return Controller::call($name, $action);
         else:
-            Console::error("Controller '$name' not found");
+            trigger_error("Controller '$name' not found", E_USER_ERROR);
         endif;
     }, false);
     
@@ -48,7 +48,7 @@
     /**
      * Set static pages controller
     **/
-    Controller::assign(Request::get('URI') ? true : false, function() {
+    Controller::assign(Request::get('URI') && Request::get('domain') == SYSTEM_DOMAIN ? true : false, function() {
         new Response;
         
         if(is_dir(root(PATH_TEMPLATES.'/'.substr(Request::get('URI'), 0, -1)))):         
@@ -75,6 +75,16 @@
     Controller::assign(Request::get('URI') == '' ? true : false, function() {
         new Response;
         Response::view('homepage', 200);
+    }, true);
+
+
+    /**
+     * If there is no response for any controller
+     * Just send a 404 response
+    **/
+    Controller::assign(true, function() {
+        new Response;
+        Response::view('404', 404);
     }, true);
 
 

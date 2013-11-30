@@ -22,6 +22,8 @@
         <param name="var" regexp="string" />
         <param name="id" regexp="integer" />
         <param name="another" regexp="any" />
+        
+        <!-- non URI parameters -->
         <param name="try" type="get" regexp="any" />
         <!--
         <param name="test" type="post" regexp="string" />

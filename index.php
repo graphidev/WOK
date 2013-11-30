@@ -20,7 +20,7 @@
     **/
     new Console; // Start handling errors
     Session::start(); // Initialiez session
-    Route::init(); // Initialize manifest data
+    Manifest::init(); // Initialize manifest data
     Request::init(); // Initialize request informations
      
 

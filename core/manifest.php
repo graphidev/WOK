@@ -5,7 +5,7 @@
      * Generate manifest data and temporary files
     **/
 
-    class Route {
+    class Manifest {
         
         protected static $manifest = array();
         

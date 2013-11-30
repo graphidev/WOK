@@ -116,7 +116,7 @@
          * Generate default reponse settings
         **/
         public function __construct($data = array()) {
-            if(parent::$query->secured):
+            if(parent::$secured):
                 self::headers(array(
                     'X-Content-Type-Options' =>     'nosniff',
                     'Strict-Transport-Security' =>  'max-age=31536000',
@@ -227,12 +227,11 @@
         /**
          * Call a view file
         **/
-        public static function view($template, $status = 200, $parser = null) {
-            self::assign(array('request' => parent::$query));
+        public static function view($template, $status = 200, $cache = null) {
             
             extract(self::$data);
             ob_start(@is_callable($parser) ? $parser : null);
-                
+            
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
                 self::status('html', $status);
                 include_once(root(PATH_TEMPLATES."/$template.php"));

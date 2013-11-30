@@ -227,20 +227,16 @@
         /**
          * Call a view file
         **/
-        public static function view($template, $status = 200, $cache = null) {
-            
-            extract(self::$data);
-            ob_start(@is_callable($parser) ? $parser : null);
-            
+        public static function view($template, $status = 200, $cache = false) {            
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
                 self::status('html', $status);
-                include_once(root(PATH_TEMPLATES."/$template.php"));
+                self::_template($template, $cache);
                 
             else:
                 self::status('html', 404);
                 
                 if(file_exists(root(PATH_TEMPLATES."/404.php"))):
-                    include_once(root(PATH_TEMPLATES."/404.php"));
+                    self::_template('404', $cache);
                 
                 else:
                     if($template != '503')
@@ -251,9 +247,48 @@
                 endif;
                 
             endif;
-                
-            // Generate output
-            ob_end_flush();
+        }
+        
+        /**
+         * Generate template output
+        **/
+        private static function _template($file, $cache) {
+            $prefix = ($cache && !is_bool($cache) ? "$cache-" : '');
+            $template = root(PATH_TEMPLATES."/$file.php");
+            $cached = root(PATH_CACHE."/$prefix$file.html");
+            $overwrite = true;
+            
+            if($cache):
+                $callback = function($buffer) use(&$overwrite, $cached) {
+                    if($overwrite)
+                        file_put_contents($cached, $buffer);
+                    return $buffer;
+                };
+            else:
+                $callback = null;
+            endif;
+            
+            ob_start($callback); // Keep output in a buffer
+            
+                if($cache):
+                    if(file_exists($cached) 
+                       && filemtime($cached) > filemtime($template)
+                       && filemtime($cached) <= time()+TEMPLATES_CACHE_TIME):
+                        $overwrite = false;
+                        echo file_get_contents($cached);
+            
+                    else:
+                        extract(self::$data);
+                        include_once($template);
+                    endif;
+
+                else:
+                    extract(self::$data);
+                    include_once($template);
+            
+                endif; 
+
+            ob_end_flush(); // Generate output
         }
         
         

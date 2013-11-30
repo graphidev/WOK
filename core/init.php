@@ -29,6 +29,7 @@
     const PATH_VAR              = '/var'; // Config path
     const PATH_TMP              = '/var/tmp'; // Temporary directory path
     const PATH_LOGS             = '/var/logs'; // PHP logs directory
+    const PATH_CACHE             = '/cache'; // PHP logs directory
     const PATH_CONTROLLERS      = '/controllers'; // Controllers' directory
 	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_LOCALES          = '/locales'; // Languages' files directory

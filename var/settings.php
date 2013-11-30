@@ -23,6 +23,11 @@
     const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with commas)
     const SYSTEM_DEFAULT_LANGUAGE       = 'en_EN'; // System default language
     
+    /**
+     * Templates settings
+    **/
+    const TEMPLATES_CACHE_TIME          = 300 ; // Max cache files lifetime (default: 5 minutes)
+
 
     /**
      * Console settings (logs)

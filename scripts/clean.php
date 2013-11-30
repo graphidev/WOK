@@ -23,20 +23,18 @@
                 echo '[ERROR] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
         }
     }
-
-    echo "\n[WOK cleaner]\n";
-
     /**
      * Ask for an option
     **/
     if(empty($_opts)):
-        $input = input("Which folders (separate with a space) ?  [all|(tmp|logs|uploads)] :");
+        $input = input("Which folders (separate with a space) ?  [all|(tmp|logs|cache|uploads)] :");
         $folders = explode(' ', $input);
         foreach($folders as $i => $folder) {
             $_opts[] = "-$folder";
         }
     endif;
     
+
     /**
      * Clean tmp folder
     **/
@@ -51,8 +49,9 @@
         
     endif;
 
+
     /**
-     * Clean tmp folder
+     * Clean logs folder
     **/
     if(in_array('-logs', $_opts) || in_array('-all', $_opts)): 
         
@@ -61,6 +60,23 @@
         if(!empty($tmp)):
             echo "Clean ".PATH_LOGS." :\n";
             remove($tmp, ACCESS_PATH.PATH_LOGS);
+            echo "\n\n";
+        endif;
+        
+        
+    endif;
+
+    
+    /**
+     * Clean cache folder
+    **/
+    if(in_array('-cache', $_opts) || in_array('-all', $_opts)): 
+        
+        $tmp = tree(ACCESS_PATH.PATH_CACHE);
+    
+        if(!empty($tmp)):
+            echo "Clean ".PATH_CACHE." :\n";
+            remove($tmp, ACCESS_PATH.PATH_CACHE);
             echo "\n\n";
         endif;
         

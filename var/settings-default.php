@@ -25,6 +25,12 @@
     
 
     /**
+     * Templates settings
+    **/
+    const TEMPLATES_CACHE_TIME          = 300 ; // Max cache files lifetime (default: 5 minutes)
+
+
+    /**
      * Console settings (logs)
     **/
     const CONSOLE_LOG_FORMAT            = '[:time] [:type] :message'; // Can contains : time, type, message, file, line

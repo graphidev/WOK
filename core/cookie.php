@@ -76,17 +76,18 @@
             mcrypt_generic_deinit($module);
             mcrypt_module_close($module);
             
-            return base64_encode($encrypted).'|'.base64_encode($iv);
+            return base64_encode($encrypted).'|'.base64_encode($expire);
         }
         
         /**
          * Decrypt a cookie value
         **/
         private static function _decrypt($value) {
-            list($value, $iv) = explode('|', $value);
+            list($value, $expire) = explode('|', $value);
             
             $module = mcrypt_module_open(COOKIES_CRYPT_ALGORITHM, '', COOKIES_CRYPT_MODE, '');
-            mcrypt_generic_init($module, COOKIES_SALT, base64_decode($iv));
+            $iv = self::_iv(base64_decode($expire), $module);
+            mcrypt_generic_init($module, COOKIES_SALT, $iv);
             
             $decrypted   = mdecrypt_generic($module, base64_decode($value));
             

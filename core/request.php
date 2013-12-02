@@ -75,16 +75,17 @@
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
                         
-                        
-                    foreach($request['parameters'] as $name => $param) {
+                    foreach($request['parameters'] as $i => $param) {
                         switch($param['type']) {
                             case 'URI':
                             
                                 $value = preg_replace('#^'.$request['url'].'$#isU', '$'.$index, self::get('URI'));
-                                if(preg_match('#^'.$param['regexp'].'$#isU', $value))
+                                if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
+                                    self::$parameters['URI'][$param['name']] = $value;
                                     $break = true;
-                                else
+                                else:
                                     $break = false;
+                                endif;
                                 
                                 $index++;
                                 
@@ -92,8 +93,8 @@
                                 
                             case 'POST':
                                     
-                                if(isset(self::$parameters['POST'][$name]) 
-                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$name]))
+                                if(isset(self::$parameters['POST'][$param['name']]) 
+                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']]))
                                     $break = true;
                                 else
                                     $break = false;
@@ -102,8 +103,8 @@
                                 
                             case 'GET':
                                 
-                                if(isset(self::$parameters['GET'][$name])
-                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['GET'][$name]))
+                                if(isset(self::$parameters['GET'][$param['name']])
+                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['GET'][$param['name']]))
                                     $break = true;
                                 else
                                     $break = false;
@@ -112,7 +113,7 @@
                                     
                             case 'FILE':
                                 
-                                if(isset(self::$parameters['FILES'][$name]))
+                                if(isset(self::$parameters['FILES'][$param['name']]))
                                     $break = true;
                                 else
                                     $break = false;

@@ -40,6 +40,7 @@
                 $manifest = $dom->getElementsByTagName('manifest')->item(0);
                 $requests = $manifest->getElementsByTagName('request');
                 
+                // Analyse request
                 foreach($requests as $case) {
                     $url = $case->getAttribute('url');
                     $action = ($case->hasAttribute('action') ? $case->getAttribute('action') : null);
@@ -73,7 +74,8 @@
                         if($type == 'URI') // Replace URI parameters by parameter REGEXP in $url
                             $url = str_replace(":$name", "($regexp)", $url);
                             
-                       $parameters[$name] = array(
+                       $parameters[] = array(
+                            'name' => $name,
                             'type' => strtoupper($type),
                             'regexp' => $regexp,
                         );
@@ -89,11 +91,10 @@
                     );
                 }
                 
-            /* Remove this comment !!!
                 $json = fopen($tmp, 'w+');
                 fwrite($json, json_encode(self::$manifest));
                 fclose($json);
-            */
+
             endif;
         }
         

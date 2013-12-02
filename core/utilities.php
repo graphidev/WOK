@@ -9,11 +9,11 @@
 	/**
      * Return absolute URL path to the string parameter
     **/
-	function path($string = null, $cdomain = false) {
+	function path($string = null) {
 		if(substr($string, 0, 1) == '/'):
-			return SYSTEM_DEFAULT_PROTOCOL.SYSTEM_ADDR."$string";
+			return SYSTEM_PROTOCOL.SYSTEM_DOMAIN.SYSTEM_DIRECTORY."$string";
 		else:
-			return SYSTEM_DEFAULT_PROTOCOL.SYSTEM_ADDR."/$string";
+			return SYSTEM_PROTOCOL.SYSTEM_DOMAIN.SYSTEM_DIRECTORY."/$string";
 		endif;
 	}
 	
@@ -27,14 +27,6 @@
         
 		return SYSTEM_ROOT.$str;
 	}
-
-    
-    /**
-     * Remove host additional root on routing
-    **/
-    function strip_system_root($url) {
-        return str_replace(SYSTEM_DIRECTORY_PATH, '', $url);  
-    }
 
     
     /**

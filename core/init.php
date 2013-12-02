@@ -9,9 +9,9 @@
     **/
     
 	const WOK_MAJOR_VERSION        = 0; // Major version
-	const WOK_MINOR_VERSION        = 8; // Minor version
-	const WOK_RELEASE_VERSION      = 2; // Release version
-	const WOK_EXTRA_RELEASE        = 'alpha'; // Extra version
+	const WOK_MINOR_VERSION        = 9; // Minor version
+	const WOK_RELEASE_VERSION      = 1; // Release version
+	const WOK_EXTRA_RELEASE        = 'beta'; // Extra version
     
     // Define full WOK version (without extra release)
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);
@@ -29,16 +29,14 @@
     const PATH_VAR              = '/var'; // Config path
     const PATH_TMP              = '/var/tmp'; // Temporary directory path
     const PATH_LOGS             = '/var/logs'; // PHP logs directory
+    const PATH_CACHE             = '/cache'; // PHP logs directory
     const PATH_CONTROLLERS      = '/controllers'; // Controllers' directory
 	const PATH_LIBRARIES        = '/libraries'; // Libraries path
     const PATH_LOCALES          = '/locales'; // Languages' files directory
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
     const PATH_FILES            = '/files'; // Files' directory
     const PATH_TMP_FILES        = '/files/tmp'; // Temporary files' directory
-
-    const PATH_DATA             = '/data'; // Data's directory path
-    const PATH_RESOURCES        = '/resources'; // Resources' directory
-
+    
     /*
      * Once we have pathes, we can call essential libraries.
      * But you first need to have a settings.php file. 

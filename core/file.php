@@ -1,7 +1,7 @@
 <?php
 
 
-	class file {
+	class File {
 		private $mime;
 		private $path;
 		private $result = false;

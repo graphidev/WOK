@@ -4,7 +4,7 @@
  *	This file contains all the system settings. This parameters are defined at the setup step.
  *	
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
- *		/!\ Changing these parameters may cause permanent damage and malfunction /!\
+ *		/!\ Changing these parameters may cause permanent damages and malfunctions /!\
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
  *
 **/
@@ -12,37 +12,51 @@
 
     /**
      * Sytem informations
-     * This informations are required for some functions and other conditions.
+     * These informations are required in most of core classes
     **/
-    const SYSTEM_DEFAULT_PROTOCOL           = 'http://'; // System default protocol
-    const SERVER_DOMAIN                     = 'localhost'; // Server domain name or IP address
-    const SERVER_DOMAIN_ALIAS               = '172.0.0.1 wok.loc'; // Server alias domains (separate with spaces)
-    const SYSTEM_DIRECTORY_PATH             = '/wok'; // Relative system directory path
-	define('SYSTEM_ADDR', SERVER_DOMAIN.SYSTEM_DIRECTORY_PATH); // System address
-    
-	const SYSTEM_TIMEZONE                   = 'Europe/Paris'; // System timezone
-    const SYSTEM_ACCEPT_LANGUAGES           = 'en_EN'; // System accepted languages
-    $languages = explode(',', SYSTEM_ACCEPT_LANGUAGES);
-    define('SYSTEM_DEFAULT_LANGUAGE', $languages[0]); // System default language (calculated)
+    const SYSTEM_PROTOCOL               = 'http://'; // System default protocol
+    const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address
+    const SYSTEM_DOMAIN_ALIAS           = ''; // Server alias domains (separate with spaces)
+    const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
+
+	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
+    const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with commas)
+    const SYSTEM_DEFAULT_LANGUAGE       = 'en_EN'; // System default language
     
     /**
-     * Cookies & session
+     * Templates settings
     **/
-    const MAX_COOKIES_LIFETIME          = 15552000; // Max cookies life time
+    const TEMPLATES_CACHE_TIME          = 300 ; // Max cache files lifetime (default: 5 minutes)
+
 
     /**
      * Console settings (logs)
     **/
     const CONSOLE_LOG_FORMAT            = '[:time] [:type] :message'; // Can contains : time, type, message, file, line
-    const CONSOLE_FATAL_EMAILS          = 'sebastien@graphidev.fr'; // Separate e-mails with spaces
-    const CONSOLE_HANDLER_LEVEL         = E_ALL; // Errors that must be handled (default: E_ALL, false to disallow handling)
+    const CONSOLE_FATAL_EMAILS          = 'debug@domain.tld'; // Separate e-mails with spaces
+    const CONSOLE_HANDLER_LEVEL         = false; // Errors that must be handled (default: E_ALL, false to disallow handling)
+    
 
     /**
-     *	Security constants
-     * You can use it to add salt in sessions, tokens or cookies' name/value
+     * Tokens configuration
     **/
-    const SESSION_CRYPT             = 'f94e7a3e4a909479f42efff836a6a955ddc83ecb'; // sha1(uniqid('sess_', true));
-    const TOKEN_SALT                = 'b7d34494e4435ee2e54e2ea419726de0903ebfdb'; // sha1(uniqid('tok_', true));
-    const COOKIE_CRYPT              = 'b932ee8624a872c8c505678e68e11cae17d5ecb5';  // sha1(uniqid('cook_', true));
-	
+    const TOKENS_LIFETIME           = 300; // Max tokens lifetime (default: 5 minutes [18000])
+    const TOKENS_SALT               = '069de552f000c9b477ad'; // Tokens key
+
+
+    /**
+     * Sessions configuration
+    **/
+    const SESSIONS_LIFETIME         = 1296000; // Max sessions lifetime (default: 15 days [77760000])
+    const SESSIONS_SALT             = '68dae0ab4687006c8c50'; // sessions key
+
+
+    /**
+     * Cookies configuration
+    **/
+    const COOKIES_LIFETIME              = 13392000; // Max cookies lifetime (default: 6 months [964224000])
+    const COOKIES_SALT                  = '7b0dff4c1df29468f29c';  // Encryption key
+    const COOKIES_CRYPT_MODE            = MCRYPT_MODE_CBC; // Encription mode
+    const COOKIES_CRYPT_ALGORITHM       = MCRYPT_RIJNDAEL_256; // Encription algorithm	
+
 ?>

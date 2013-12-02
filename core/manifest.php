@@ -28,7 +28,7 @@
          * Build tmp manifest
         **/
         public static function init() {
-            $tmp = root(PATH_TMP . '/manifest.son');
+            $tmp = root(PATH_TMP . '/manifest.json');
             $source = root(PATH_VAR.'/manifest.xml');
             
             if(file_exists($tmp) && (!file_exists($source) || filemtime($source) < filemtime($tmp))):
@@ -42,6 +42,7 @@
                 
                 // Analyse request
                 foreach($requests as $case) {
+                    $parameters = array();
                     $url = $case->getAttribute('url');
                     $action = ($case->hasAttribute('action') ? $case->getAttribute('action') : null);
                     if($case->hasAttribute('domain'))
@@ -89,6 +90,7 @@
                         'domain' => $domain,
                         'parameters' => (!empty($parameters) ? $parameters : array())
                     );
+                    
                 }
                 
                 $json = fopen($tmp, 'w+');

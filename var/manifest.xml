@@ -18,7 +18,7 @@
     
     -->
     
-    <request domain ="~" url="test/:var/:id/:another" methods="ANY" action="Test:page">
+    <request domain="~" url="test/:var/:id/:another" methods="ANY" action="Test:page">
         <param name="var" regexp="string" />
         <param name="id" regexp="integer" />
         <param name="another" regexp="any" />
@@ -30,5 +30,7 @@
         <param name="file" type="file" />
         -->
     </request>
+    
+    <request url="static-page" action="static"></request>
     
 </manifest>

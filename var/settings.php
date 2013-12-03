@@ -26,6 +26,7 @@
     /**
      * Templates settings
     **/
+    const TEMPLATES_CACHE_STATICS       = false; // Cache static pages by default (true/false)
     const TEMPLATES_CACHE_TIME          = 300 ; // Max cache files lifetime (default: 5 minutes)
 
 

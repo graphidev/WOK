@@ -30,20 +30,20 @@
     **/
     if(file_exists(root(PATH_VAR.'/manifest.php')))
         require_once(root(PATH_VAR.'/manifest.php'));
-    
 
+    
     /**
-     * Set static pages controller
+     * Set static pages controller (special)
     **/
     Controller::assign(Request::get('action') == 'static', function() {
-        Response::view(Request::get('URI'), 200, true);
+        Response::view(Request::get('URI'), 200, TEMPLATES_CACHE_STATICS);
     }, true);
 
-    
+
     /**
-     * Set predefined controllers
+     * Set manifest controllers
     **/
-    Controller::assign(Request::get('action') && Request::get('action') != 'static' ? true : false, function() {
+    Controller::assign(Request::get('action') ? true : false, function() {
         list($name, $action) = explode(':', Request::get('action'));
         if(file_exists(root(PATH_CONTROLLERS."/$name.ctrl.php"))):
             return Controller::call($name, $action);
@@ -51,7 +51,7 @@
             trigger_error("Controller '$name' not found", E_USER_ERROR);
         endif;
     }, false);
-    
+
 
     /**
      * Set default homepage controller

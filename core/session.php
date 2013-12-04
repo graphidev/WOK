@@ -17,7 +17,7 @@
             self::$secured = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
             
             // Language
-            $accepted_languages = explode(',', SYSTEM_LANGUAGES);
+            $accepted_languages = explode(' ', SYSTEM_LANGUAGES);
             if(self::has('language') && in_array(self::get('language'), $accepted_languages)):
                 self::language(self::get('language'));
             

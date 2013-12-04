@@ -7,7 +7,7 @@
             - domain (optional) : The domain access (~ corresponds to the default domain)
             - url (required) : the URI access, add a colon before parameters
             - methods (default=ANY) : accepted request methods (REST)
-            - action (recommended) : string for the action that should be called (null by default)
+            - action (required) : string for the action that should be called (null by default)
 
             param (optional, recommended for URI parameters)
                 - name (required) : just the param name
@@ -18,7 +18,7 @@
     
     -->
     
-    <request domain="~" url="test/:var/:id/:another" methods="ANY" action="Test:page">
+    <request domain="~" url="test/:var/:id/:another" action="Test:page">
         <param name="var" regexp="string" />
         <param name="id" regexp="integer" />
         <param name="another" regexp="any" />

@@ -1,4 +1,16 @@
 <?php
+    Session::language('en_US');
+    $data = array('data'=>date('Y-m-d H:i:s'));
+    echo _e('tests:test.datetime.default', $data).'<br />';
+    echo _e('tests:test.datetime.formated', $data).'<br />';
+    echo _e('tests:test.datetime.original', $data);
+
+?>
+
+
+<?php
+    
+    exit;
 
     $data = array('a', 'b', 'c');
     $data = array(date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), date('Y-m-d H:i:s'), date('Y-m-d H:i:s'));

@@ -350,7 +350,7 @@
                 endif;
             
             else:
-                self::view('404', 404);
+                self::view('404', 404, TEMPLATES_CACHE_STATICS);
             endif;            
         }
         

@@ -11,7 +11,7 @@
     **/
     if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS))):
         new Response;
-        Response::view('503', 503);
+        Response::view('503', 503, TEMPLATES_CACHE_STATICS);
         trigger_error('not writable system folders', E_USER_ERROR);
     endif;
 

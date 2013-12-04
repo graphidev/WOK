@@ -4,23 +4,22 @@
         
         private static $language = null;
         private static $locales = array();
-        private static $formats = array();
         
         /**
          * Get a locale file
         **/
-        private static function load($locale) {        
+        private static function _load($locale) {        
             $source = root(PATH_LOCALES.'/'.self::$language."/$locale.properties");
             $parsed = root(PATH_TMP.'/'.self::$language.".$locale.json");
             if(file_exists($parsed)):
                 if(file_exists($source) && filemtime($source) > filemtime($parsed)):
-                    self::generate($locale);
+                    self::_generate($locale);
                 else:
                     self::$locales[self::$language][$locale] = json_decode(file_get_contents($parsed), true);
                 endif;
             
             elseif(file_exists($source)):
-                self::generate($locale);
+                self::_generate($locale);
             
             else:
                 self::$locales[self::$language][$locale] = array();
@@ -30,7 +29,7 @@
         /**
          * Generate JSON locale
         **/
-        private static function generate($locale) {
+        private static function _generate($locale) {
             $handle = fopen(root(PATH_LOCALES.'/'.self::$language."/$locale.properties"), 'r');
             if($handle):
                 while(!feof($handle)):
@@ -40,6 +39,7 @@
                         $path = trim(str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true))); // Property name
                         $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false)))); // Property value
                         $value = str_replace(array('\n','\r'), "\r\n", $value); // Allow breaklines in value
+                        $value = htmlentities($value);
                                     
                         $data = array();
                         eval("\$data['$path']='$value';");
@@ -80,7 +80,7 @@
             
             // Load locale if it isn't.
             if(!isset(self::$locales[$language][$locale]))
-                self::load($locale);
+                self::_load($locale);
                                 
             // Return the finale node value
             $translation = self::$locales[$language][$locale];
@@ -101,58 +101,34 @@
             
             /**
              * default      :input
-             * string       (:index|format)
-             * date/time    [:index|format]
+             * resume       (:index|length)
+             * date/time    [:index|format] [:index]
              * money        {:index|format} {:index}
              * reference    &[locale:node.get.name]
              * reference    &[~:node.get.name]
-             * resume       (:index|1234)
             **/
             if(!empty($data)):
                 foreach($data as $index => $value) {
-                                                        
-                    // Replace with a date format
+                    
+                    // Replace with a date format [advanced]
                     $translation = preg_replace_callback("#\[:$index\|(.+)\]#isU", function($matches) use (&$value){
-                        $datetime = new DateTime($value);
-                        return $datetime->format($matches[1]);
+                        return strftime($matches[1], strtotime($value));
                     }, $translation);
                     
-                    // Replace with a money format
+                    // Replace with a money format [advanced]
                     $translation = preg_replace_callback("#\{:$index\|(.+)\}#isU", function($matches) use (&$value){
                         return money_format($matches[1], $value);
                     }, $translation);
                     
-                    // Call a predefined format
-                    $translation = preg_replace_callback("#\(:$index\|(.+)\)#isU", function($matches) use (&$value){
-                        $formats = explode(',', $matches[1]);
-                        foreach($formats as $i => $format) {
-                            switch ($format) {
-                                case 'trim':
-                                    $value = trim($value);
-                                break;
-                                case 'uppercase':
-                                    $value = mb_strtoupper($value, 'UTF-8');
-                                break;
-                                case 'lowercase':
-                                    $value = mb_strtolower($value, 'UTF-8');
-                                break;
-                                case 'reverse':
-                                    $value = \Compatibility\strrev($value);
-                                default:
-                                    if(is_numeric($format)):
-                                        $value = resume($value, intval($format));
-                                    elseif(!empty(self::$formats[$format])):
-                                        $parser = self::$formats[$format];
-                                        $value = $parser($value);
-                                    else:
-                                        return $value;
-                                    endif;
-                            }
-                        }
-                        
+                    // Limit the data length (words number)
+                    $translation = preg_replace_callback("#\(:$index\|[0-9]+\)#isU", function($matches) use (&$value){
+                        return resume($value, intval($matches[1]));                        
                     }, $translation);
                     
-                    // Replace with locale money format
+                    // Replace with a date format [basic]
+                    $translation = str_replace("[:$index]", strftime('%c', strtotime($value)), $translation);
+                    
+                    // Replace with locale money format [basic]
                     $translation = str_replace("{:$index}", money_format('%i', floatval($value)), $translation);
                     
                     // Replace with the value
@@ -168,14 +144,6 @@
             
             return $translation;
                                 
-        }
-        
-        
-        /**
-         * Set a format
-        **/
-        public static function assign($format, $callback) {
-            self::$formats[$format] = $callback;
         }
         
     }

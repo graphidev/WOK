@@ -25,6 +25,11 @@
                 error_reporting(CONSOLE_HANDLER_LEVEL);
                 set_error_handler('Console::handler');
             endif;
+            register_shutdown_function('Console::shutdown');
+        }
+        
+        public static function shutdown() {
+            self::register();   
         }
         
         public static function handler($type, $message, $file, $line){
@@ -46,7 +51,7 @@
                 default:
                     Console::log("$message in $file : line $line", Console::LOG_ERROR);
             }
-            
+
             return true;
         }
         
@@ -54,6 +59,7 @@
          * Add a log
         **/
         public static function log($message, $type = self::LOG_DEFAULT, $exit = false) {
+
             self::$logs[] = array(
                 'date'      => date('Y-m-d'),
                 'time'      => date('H:i:s'),

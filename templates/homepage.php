@@ -1,9 +1,12 @@
 <?php
-    Session::language('en_US');
+
+    Session::language('fr_FR');
     $data = array('data'=>date('Y-m-d H:i:s'));
     echo _e('tests:test.datetime.default', $data).'<br />';
     echo _e('tests:test.datetime.formated', $data).'<br />';
     echo _e('tests:test.datetime.original', $data);
+    
+    echo nl2br(_e('tests:test.return', $data));
 
 ?>
 

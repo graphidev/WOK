@@ -38,9 +38,9 @@
                     if($beginwith != '#' && $beginwith != '!'):
                         $path = trim(str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true))); // Property name
                         $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false)))); // Property value
-                        $value = str_replace(array('\n','\r'), "\r\n", $value); // Allow breaklines in value
+                        $value = str_replace(array('/r/n', '/r', '/n'), PHP_EOL, $value); // Allow breaklines in value                        
                         $value = htmlentities($value);
-                                    
+            
                         $data = array();
                         eval("\$data['$path']='$value';");
             

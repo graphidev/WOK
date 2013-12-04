@@ -140,7 +140,7 @@
                 
                 foreach(self::$logs as $i => $log) {
                                 
-                    $row = CONSOLE_LOG_FORMAT . "\r\n";
+                    $row = CONSOLE_LOG_FORMAT . PHP_EOL;
                     foreach($log as $param => $value) {                            
                         $row = str_replace(":$param", $value, $row);
                     }

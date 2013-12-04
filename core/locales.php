@@ -83,12 +83,16 @@
                 self::_load($locale);
                                 
             // Return the finale node value
-            $translation = self::$locales[$language][$locale];
+            if(isset(self::$locales[$language][$locale]))
+                $translation = self::$locales[$language][$locale];
+            else
+                $translation = null;
 
             foreach($nodes as $i => $node) {
                 if(is_array($translation) && isset($translation[$node])):
                     $translation = $translation[$node];
                 else: // Try to get the default locale
+                    trigger_error("Locales '$path'($language) not found", E_USER_NOTICE);
                     if($language != SYSTEM_DEFAULT_LANGUAGE):
                         $translation = self::_e($path, $data, SYSTEM_DEFAULT_LANGUAGE);
                     else:

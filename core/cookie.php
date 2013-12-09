@@ -102,7 +102,7 @@
         **/
         private static function _iv($key, &$module) {
             $size = mcrypt_enc_get_iv_size($module);
-            $iv = md5($key);
+            $iv = sha1($key);
             
             if (strlen($iv) > $size)
                 $iv = substr($iv, 0, $size);

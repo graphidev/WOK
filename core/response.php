@@ -253,9 +253,10 @@
          * Generate template output
         **/
         private static function _template($file, $cache) {
+            $language = Session::language();
             $prefix = ($cache && !is_bool($cache) ? "$cache-" : '');
             $template = root(PATH_TEMPLATES."/$file.php");
-            $cached = root(PATH_CACHE."/$prefix$file.html");
+            $cached = root(PATH_CACHE."/$prefix$file-$language.html");
             $overwrite = true;
             
             if($cache):

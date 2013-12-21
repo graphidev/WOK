@@ -46,11 +46,11 @@
     Controller::assign(Request::get('action') ? true : false, function() {
         list($name, $action) = explode(':', Request::get('action'));
         if(file_exists(root(PATH_CONTROLLERS."/$name.ctrl.php"))):
-            return Controller::call($name, $action);
+            Controller::call($name, $action);
         else:
             trigger_error("Controller '$name' not found", E_USER_ERROR);
         endif;
-    }, false);
+    }, true);
 
 
     /**

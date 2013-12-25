@@ -2,6 +2,9 @@
 
     class Cookie {
         
+        const CRYPT_MODE = MCRYPT_MODE_CBC;
+        const CRYPT_ALGORITHM = MCRYPT_RIJNDAEL_256;
+        
         /**
          * Define a cookie        
         **/
@@ -67,7 +70,7 @@
          * Encrypt a cookie value
         **/
         private static function _encrypt($value, $expire) {
-            $module = mcrypt_module_open(COOKIES_CRYPT_ALGORITHM, '', COOKIES_CRYPT_MODE, '');
+            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
             $iv = self::_iv($expire, $module);
             mcrypt_generic_init($module, COOKIES_SALT, $iv);
                 
@@ -85,7 +88,7 @@
         private static function _decrypt($value) {
             list($value, $expire) = explode('|', $value);
             
-            $module = mcrypt_module_open(COOKIES_CRYPT_ALGORITHM, '', COOKIES_CRYPT_MODE, '');
+            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
             $iv = self::_iv(base64_decode($expire), $module);
             mcrypt_generic_init($module, COOKIES_SALT, $iv);
             

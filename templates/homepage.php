@@ -1,5 +1,18 @@
-<?php
 
+
+<?php
+    $result = Cookie::set('blabla', 'lalala', null, true);
+    echo $result ? 'Cookie sent' : 'Error'; 
+    echo '<br />';
+    if(Cookie::exists('blabla'))
+        echo Cookie::get('blabla', true); 
+    else
+        echo 'Cookie doesn\'t exists';
+?>
+
+
+<?php
+    exit;
     Session::language('fr_FR');
     $data = array('data'=>date('Y-m-d H:i:s'));
     echo _e('tests:test.datetime.default', $data).'<br />';
@@ -62,17 +75,6 @@
 
     echo Session::id();
 
-?>
-
-<?php
-    exit;
-    $result = Cookie::set('blabla', 'lalala', null, true);
-    echo $result ? 'Cookie sent' : 'Error'; 
-    echo '<br />';
-    if(Cookie::exists('blabla'))
-        echo Cookie::get('blabla', true); 
-    else
-        echo 'Cookie doesn\'t exists';
 ?>
 
 

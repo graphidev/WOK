@@ -83,7 +83,7 @@
                                          
                     }
                     
-                    self::$manifest[$action] = array(
+                    self::$manifest[] = array(
                         'url' => $url,
                         'methods' => $methods,
                         'action' => $action,

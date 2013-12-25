@@ -26,7 +26,7 @@
         /**
          * Build request
         **/
-        public static function init() {
+        public function __construct() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
             $static         = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	

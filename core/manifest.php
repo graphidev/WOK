@@ -8,26 +8,11 @@
     class Manifest {
         
         protected static $manifest = array();
-        
-        /**
-         * Get URL from an action
-        **/
-        public static function url($action, $data = array()) {
-            if(!empty(self::$manifest[$action])):
-                $url = self::$manifest[$action]['url'];
-                foreach($data as $index => $value) {
-                    $url = str_replace(":$index", $value, $url);   
-                }
-                return path($url);
-            else:
-                return false;
-            endif;
-        }
-        
+            
         /**
          * Build tmp manifest
         **/
-        public static function init() {
+        public function __construct() {
             $tmp = root(PATH_TMP . '/manifest.json');
             $source = root(PATH_VAR.'/manifest.xml');
             
@@ -97,6 +82,22 @@
                 fwrite($json, json_encode(self::$manifest));
                 fclose($json);
 
+            endif;
+        }
+        
+        
+        /**
+         * Get URL from an action
+        **/
+        public static function url($action, $data = array()) {
+            if(!empty(self::$manifest[$action])):
+                $url = self::$manifest[$action]['url'];
+                foreach($data as $index => $value) {
+                    $url = str_replace(":$index", $value, $url);   
+                }
+                return path($url);
+            else:
+                return false;
             endif;
         }
         

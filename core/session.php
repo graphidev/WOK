@@ -8,7 +8,7 @@
         /**
          * Initialize session
         **/
-        public static function start() {          
+        public function __construct() {          
             
             // Start session
             session_start();

@@ -46,12 +46,6 @@
 
 
     /**
-     * Sessions configuration
-    **/
-    const SESSIONS_LIFETIME             = 1296000; // Max sessions lifetime (default: 15 days [77760000])
-    const SESSIONS_SALT                 = '68dae0ab4687006c8c50'; // sessions key
-
-    /**
      * Cookies configuration
     **/
     const COOKIES_LIFETIME              = 13392000; // Max cookies lifetime (default: 6 months [964224000])

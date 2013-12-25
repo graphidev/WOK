@@ -9,11 +9,11 @@
 	/**
      * Return absolute URL path to the string parameter
     **/
-	function path($string = null) {
+	function path($string = null, $protocol = SYSTEM_PROTOCOL) {
 		if(substr($string, 0, 1) == '/'):
-			return SYSTEM_PROTOCOL.SYSTEM_DOMAIN.SYSTEM_DIRECTORY."$string";
+			return $protocol.SYSTEM_DOMAIN.SYSTEM_DIRECTORY."$string";
 		else:
-			return SYSTEM_PROTOCOL.SYSTEM_DOMAIN.SYSTEM_DIRECTORY."/$string";
+			return $protocol.SYSTEM_DOMAIN.SYSTEM_DIRECTORY."/$string";
 		endif;
 	}
 	

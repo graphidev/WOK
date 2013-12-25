@@ -19,7 +19,7 @@
      * Inititialize Required classes
     **/
     new Console; // Start handling errors
-    Session::start(); // Initialiez session
+    Session::start(); // Initialize session
     Manifest::init(); // Initialize manifest data
     Request::init(); // Initialize request informations
      

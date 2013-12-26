@@ -35,6 +35,6 @@
     
     <request uri="static-page" action="static"></request>
     
-    <request uri="all-options" action="static" domain="~" languages="fr_FR" methods="get"></request>
+    <request uri="all-options" action="static" domain="~" languages="any" methods="get"></request>
     
 </manifest>

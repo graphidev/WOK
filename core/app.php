@@ -48,6 +48,8 @@
                 // Analyse request
                 foreach($requests as $case) {
                     $parameters = array();
+                    
+                    // define request options
                     $uri = $case->getAttribute('uri');
                     $uri_regexp = $uri;
                     $action = $case->getAttribute('action');
@@ -66,7 +68,8 @@
                         $methods = explode(' ', strtoupper($case->getAttribute('methods')));
                     else
                         $methods = array('GET', 'POST', 'HEAD', 'PUT');
-                                           
+                    
+                    // Define request parameters (URI, GET, POST, ...)
                     foreach($case->getElementsByTagName('param') as $param) {
                         $name = $param->getAttribute('name');
                         $type = $param->hasAttribute('type') ? $param->getAttribute('type') : 'URI';

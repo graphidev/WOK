@@ -145,11 +145,43 @@
             return (!empty(self::$parameters[$method][$name]) ? self::$parameters[$method][$name] : false);
         }
         
+        
         /**
          * Get request information
         **/
         public static function get($name) {
             return (!empty(self::$$name) ? self::$$name : false);   
+        }
+        
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function secured() {
+            return self::$secured;     
+        }
+        
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function ajax() {
+            return self::$ajax;     
+        }
+        
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function method() {
+            return self::$method;     
+        }
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function URI() {
+            return self::$URI;     
         }
 
     }

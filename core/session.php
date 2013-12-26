@@ -99,11 +99,8 @@
         /**
          * Get session informations
         **/
-        public static function get($parameter) {
-            if(self::has($parameter))
-                return $_SESSION[$parameter];
-            else
-                return false;
+        public static function get($parameter, $default = false) {
+            return self::has($parameter) ? $_SESSION[$parameter] : $default;
         }
         
         /**
@@ -131,7 +128,9 @@
             unset($_SESSION[$parameter]);
         }
         
-        
+        /**
+         * Get or set session language
+        **/
         public static function language($set = null) {
             if(!empty($set)):   
                 self::set('language', $set);

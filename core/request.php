@@ -67,8 +67,7 @@
              * Add URI parameters and action
             **/
             foreach(parent::$manifest as $i => $request) {
-
-                if(($request['url'] == self::$URI || preg_match('#^'.$request['url'].'$#isU', self::$URI)) 
+                if(($request['regexp'] == self::$URI || preg_match('#^'.$request['regexp'].'$#isU', self::$URI))
                    && in_array(self::$method, $request['methods'])
                    && ($request['domain'] == self::$domain || (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))):
                     
@@ -79,7 +78,7 @@
                         switch($param['type']) {
                             case 'URI':
                             
-                                $value = preg_replace('#^'.$request['url'].'$#isU', '$'.$index, self::get('URI'));
+                                $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('URI'));
                                 if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                     self::$parameters['URI'][$param['name']] = $value;
                                     $break = true;

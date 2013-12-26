@@ -14,15 +14,18 @@
          * Get URL from an action
         **/
         public static function url($action, $data = array()) {
-            if(!empty(self::$manifest[$action])):
-                $url = self::$manifest[$action]['url'];
-                foreach($data as $index => $value) {
-                    $url = str_replace(":$index", $value, $url);   
-                }
-                return path($url);
-            else:
-                return false;
-            endif;
+            foreach(self::$manifest as $key => $request) {
+                
+                if($request['name'] == $action):
+                    $uri = $request['uri'];
+                    foreach($data as $index => $value) {
+                        $uri = str_replace(":$index", $value, $uri);
+                    }
+                    break;
+                endif;
+            }
+            
+            return $uri ? path($uri) : false;
         }
         
         
@@ -45,8 +48,10 @@
                 // Analyse request
                 foreach($requests as $case) {
                     $parameters = array();
-                    $url = $case->getAttribute('url');
-                    $action = ($case->hasAttribute('action') ? $case->getAttribute('action') : null);
+                    $uri = $case->getAttribute('uri');
+                    $uri_regexp = $uri;
+                    $action = $case->getAttribute('action');
+                    $route = ($case->hasAttribute('name') ? $case->getAttribute('name') : $action);
                     if($case->hasAttribute('domain'))
                         $domain = str_replace('~', str_replace('www.', '', SYSTEM_DOMAIN), $case->getAttribute('domain'));
                     else
@@ -75,7 +80,7 @@
                         }
                         
                         if($type == 'URI') // Replace URI parameters by parameter REGEXP in $url
-                            $url = str_replace(":$name", "($regexp)", $url);
+                            $uri_regexp = str_replace(":$name", "($regexp)", $uri_regexp);
                             
                        $parameters[] = array(
                             'name' => $name,
@@ -86,13 +91,15 @@
                     }
                     
                     self::$manifest[] = array(
-                        'url' => $url,
+                        'uri' => $uri,
+                        'regexp' => $uri_regexp,
+                        'name' => $route,
                         'methods' => $methods,
                         'action' => $action,
                         'domain' => $domain,
                         'parameters' => (!empty($parameters) ? $parameters : array())
                     );
-                    
+                                        
                 }
                 
                 $json = fopen($tmp, 'w+');

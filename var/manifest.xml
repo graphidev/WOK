@@ -5,9 +5,10 @@
     <!-- 
         request
             - domain (optional) : The domain access (~ corresponds to the default domain)
-            - url (required) : the URI access, add a colon before parameters
+            - uri (required) : the URI access, add a colon before parameters
             - methods (default=ANY) : accepted request methods (REST)
             - action (required) : string for the action that should be called (null by default; controller:action or static)
+            - name (optional) : Used to call the request URI (if empty, the action's name is used)
 
             param (optional, recommended for URI parameters)
                 - name (required) : just the param name
@@ -18,7 +19,7 @@
     
     -->
     
-    <request domain="~" url="test/:var/:id/:another" action="Test:page">
+    <request uri="test/:var/:id/:another" action="Test:page" name="testpage">
         <param name="var" regexp="string" />
         <param name="id" regexp="integer" />
         <param name="another" regexp="any" />
@@ -31,6 +32,6 @@
         -->
     </request>
     
-    <request url="static-page" action="static"></request>
+    <request uri="static-page" action="static"></request>
     
 </manifest>

@@ -69,7 +69,9 @@
             foreach(parent::$manifest as $i => $request) {
                 if(($request['regexp'] == self::$URI || preg_match('#^'.$request['regexp'].'$#isU', self::$URI))
                    && in_array(self::$method, $request['methods'])
-                   && ($request['domain'] == self::$domain || (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))):
+                   && ($request['domain'] == self::$domain || 
+                       (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))
+                  && in_array(Session::language(), $request['languages'])):
                     
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index

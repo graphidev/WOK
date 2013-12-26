@@ -57,6 +57,11 @@
                     else
                         $domain = SYSTEM_DOMAIN;
                     
+                    if($case->hasAttribute('languages') && $case->getAttribute('languages') != '' && strtoupper($case->getAttribute('languages')) != 'ANY')
+                        $languages = explode(' ', $case->getAttribute('languages'));
+                    else
+                        $languages = explode(' ', SYSTEM_LANGUAGES);
+                    
                     if($case->hasAttribute('methods') && $case->getAttribute('methods') != '' && strtoupper($case->getAttribute('methods')) != 'ANY')
                         $methods = explode(' ', strtoupper($case->getAttribute('methods')));
                     else
@@ -95,6 +100,7 @@
                         'regexp' => $uri_regexp,
                         'name' => $route,
                         'methods' => $methods,
+                        'languages' => $languages,
                         'action' => $action,
                         'domain' => $domain,
                         'parameters' => (!empty($parameters) ? $parameters : array())

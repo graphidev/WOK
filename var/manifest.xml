@@ -9,6 +9,7 @@
             - methods (default=ANY) : accepted request methods (REST)
             - action (required) : string for the action that should be called (null by default; controller:action or static)
             - name (optional) : Used to call the request URI (if empty, the action's name is used)
+            - languages (default=ANY) : authorized languages
 
             param (optional, recommended for URI parameters)
                 - name (required) : just the param name
@@ -33,5 +34,7 @@
     </request>
     
     <request uri="static-page" action="static"></request>
+    
+    <request uri="all-options" action="static" domain="~" languages="fr_FR" methods="get"></request>
     
 </manifest>

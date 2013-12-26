@@ -22,7 +22,6 @@
     new Console; // Start handling errors
     new Session; // Initialize session
     new Request; // Initialize request informations
-     
 
 
     /**

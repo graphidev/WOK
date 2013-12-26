@@ -18,9 +18,9 @@
     /**
      * Inititialize Required classes
     **/
+    new App; // Initialize the app
     new Console; // Start handling errors
     new Session; // Initialize session
-    new Manifest; // Initialize manifest data
     new Request; // Initialize request informations
      
 

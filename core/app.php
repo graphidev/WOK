@@ -1,18 +1,35 @@
 <?php
 
-    /**
-     * Manifest class
-     * Generate manifest data and temporary files
-    **/
-
-    class Manifest {
-        
+    class App {
+     
         protected static $manifest = array();
-            
-        /**
-         * Build tmp manifest
-        **/
+        protected static $settings = array();
+        
         public function __construct() {
+            self::_manifest();
+        }
+        
+        
+        /**
+         * Get URL from an action
+        **/
+        public static function url($action, $data = array()) {
+            if(!empty(self::$manifest[$action])):
+                $url = self::$manifest[$action]['url'];
+                foreach($data as $index => $value) {
+                    $url = str_replace(":$index", $value, $url);   
+                }
+                return path($url);
+            else:
+                return false;
+            endif;
+        }
+        
+        
+        /**
+         * Load manifest for App usage
+        **/
+        private static function _manifest() {
             $tmp = root(PATH_TMP . '/manifest.json');
             $source = root(PATH_VAR.'/manifest.xml');
             
@@ -82,24 +99,9 @@
                 fwrite($json, json_encode(self::$manifest));
                 fclose($json);
 
-            endif;
+            endif;   
         }
         
-        
-        /**
-         * Get URL from an action
-        **/
-        public static function url($action, $data = array()) {
-            if(!empty(self::$manifest[$action])):
-                $url = self::$manifest[$action]['url'];
-                foreach($data as $index => $value) {
-                    $url = str_replace(":$index", $value, $url);   
-                }
-                return path($url);
-            else:
-                return false;
-            endif;
-        }
         
     }
 

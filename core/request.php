@@ -5,7 +5,7 @@
      * Contains the entry point and requests informations
     **/
     
-    class Request extends Manifest {
+    class Request extends App {
         
         protected static $URI         = false;
         protected static $domain        = null;

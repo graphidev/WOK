@@ -34,7 +34,7 @@
     /**
      * Set static pages controller (special)
     **/
-    Controller::assign(Request::get('action') == 'static', function() {
+    Controller::route(Request::get('action') == 'static', function() {
         Response::view(Request::get('URI'), 200, TEMPLATES_CACHE_STATICS);
     }, true);
 
@@ -42,7 +42,7 @@
     /**
      * Set manifest controllers
     **/
-    Controller::assign(Request::get('action') ? true : false, function() {
+    Controller::route(Request::get('action') ? true : false, function() {
         list($name, $action) = explode(':', Request::get('action'));
         if(file_exists(root(PATH_CONTROLLERS."/$name.ctrl.php"))):
             Controller::call($name, $action);
@@ -55,7 +55,7 @@
     /**
      * Set default homepage controller
     **/
-    Controller::assign(Request::get('URI') == '' ? true : false, function() {
+    Controller::route(Request::get('URI') == '' ? true : false, function() {
         new Response;
         Response::view('homepage', 200);
     }, true);
@@ -65,7 +65,7 @@
      * If there is no response for any controller
      * Just send a 404 response
     **/
-    Controller::assign(true, function() {
+    Controller::route(true, function() {
         new Response;
         Response::view('404', 404);
     }, true);

@@ -5,6 +5,7 @@
         
         private static $secured = false;
         
+        
         /**
          * Initialize session
         **/
@@ -58,6 +59,7 @@
             endif;
         }
         
+        
         /**
          * Check user session
         **/
@@ -73,6 +75,7 @@
                 endif;
             endif;
         }
+        
         
         /**
          * Log out user

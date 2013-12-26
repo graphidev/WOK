@@ -58,7 +58,7 @@
                         $domain = SYSTEM_DOMAIN;
                     
                     if($case->hasAttribute('methods') && $case->getAttribute('methods') != '' && strtoupper($case->getAttribute('methods')) != 'ANY')
-                        $methods = explode('|', strtoupper($case->getAttribute('methods')));
+                        $methods = explode(' ', strtoupper($case->getAttribute('methods')));
                     else
                         $methods = array('GET', 'POST', 'HEAD', 'PUT');
                                            

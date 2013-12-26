@@ -51,7 +51,7 @@
          * Set user as logged in
         **/
         public static function login($id = null, $persistant = true) {
-            if(!self::isLogged()):
+            if(!self::exists()):
                 self::set('id', !empty($id) ? id : uniqid());
                 if($persistant)
                     Cookie::set('session', self::get('id'), SESSIONS_LIFETIME, true, true);
@@ -61,7 +61,7 @@
         /**
          * Check user session
         **/
-        public static function isLogged() {
+        public static function exists() {
             if(self::has('id', true)):
                 return true;
             else:

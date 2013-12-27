@@ -1,6 +1,11 @@
-
+<?php
+    
+    Session::set('session.testme','tralala');
+    echo Session::get('session.testme', 'not found');
+?>
 
 <?php
+    exit;
     $result = Cookie::set('blabla', 'lalala', null, true);
     echo $result ? 'Cookie sent' : 'Error'; 
     echo '<br />';

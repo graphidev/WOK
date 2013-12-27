@@ -92,21 +92,49 @@
          * Check if session has parameter
         **/
         public static function has($parameter, $isempty = false) {
-            if($isempty && !empty($_SESSION[$parameter])):
-                return true;
-            else:
-                return isset($_SESSION[$parameter]);
-            endif;
+            $path = &$_SESSION;
+            $nodes = explode('.', $parameter);
+            foreach($nodes as $i => $node) {
+                if(isset($path[$node]))
+                    $path = &$path[$node]; 
+                else
+                    return false;
+            }
+            return $isempty ? !empty($path) : true;
         }
         
         /**
          * Get session informations
         **/
         public static function get($parameter, $default = false) {
-            return self::has($parameter) ? $_SESSION[$parameter] : $default;
+            $path = &$_SESSION;
+            $nodes = explode('.', $parameter);
+            foreach($nodes as $i => $node) {
+                if(isset($path[$node]))
+                    $path = &$path[$node]; 
+                else
+                    return $default;
+            }
+            return $path;
         }
         
         /**
+         * Set session information
+        **/
+        public static function set($parameter, $value) {
+            $path = str_replace('.', "']['", $parameter);
+            eval("\$_SESSION['$path']='$value';");
+        }
+        
+        
+        /**
+         * Delete a session information 
+        **/
+        public static function delete($parameter) {
+            unset($_SESSION[$parameter]);
+        }
+        
+                /**
          * Get session id
         **/
         public static function id() {
@@ -115,20 +143,6 @@
             else:
                 return self::get('uniqid');
             endif;
-        }
-        
-        /**
-         * Set session information
-        **/
-        public static function set($parameter, $value) {
-            $_SESSION[$parameter] = $value;
-        }
-        
-        /**
-         * Delete a session information 
-        **/
-        public static function delete($parameter) {
-            unset($_SESSION[$parameter]);
         }
         
         /**

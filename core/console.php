@@ -20,16 +20,12 @@
         /**
          * Redefine logs format
         **/
-        public function __construct() {
+        public static function handle() {
             if(CONSOLE_HANDLER_LEVEL !== false):
                 error_reporting(CONSOLE_HANDLER_LEVEL);
                 set_error_handler('Console::handler');
             endif;
-            register_shutdown_function('Console::shutdown');
-        }
-        
-        public static function shutdown() {
-            self::register();   
+            register_shutdown_function('Console::register');
         }
         
         public static function handler($type, $message, $file, $line){

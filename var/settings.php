@@ -22,12 +22,6 @@
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
     const SYSTEM_LANGUAGES              = 'en_EN fr_FR en_US'; // System accepted languages (separate with space)
     const SYSTEM_DEFAULT_LANGUAGE       = 'en_EN'; // System default language
-    
-    /**
-     * Templates settings
-    **/
-    const TEMPLATES_CACHE_STATICS       = false; // Cache static pages by default (true/false)
-    const TEMPLATES_CACHE_TIME          = 300 ; // Max cache files lifetime (default: 5 minutes)
 
 
     /**
@@ -39,16 +33,10 @@
     
 
     /**
-     * Tokens configuration
+     * Salts and keys
+     * Generated randomly on setup for security reasons
     **/
-    const TOKENS_LIFETIME               = 300; // Max tokens lifetime (default: 5 minutes [18000])
-    const TOKENS_SALT                   = '069de552f000c9b477ad'; // Tokens key
-
-
-    /**
-     * Cookies configuration
-    **/
-    const COOKIES_LIFETIME              = 13392000; // Max cookies lifetime (default: 6 months [964224000])
-    const COOKIES_SALT                  = '7b0dff4c1df29468f29c';  // Encryption key
+    const TOKENS_SALT                   = '069de552f000c9b477ad'; // Tokens salt
+    const COOKIES_SALT                  = '7b0dff4c1df29468f29c';  // Cookies Encryption key
 
 ?>

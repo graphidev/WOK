@@ -100,8 +100,8 @@
         const CACHE_PUBLIC          = 'PUBLIC'; // Cache public
         const CACHE_PROTECTED       = 'PROTECTED'; // Cache for autheticaed only
         const CACHE_PRIVATE         = 'PRIVATE'; // Cache private
-        const CACHETIME_NULL        = 0; // Do not cache
-        const CACHETIME_LOW         = 1800; // 5 minutes
+        const DISABLE_CACHE         = 0; // Do not cache
+        const CACHETIME_SHORT       = 1800; // 5 minutes
         const CACHETIME_MEDIUM      = 2592000; // 12 hours
         const CACHETIME_LONG        = 5184000; // 1 day
         
@@ -161,7 +161,7 @@
         /**
          * Send Cache headers
         **/
-        public static function cache($time = self::CACHETIME_LOW, $status = self::CACHE_PROTECTED) {
+        public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED) {
             // Private cache : do not cache
             if(!$time || $status == self::CACHE_PRIVATE):
                 $arguments = array(
@@ -227,7 +227,7 @@
         /**
          * Call a view file
         **/
-        public static function view($template, $status = 200, $cache = false) {            
+        public static function view($template, $status = 200, $cache = Response::DISABLE_CACHE) {            
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
                 self::status('html', $status);
                 self::_template($template, $cache);
@@ -257,6 +257,7 @@
             $prefix = ($cache && !is_bool($cache) ? "$cache-" : '');
             $template = root(PATH_TEMPLATES."/$file.php");
             $cached = root(PATH_CACHE."/$prefix$file-$language.html");
+            $time = (!is_bool($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             
             if($cache):
@@ -274,7 +275,7 @@
                 if($cache):
                     if(file_exists($cached) 
                        && filemtime($cached) > filemtime($template)
-                       && filemtime($cached) <= time()+TEMPLATES_CACHE_TIME):
+                       && filemtime($cached) <= time()+$time):
                         $overwrite = false;
                         echo file_get_contents($cached);
             
@@ -351,7 +352,7 @@
                 endif;
             
             else:
-                self::view('404', 404, TEMPLATES_CACHE_STATICS);
+                self::view('404', 404, true);
             endif;            
         }
         

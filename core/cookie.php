@@ -4,14 +4,15 @@
         
         const CRYPT_MODE = MCRYPT_MODE_CBC;
         const CRYPT_ALGORITHM = MCRYPT_RIJNDAEL_256;
+        const LIFETIME = 13392000; // 6 monthes
         
         /**
          * Define a cookie        
         **/
-        public static function set($name, $value, $duration = COOKIES_LIFETIME, $secured = false) {
+        public static function set($name, $value, $duration = Cookie::LIFETIME, $secured = false) {
                                     
             if(empty($duration))
-                $duration = COOKIES_LIFETIME;
+                $duration = Cookie::LIFETIME;
             
             $expire = time()+$duration;
             

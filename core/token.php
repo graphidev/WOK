@@ -2,6 +2,8 @@
     
     class Token {
         
+        const LIFETIME = 300; // 5 minutes
+        
         
         /**
          * Generate a token
@@ -19,12 +21,12 @@
         /**
          * Check token validity
         **/
-        public static function authorized($name, $key, $lifetime) {
+        public static function authorized($name, $key, $lifetime = Token::LIFETIME) {
             $token = self::_get($name);
             if(!$token) return false;
             
             if(empty($lifetime))
-                $lifetime = TOKENS_LIFETIME;
+                $lifetime = Token::LIFETIME;
             
             $elapsed = time() - $token['time'];
             

@@ -1,7 +1,11 @@
 <?php
 
+    /**
+     * File management class
+    **/
 
 	class File {
+        
 		private $mime;
 		private $path;
 		private $result = false;

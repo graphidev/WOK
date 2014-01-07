@@ -10,8 +10,6 @@
 # Copyright (c) 2004-2006 John Gruber  
 # <http://daringfireball.net/projects/markdown/>
 #
-namespace Tools;
-
 
 #
 # Markdown Parser Class
@@ -1524,7 +1522,7 @@ class Markdown {
 # one.
 #
 
-class _MarkdownExtra_TmpImpl extends \Tools\Markdown {
+class _MarkdownExtra_TmpImpl extends Markdown {
 
 	### Configuration Variables ###
 
@@ -3094,7 +3092,7 @@ class _MarkdownExtra_TmpImpl extends \Tools\Markdown {
 
 
 function markdown($string) {     
-    return \Tools\Markdown::defaultTransform($string);
+    return Markdown::defaultTransform($string);
 }
 
 ?>

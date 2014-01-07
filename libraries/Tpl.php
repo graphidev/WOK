@@ -8,7 +8,7 @@
                 extract($transmit);
                 include($path);
             else:
-                Console::log("Can't call zone '$path'", Console::LOG_TEMPLATE);
+                trigger_error("Can't call zone '$path'", E_USER_NOTICE);
             endif;
         }
         

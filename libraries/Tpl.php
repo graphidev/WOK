@@ -1,6 +1,6 @@
 <?php
 
-    class Tpl extends Request {
+    class Tpl {
         
         public static function zone($path, $transmit = array()) {
             $path = root(PATH_TEMPLATES."/$path.php");

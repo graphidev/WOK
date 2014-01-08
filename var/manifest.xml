@@ -16,7 +16,7 @@
                 - regexp (optional) : how full value should be ('string', 'integer', 'any' or a custom regexp)
                 - type (optional) : predefined parameter type (URI, GET, POST, FILE; default: URI)
 
-            /!\ URI Parameters must be in the same order than in the request 'url' attribute
+            /!\ URI Parameters must be in the same order than in the request 'uri' attribute
     
     -->
     
@@ -32,6 +32,12 @@
         <param name="file" type="file" />
         -->
     </request>
+    
+    <request uri="test-controller" action="test:form">
+        <param name="data" type="post" regexp="array" />
+    </request>
+    
+    <request uri="test-controller" action="test:action"></request>
     
     <request uri="static-page" action="static"></request>
     

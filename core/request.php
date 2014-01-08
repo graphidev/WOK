@@ -93,12 +93,18 @@
                                 break;
                                 
                             case 'POST':
-                                    
-                                if(isset(self::$parameters['POST'][$param['name']]) 
-                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']]))
-                                    $break = true;
-                                else
+                            
+                                if(isset(self::$parameters['POST'][$param['name']])):
+                                    if($param['regexp'] == 'array' && is_array(self::$parameters['POST'][$param['name']])):
+                                        $break = true;
+                                    elseif(preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']])):
+                                        $break = true;
+                                    else:
+                                        $break = false;
+                                    endif;
+                                else:
                                     $break = false;
+                                endif;
                                 
                                 break;
                                 

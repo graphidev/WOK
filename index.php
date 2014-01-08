@@ -7,15 +7,6 @@
 
 
     /**
-     * Foremost, we'll check if all the folders which must be writable are writable
-    **/
-    if(!@is_writable(PATH_TMP) || !@is_writable(root(PATH_LOGS))):
-        new Response;
-        Response::view('503', 503, true);
-        trigger_error('not writable system folders', E_USER_ERROR);
-    endif;
-
-    /**
      * Inititialize Required classes
     **/
     new App; // Initialize the app

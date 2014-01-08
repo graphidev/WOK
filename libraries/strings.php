@@ -72,26 +72,6 @@
 		return $result;
 	}
 
-
-    /**
-     * Remove Javascript actions in a string
-    **/
-    function strip_scripts($string, $exceptions = array()) {
-		$events = array('onabort', 'onblur', 'onchange', 'onclick', 'ondblclick', 'ondragdrop', 'onerror', 'onfocus', 'onkeydown', 'onkeypress', 'onkeyup', 'onload', 'onmouseover', 'onmouseout', 'onreset', 'onresize', 'onselect', 'onsubmit', 'onunload');
-		
-		foreach($events as $i => $name) {
-			if(in_array($name, $exceptions)):
-				unset($events[$i]);
-			endif;
-		}
-		
-        $string = preg_replace('#<script(.+)?>(.+)</script>#isU', '', $string);
-		$string = preg_replace('# ('.implode('|',$events).')="(.+)"#isU', null, $string);
-		$string = preg_replace('# ('.implode('|',$events).')=\'(.+)\'#isU', null, $string);
-		
-		return $string;
-	}
-    
     
     /**
      * Generate an URL accepted format from a string

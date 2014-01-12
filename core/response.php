@@ -260,29 +260,28 @@
             $time = (!is_bool($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             
-            if($cache):
-                $callback = function($buffer) use(&$overwrite, $cached) {
-                    if($overwrite)
-                        file_put_contents($cached, $buffer);
-                    return $buffer;
-                };
-            else:
-                $callback = null;
-            endif;
+            
+            $callback = function($buffer) use(&$overwrite, $cached, $cache) {
+                // Minify output
+                $buffer = preg_replace('/<!--(?!s*(?:[if [^]]+]|!|>))(?:(?!-->).)*-->/s', '', $buffer);
+                $buffer = str_replace(array("\r\n", "\r", "\n", "\t"), '', $buffer);
+                while(stristr($buffer, '  ')) 
+                    $buffer = str_replace('  ', ' ', $buffer); 
+                
+                // Overwrite cached file
+                if($cache && $overwrite)
+                    file_put_contents($cached, $buffer);
+                    
+                return $buffer;
+            };
             
             ob_start($callback); // Keep output in a buffer
             
-                if($cache):
-                    if(file_exists($cached) 
-                       && filemtime($cached) > filemtime($template)
-                       && filemtime($cached) <= time()+$time):
-                        $overwrite = false;
-                        echo file_get_contents($cached);
-            
-                    else:
-                        extract(self::$data);
-                        include_once($template);
-                    endif;
+                if($cache && file_exists($cached) 
+                   && filemtime($cached) > filemtime($template)
+                   && filemtime($cached) <= time()+$time):
+                    $overwrite = false;
+                    echo file_get_contents($cached);
 
                 else:
                     extract(self::$data);

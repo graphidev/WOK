@@ -31,7 +31,7 @@
     const PATH_LOGS             = '/var/logs'; // PHP logs directory
     const PATH_CACHE            = '/var/cache'; // PHP logs directory
     const PATH_CONTROLLERS      = '/controllers'; // Controllers' directory
-	const PATH_LIBRARIES        = '/libraries'; // Libraries path
+	const PATH_MODELS           = '/models'; // Libraries path
     const PATH_LOCALES          = '/locales'; // Languages' files directory
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
     const PATH_FILES            = '/files'; // Files' directory
@@ -63,7 +63,7 @@
         });
         
         /**
-         * Controllers libraries auto loader
+         * Controllers auto loader
         **/
         spl_autoload_register(function($name) {
             $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
@@ -74,12 +74,15 @@
         });
 
         /**
-         * Additional libraries auto loader
+         * Models auto loader
         **/
         spl_autoload_register(function($name) {
-            $path = str_replace('\\', DIRECTORY_SEPARATOR, $name);
-            if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES . "/$path.php"))
-                require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.php";
+            
+            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
+            $path = str_replace('models/', '', $path);
+                        
+            if(file_exists(SYSTEM_ROOT.PATH_MODELS . "/$path.model.php"))
+                require_once SYSTEM_ROOT.PATH_MODELS . "/$path.model.php";
         });
 
         /**

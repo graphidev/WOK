@@ -26,7 +26,7 @@
      * Set static pages controller (special)
     **/
     Controller::route(Request::get('action') == 'static', function() {
-        Response::view(Request::get('URI'), 200, TEMPLATES_CACHE_STATICS);
+        Response::view(Request::get('URI'), 200, true);
     }, true);
 
 

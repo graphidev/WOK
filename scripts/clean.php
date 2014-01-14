@@ -1,12 +1,20 @@
-<?php
+<?php // Remove temporary files
+    require "cli.php";
+    
 
     /**
-     * Clean all temporary files
+     * Ask for an option
     **/
-
-    if(!defined('ACCESS_PATH'))
-        exit("* Call as : php cli.php [script] [args]");
-
+    if(empty($_args)):  
+        echo "Illegal options number\n";
+        echo "  -cache          Remove cache files\n";
+        echo "  -logs           Remove logs\n";
+        echo "  -tmp            Remove temporary files (manifest, locales, ...)\n";
+        echo "  -all            Remove all temporary files (cache, logs, ...)\n";
+        exit;
+    endif;
+    
+    
     function remove($tmp, $path) {
         
         foreach($tmp as $name => $value) {
@@ -23,26 +31,16 @@
                 echo '[ERROR] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
         }
     }
-    /**
-     * Ask for an option
-    **/
-    if(empty($_opts)):
-        $input = input("Which folders (separate with a space) ?  [all|(tmp|logs|cache|uploads)] :");
-        $folders = explode(' ', $input);
-        foreach($folders as $i => $folder) {
-            $_opts[] = "-$folder";
-        }
-    endif;
-    
+
 
     /**
      * Clean tmp folder
     **/
-    if(in_array('-tmp', $_opts) || in_array('-all', $_opts)): 
+    if(in_array('-tmp', $_args) || in_array('-all', $_args)): 
         $tmp = tree(ACCESS_PATH.PATH_TMP);
-    
+        
+        echo "Clean ".PATH_TMP." ...\n";
         if(!empty($tmp)):
-            echo "Clean ".PATH_TMP." :\n";
             remove($tmp, ACCESS_PATH.PATH_TMP);
             echo "\n\n";
         endif;
@@ -53,12 +51,13 @@
     /**
      * Clean logs folder
     **/
-    if(in_array('-logs', $_opts) || in_array('-all', $_opts)): 
+    if(in_array('-logs', $_args) || in_array('-all', $_args)): 
         
         $tmp = tree(ACCESS_PATH.PATH_LOGS);
-    
+        
+        echo "Clean ".PATH_LOGS." ...\n";
         if(!empty($tmp)):
-            echo "Clean ".PATH_LOGS." :\n";
+            
             remove($tmp, ACCESS_PATH.PATH_LOGS);
             echo "\n\n";
         endif;
@@ -70,12 +69,12 @@
     /**
      * Clean cache folder
     **/
-    if(in_array('-cache', $_opts) || in_array('-all', $_opts)): 
+    if(in_array('-cache', $_args) || in_array('-all', $_args)): 
         
         $tmp = tree(ACCESS_PATH.PATH_CACHE);
-    
+
+        echo "Clean ".PATH_CACHE." ...\n";
         if(!empty($tmp)):
-            echo "Clean ".PATH_CACHE." :\n";
             remove($tmp, ACCESS_PATH.PATH_CACHE);
             echo "\n\n";
         endif;
@@ -84,21 +83,6 @@
     endif;
 
 
-    /**
-     * Clean uploads folder
-    **/
-    if(in_array('-uploads', $_opts) || in_array('-all', $_opts)): 
-        
-        $tmp = tree(ACCESS_PATH.PATH_TMP_FILES);
-    
-        if(!empty($tmp)):
-            echo "Clean ".PATH_LOGS." :\n";
-            remove($tmp, ACCESS_PATH.PATH_TMP_FILES);
-            echo "\n\n";
-        endif;
-        
-    endif;
-
-    echo "Temporary folders cleaned\n";
+    echo "Cleaning is complete\n";
 
 ?>

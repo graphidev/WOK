@@ -1,51 +1,19 @@
-<?php
-    
-    if(!defined('ACCESS_PATH'))
-        exit("* Call as : php cli.php [script] [args]\n");
-
-    function setSetting($name, $value, $settings) {
-        $settings = preg_replace("#const $name (.+)?= '(.+)?';#", "const $name $1= '$value';", $settings);
-        echo "-- -- $name : $value\n";
-        return $settings;
-    }
-    
-    
-    /**
-     * WOK ASCII name
-    **/
-    echo  "
- __          ______  _  __       
- \ \        / / __ \| |/ /      
-  \ \  /\  / / |  | | ' /       
-   \ \/  \/ /| |  | |  <        
-    \  /\  / | |__| | . \       
-     \/  \/   \____/|_|\_\      
-    \n";
-
-    echo "\nUsing WOK " . WOK_VERSION . "\n\n";
+<?php // Install WOK
+    require "cli.php";
 
     /**
      * Check PHP version
     **/
     if(PHP_VERSION < 5.3)
-        exit("ERROR :: You must updgrade your PHP version to 5.3 at least\n\n");
+        exit("ERROR :: You must updgrade your PHP version to 5.3  or newer\n\n");
     
-    /**
-     * Check required folders
-    **/
-    if(!@is_writable(ACCESS_PATH.PATH_VAR) || 
-       !@is_writable(ACCESS_PATH.PATH_TMP) || 
-       !@is_writable(ACCESS_PATH.PATH_LOGS) || 
-       !@is_writable(ACCESS_PATH.PATH_FILES) || 
-       !@is_writable(ACCESS_PATH.PATH_TMP_FILES)):
-        echo "ERROR :: The following folders must be accesible for writing :\n";
-        echo "- " . PATH_VAR . "\n";
-        echo "- " . PATH_TMP . "\n";
-        echo "- " . PATH_LOGS . "\n";
-        echo "- " . PATH_FILES . "\n";
-        echo "- " . PATH_TMP_FILES . "\n";
-        exit("\n");
-    endif;
+
+    function setSetting($name, $value, $settings) {
+        $settings = preg_replace("#const $name (.+)?= '(.+)?';#", "const $name $1= '$value';", $settings);
+        echo "  $name : $value\n";
+        return $settings;
+    }
+    
 
     /**
      * Calculate default settings
@@ -58,15 +26,11 @@
     $url = $protocol.$domain.$directory;
     
     // Customize configuration
-    if(!in_array('-auto', $_opts)):
-        
-        echo "* The following program will help you to configure WOK\n";
-        echo "* Please type 'exit' in any time if you want to stop it\n\n";
-        
+    if(!in_array('--auto', $_args)):
         /**
          * Customize settings
         **/
-        $manual = strtoupper(input("Would you want to customize your setup ? (Y/N) : "));
+        $manual = strtoupper(input("Would you want to customize your set up informations ? (Y/N) : "));
         if(empty($manual) || $manual == 'Y'):
             
             echo "* Press enter (empty value) to get the calculated value\n";
@@ -136,7 +100,7 @@
     echo "\nGenerate required files and folders ...\n";
     foreach($languages as $i => $language) {
         if(@mkdir(ACCESS_PATH.PATH_LOCALES."/$language"))
-            echo "-- -- /locales/$language\n";
+            echo "  /locales/$language\n";
     }
         
     /**
@@ -149,13 +113,13 @@
         fclose($file);
     endif;
     file_put_contents(ACCESS_PATH.'/.htaccess', $htaccess);
-    echo "-- -- /.htaccess\n";
+    echo "  /.htaccess\n";
     
     echo "\n";
 
     /**
      * End of WOK setup
     **/
-    echo "* The configuration is now ready.\n";
-    echo "* Thank you for considering WOK power. \n\n\n";
+    echo "The configuration is now ready.\n";
+    echo "Thank you for considering WOK power. \n";
 ?>

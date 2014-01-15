@@ -21,10 +21,11 @@
             return $data;
     }
 
+
     /**
      * CLI usage
     **/
-    if($argv[0] == pathinfo(__FILE__, PATHINFO_BASENAME)):
+    if(basename($argv[0]) == pathinfo(__FILE__, PATHINFO_BASENAME)):
 
         if(!empty($argv[1]) && $argv[1] == '-v'):
             echo WOK_VERSION.' '.WOK_EXTRA_RELEASE."\r\n";
@@ -38,7 +39,7 @@
             $scripts = scandir(ACCESS_PATH.'/scripts');
             foreach($scripts as $i => $name) {
                 if(substr($name, -4) == '.php' && $name != 'cli.php'):
-                    $script = fopen($name, 'r');
+                    $script = fopen(ACCESS_PATH.'/scripts/'.$name, 'r');
                     $description = trim(preg_replace("#^<\?php ?(//(.+))?$#isU", '$2', fgets($script, 4096)));
                     
                     //echo '  '.substr($name, 0, -4)."        $description\n";

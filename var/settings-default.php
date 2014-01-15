@@ -20,17 +20,14 @@
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
 
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
-    const SYSTEM_LANGUAGES              = 'en_EN fr_FR en_US'; // System accepted languages (separate with space)
+    const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
     const SYSTEM_DEFAULT_LANGUAGE       = 'en_EN'; // System default language
-
-
-    /**
-     * Console settings (logs)
-    **/
-    const CONSOLE_LOG_FORMAT            = '[:time] [:type] :message'; // Can contains : time, type, message, file, line
-    const CONSOLE_FATAL_EMAILS          = 'debug@domain.tld'; // Separate e-mails with spaces
-    const CONSOLE_HANDLER_LEVEL         = E_ALL; // Errors that must be handled (default: E_ALL, false to disallow handling)
     
+    /**
+     * Project environnement state
+    **/
+    const SYSTEM_DEBUG                  = true;
+
 
     /**
      * Salts and keys

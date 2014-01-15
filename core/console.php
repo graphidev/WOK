@@ -7,6 +7,13 @@
         private static $logs        = array();
         
         /**
+         * Console configuration
+        **/
+        const ERRORS_REPORTING      = E_ALL;
+        const LOGS_FORMAT           = '[:time] [:type] :message';
+        
+        
+        /**
          * Logs types
         **/
         const LOG_DEFAULT       = 'DEFAULT'; // Default log
@@ -15,16 +22,16 @@
         const LOG_NOTICE        = 'NOTICE';
         const LOG_DEPRECATED    = 'DEPRECATED';
         const LOG_DEBUG         = 'DEBUG';
-        
+                
         
         /**
          * Redefine logs format
         **/
         public static function handle() {
-            if(CONSOLE_HANDLER_LEVEL !== false):
-                error_reporting(CONSOLE_HANDLER_LEVEL);
+            if(!SYSTEM_DEBUG) // Run Console errors handler
                 set_error_handler('Console::handler');
-            endif;
+            
+            error_reporting(Console::ERRORS_REPORTING);
             register_shutdown_function('Console::register');
         }
         
@@ -136,7 +143,7 @@
                 
                 foreach(self::$logs as $i => $log) {
                                 
-                    $row = CONSOLE_LOG_FORMAT . PHP_EOL;
+                    $row = Console::LOGS_FORMAT . PHP_EOL;
                     foreach($log as $param => $value) {                            
                         $row = str_replace(":$param", $value, $row);
                     }

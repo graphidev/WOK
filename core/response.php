@@ -263,13 +263,15 @@
             
             $callback = function($buffer) use(&$overwrite, $cached, $cache) {
                 // Minify output
-                $buffer = preg_replace('/<!--(?!s*(?:[if [^]]+]|!|>))(?:(?!-->).)*-->/s', '', $buffer);
-                $buffer = str_replace(array("\r\n", "\r", "\n", "\t"), '', $buffer);
-                while(stristr($buffer, '  ')) 
-                    $buffer = str_replace('  ', ' ', $buffer); 
+                if(!SYSTEM_DEBUG):
+                    $buffer = preg_replace('/<!--(?!s*(?:[if [^]]+]|!|>))(?:(?!-->).)*-->/s', '', $buffer);
+                    $buffer = str_replace(array("\r\n", "\r", "\n", "\t"), '', $buffer);
+                    while(stristr($buffer, '  ')) 
+                        $buffer = str_replace('  ', ' ', $buffer); 
+                endif;
                 
                 // Overwrite cached file
-                if($cache && $overwrite)
+                if(!SYSTEM_DEBUG && $cache && $overwrite)
                     file_put_contents($cached, $buffer);
                     
                 return $buffer;

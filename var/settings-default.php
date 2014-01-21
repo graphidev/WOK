@@ -27,6 +27,7 @@
      * Project environnement state
     **/
     const SYSTEM_DEBUG                  = true;
+    const SYSTEM_MAINTENANCE            = false;
 
 
     /**

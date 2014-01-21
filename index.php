@@ -23,6 +23,14 @@
 
     
     /**
+     * Ongoing maintenance 
+    **/
+    Controller::route(SYSTEM_MAINTENANCE, function() {
+        Response::view('maintenance', 503, true);
+    }, true);
+
+
+    /**
      * Set static pages controller (special)
     **/
     Controller::route(Request::get('action') == 'static', function() {

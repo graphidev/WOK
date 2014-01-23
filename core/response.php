@@ -257,7 +257,7 @@
             $prefix = ($cache && !is_bool($cache) ? "$cache-" : '');
             $template = root(PATH_TEMPLATES."/$file.php");
             $cached = root(PATH_CACHE."/$prefix$file-$language.html");
-            $time = (!is_bool($cache) ? $cache : Response::CACHETIME_SHORT);
+            $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             
             

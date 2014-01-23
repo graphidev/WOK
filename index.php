@@ -64,8 +64,8 @@
      * Just send a 404 response
     **/
     Controller::route(true, function() {
-        new Response;
-        Response::view('404', 404, true);
+        $prefix = nl2url(Request::get('URI'));
+        Response::view('404', 404, $prefix);
     }, true);
 
 

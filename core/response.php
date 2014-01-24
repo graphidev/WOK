@@ -252,11 +252,11 @@
         /**
          * Generate template output
         **/
-        private static function _template($file, $cache) {
+        private static function _template($view, $cache) {
             $language = Session::language();
-            $prefix = ($cache && !is_bool($cache) ? "$cache-" : '');
-            $template = root(PATH_TEMPLATES."/$file.php");
-            $cached = root(PATH_CACHE."/$prefix$file-$language.html");
+            $suffix = ($cache && !is_bool($cache) ? "-$cache" : '');
+            $template = root(PATH_TEMPLATES."/$view.php");
+            $cached = root(PATH_CACHE."/$view$suffix-$language.html");
             $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             
@@ -283,7 +283,7 @@
                    && filemtime($cached) > filemtime($template)
                    && filemtime($cached) <= time()+$time):
                     $overwrite = false;
-                    echo file_get_contents($cached);
+                    echo readfile($cached);
 
                 else:
                     extract(self::$data);

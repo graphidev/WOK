@@ -101,9 +101,9 @@
         const CACHE_PROTECTED       = 'PROTECTED'; // Cache for autheticaed only
         const CACHE_PRIVATE         = 'PRIVATE'; // Cache private
         const DISABLE_CACHE         = 0; // Do not cache
-        const CACHETIME_SHORT       = 1800; // 5 minutes
-        const CACHETIME_MEDIUM      = 2592000; // 12 hours
-        const CACHETIME_LONG        = 5184000; // 1 day
+        const CACHETIME_SHORT       = 360; // 1 minutes
+        const CACHETIME_MEDIUM      = 216000; // 1 hour
+        const CACHETIME_LONG        = 5184000; // 24 hours
         
         /**
          * Frame constants

@@ -275,7 +275,7 @@
                    && filemtime($cached) > filemtime($template)
                    && filemtime($cached) <= time()+$time):
                     $overwrite = false;
-                    echo readfile($cached);
+                    readfile($cached);
 
                 else:
                     extract(self::$data);

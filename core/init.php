@@ -55,6 +55,12 @@
         require_once SYSTEM_ROOT.PATH_CORE . '/utilities.php'; // Framework functions
         
         /**
+         * Set default locale
+         * This information may be updated by using Locales
+        **/
+        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE);
+    
+        /**
          * Core libraries auto loader
         **/
         spl_autoload_register(function($name) {

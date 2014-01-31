@@ -256,6 +256,7 @@
             $language = Session::language();
             $suffix = ($cache && !is_bool($cache) ? "-$cache" : '');
             $template = root(PATH_TEMPLATES."/$view.php");
+            $cache = (!SYSTEM_DEBUG ? $cache : false);
             $cached = root(PATH_CACHE."/$view$suffix-$language.html");
             $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
@@ -263,7 +264,7 @@
             
             $callback = function($buffer) use(&$overwrite, $cached, $cache) {                
                 // Overwrite cached file
-                if(!SYSTEM_DEBUG && $cache && $overwrite)
+                if($cache && $overwrite)
                     file_put_contents($cached, $buffer);
                     
                 return $buffer;
@@ -285,7 +286,6 @@
 
             ob_end_flush(); // Generate output
         }
-        
         
         /**
          * Send JSON data

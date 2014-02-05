@@ -72,9 +72,7 @@
             );
             
             if($exit):
-                Console::register();
-                $response = new Response;
-                $response->view('503', 503);
+                Response::view('503', 503);
                 exit;
             endif;
         }

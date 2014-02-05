@@ -92,8 +92,8 @@
              * Models
             **/
             $model = str_replace('models/', '', $path);
-            if(file_exists(SYSTEM_ROOT.PATH_MODELS . "/$model.model.php"))
-                require_once SYSTEM_ROOT.PATH_MODELS . "/$model.model.php";
+            if(file_exists(SYSTEM_ROOT.PATH_MODELS . "/$model.mdl.php"))
+                require_once SYSTEM_ROOT.PATH_MODELS . "/$model.mdl.php";
             
             /**
              * External libraries

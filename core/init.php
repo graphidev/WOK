@@ -107,7 +107,14 @@
         **/
         if(!function_exists('json_decode') && !function_exists('json_encode'))
 			require_once SYSTEM_ROOT.PATH_CORE . "/json.php"; // JSON functions
-    
+        
+        
+        /**
+         * Start handling errors
+        **/
+        Console::handle();
+        
+
         /**
          * Once everything is fine loaded, we call the options file.
          * This one will be used to add your own stuffs.

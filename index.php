@@ -10,7 +10,6 @@
      * Inititialize Required classes
     **/
     new App; // Initialize the app
-    Console::handle(); // Start handling errors
     new Session; // Initialize session
     new Request; // Initialize request informations
 

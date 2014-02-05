@@ -58,47 +58,46 @@
          * Set default locale
          * This information may be updated by using Locales
         **/
-        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE);
-    
+        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF8');
+
         /**
-         * Core libraries auto loader
+         * Start and send every required headers.
+        **/
+        if(!headers_sent())
+            @date_default_timezone_set(SYSTEM_TIMEZONE); // Define date timezone        
+
+        /**
+         * Autoload libraries
+         * Core, Controllers, Models and external libraries
         **/
         spl_autoload_register(function($name) {
+            
+            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
+            
+            /**
+             * Core libraries
+            **/
             $name = strtolower($name);
             if(file_exists(SYSTEM_ROOT.PATH_CORE . "/$name.php"))
                 require_once SYSTEM_ROOT.PATH_CORE . "/$name.php";
-        });
-        
-        /**
-         * Controllers auto loader
-        **/
-        spl_autoload_register(function($name) {
-            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
-            $path = str_replace('controllers/', '', $path);
             
-            if(file_exists(SYSTEM_ROOT.PATH_CONTROLLERS . "/$path.ctrl.php"))
-                require_once SYSTEM_ROOT.PATH_CONTROLLERS . "/$path.ctrl.php";
-        });
-
-        /**
-         * Models auto loader
-        **/
-        spl_autoload_register(function($name) {
+            /**
+             * Controllers
+            **/
+            $controller = str_replace('controllers/', '', $path);
+            if(file_exists(SYSTEM_ROOT.PATH_CONTROLLERS . "/$controller.ctrl.php"))
+                require_once SYSTEM_ROOT.PATH_CONTROLLERS . "/$controller.ctrl.php";
             
-            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
-            $path = str_replace('models/', '', $path);
-                        
-            if(file_exists(SYSTEM_ROOT.PATH_MODELS . "/$path.model.php"))
-                require_once SYSTEM_ROOT.PATH_MODELS . "/$path.model.php";
-        });
-
-        /**
-         * Libraries auto loader
-        **/
-        spl_autoload_register(function($name) {
+            /**
+             * Models
+            **/
+            $model = str_replace('models/', '', $path);
+            if(file_exists(SYSTEM_ROOT.PATH_MODELS . "/$model.model.php"))
+                require_once SYSTEM_ROOT.PATH_MODELS . "/$model.model.php";
             
-            $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
-            
+            /**
+             * External libraries
+            **/            
             if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php"))
                 require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php";
         });
@@ -108,13 +107,6 @@
         **/
         if(!function_exists('json_decode') && !function_exists('json_encode'))
 			require_once SYSTEM_ROOT.PATH_CORE . "/json.php"; // JSON functions
-
-        /**
-         * Start and send every required headers.
-        **/
-        if(!headers_sent()):
-            @date_default_timezone_set(SYSTEM_TIMEZONE); // Define date timezone
-        endif;
     
         /**
          * Once everything is fine loaded, we call the options file.

@@ -146,6 +146,8 @@
             
             if(!empty(self::$types[$type]))           
                 header("Content-type: ".self::$types[$type], true, $code);
+            else
+                header("Content-type: $type", true, $code);
         }
         
         /**
@@ -332,18 +334,10 @@
                     ));
                 endif;
                 
-                if(Request::get('range')):
-                    set_time_limit(0);
-                    $file = @fopen(root("/$path"), "rb");
-                    while(!feof($file)):
-                        print(@fread($file, 1024*8));
-                        ob_flush();
-                        flush();
-                    endwhile;
-                else:
-                    self::status(null, 416);
-                endif;
-            
+          
+                ob_clean();
+                readfile(root("/$path"));
+                    
             else:
                 self::view('404', 404, true);
             endif;            

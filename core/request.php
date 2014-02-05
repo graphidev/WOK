@@ -5,7 +5,7 @@
      * Contains the entry point and requests informations
     **/
     
-    class Request extends Manifest {
+    class Request extends App {
         
         protected static $URI         = false;
         protected static $domain        = null;
@@ -26,7 +26,7 @@
         /**
          * Build request
         **/
-        public static function init() {
+        public function __construct() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
             $static         = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
@@ -67,10 +67,11 @@
              * Add URI parameters and action
             **/
             foreach(parent::$manifest as $i => $request) {
-
-                if(($request['url'] == self::$URI || preg_match('#^'.$request['url'].'$#isU', self::$URI)) 
+                if(($request['regexp'] == self::$URI || preg_match('#^'.$request['regexp'].'$#isU', self::$URI))
                    && in_array(self::$method, $request['methods'])
-                   && ($request['domain'] == self::$domain || (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))):
+                   && ($request['domain'] == self::$domain || 
+                       (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))
+                  && in_array(Session::language(), $request['languages'])):
                     
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
@@ -79,7 +80,7 @@
                         switch($param['type']) {
                             case 'URI':
                             
-                                $value = preg_replace('#^'.$request['url'].'$#isU', '$'.$index, self::get('URI'));
+                                $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('URI'));
                                 if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                     self::$parameters['URI'][$param['name']] = $value;
                                     $break = true;
@@ -92,12 +93,18 @@
                                 break;
                                 
                             case 'POST':
-                                    
-                                if(isset(self::$parameters['POST'][$param['name']]) 
-                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']]))
-                                    $break = true;
-                                else
+                            
+                                if(isset(self::$parameters['POST'][$param['name']])):
+                                    if($param['regexp'] == 'array' && is_array(self::$parameters['POST'][$param['name']])):
+                                        $break = true;
+                                    elseif(preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']])):
+                                        $break = true;
+                                    else:
+                                        $break = false;
+                                    endif;
+                                else:
                                     $break = false;
+                                endif;
                                 
                                 break;
                                 
@@ -144,11 +151,43 @@
             return (!empty(self::$parameters[$method][$name]) ? self::$parameters[$method][$name] : false);
         }
         
+        
         /**
          * Get request information
         **/
         public static function get($name) {
             return (!empty(self::$$name) ? self::$$name : false);   
+        }
+        
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function secured() {
+            return self::$secured;     
+        }
+        
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function ajax() {
+            return self::$ajax;     
+        }
+        
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function method() {
+            return self::$method;     
+        }
+        
+        /**
+         * Check secured connexion
+        **/
+        public static function URI() {
+            return self::$URI;     
         }
 
     }

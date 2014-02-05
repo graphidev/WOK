@@ -1,33 +1,38 @@
 <?php
 
-    /**
-     * Manifest class
-     * Generate manifest data and temporary files
-    **/
-
-    class Manifest {
-        
+    class App {
+     
         protected static $manifest = array();
+        protected static $settings = array();
+        
+        public function __construct() {
+            self::_manifest();
+        }
+        
         
         /**
          * Get URL from an action
         **/
         public static function url($action, $data = array()) {
-            if(!empty(self::$manifest[$action])):
-                $url = self::$manifest[$action]['url'];
-                foreach($data as $index => $value) {
-                    $url = str_replace(":$index", $value, $url);   
-                }
-                return path($url);
-            else:
-                return false;
-            endif;
+            foreach(self::$manifest as $key => $request) {
+                
+                if($request['name'] == $action):
+                    $uri = $request['uri'];
+                    foreach($data as $index => $value) {
+                        $uri = str_replace(":$index", $value, $uri);
+                    }
+                    break;
+                endif;
+            }
+            
+            return $uri ? path($uri) : false;
         }
         
+        
         /**
-         * Build tmp manifest
+         * Load manifest for App usage
         **/
-        public static function init() {
+        private static function _manifest() {
             $tmp = root(PATH_TMP . '/manifest.json');
             $source = root(PATH_VAR.'/manifest.xml');
             
@@ -43,18 +48,28 @@
                 // Analyse request
                 foreach($requests as $case) {
                     $parameters = array();
-                    $url = $case->getAttribute('url');
-                    $action = ($case->hasAttribute('action') ? $case->getAttribute('action') : null);
+                    
+                    // define request options
+                    $uri = $case->getAttribute('uri');
+                    $uri_regexp = $uri;
+                    $action = $case->getAttribute('action');
+                    $route = ($case->hasAttribute('name') ? $case->getAttribute('name') : $action);
                     if($case->hasAttribute('domain'))
                         $domain = str_replace('~', str_replace('www.', '', SYSTEM_DOMAIN), $case->getAttribute('domain'));
                     else
                         $domain = SYSTEM_DOMAIN;
                     
+                    if($case->hasAttribute('languages') && $case->getAttribute('languages') != '' && strtoupper($case->getAttribute('languages')) != 'ANY')
+                        $languages = explode(' ', $case->getAttribute('languages'));
+                    else
+                        $languages = explode(' ', SYSTEM_LANGUAGES);
+                    
                     if($case->hasAttribute('methods') && $case->getAttribute('methods') != '' && strtoupper($case->getAttribute('methods')) != 'ANY')
-                        $methods = explode('|', strtoupper($case->getAttribute('methods')));
+                        $methods = explode(' ', strtoupper($case->getAttribute('methods')));
                     else
                         $methods = array('GET', 'POST', 'HEAD', 'PUT');
-                                           
+                    
+                    // Define request parameters (URI, GET, POST, ...)
                     foreach($case->getElementsByTagName('param') as $param) {
                         $name = $param->getAttribute('name');
                         $type = $param->hasAttribute('type') ? $param->getAttribute('type') : 'URI';
@@ -73,7 +88,7 @@
                         }
                         
                         if($type == 'URI') // Replace URI parameters by parameter REGEXP in $url
-                            $url = str_replace(":$name", "($regexp)", $url);
+                            $uri_regexp = str_replace(":$name", "($regexp)", $uri_regexp);
                             
                        $parameters[] = array(
                             'name' => $name,
@@ -83,22 +98,32 @@
                                          
                     }
                     
-                    self::$manifest[$action] = array(
-                        'url' => $url,
+                    self::$manifest[] = array(
+                        'uri' => $uri,
+                        'regexp' => $uri_regexp,
+                        'name' => $route,
                         'methods' => $methods,
+                        'languages' => $languages,
                         'action' => $action,
                         'domain' => $domain,
                         'parameters' => (!empty($parameters) ? $parameters : array())
                     );
-                    
+                                        
                 }
                 
                 $json = fopen($tmp, 'w+');
                 fwrite($json, json_encode(self::$manifest));
                 fclose($json);
 
-            endif;
+            endif;   
         }
+        
+        
+        public static function inc($library) {
+            if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES."/$library.php"))
+                require_once(SYSTEM_ROOT.PATH_LIBRARIES."/$library.php");
+        }
+        
         
     }
 

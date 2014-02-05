@@ -1,6 +1,6 @@
 <?php
 
-    class Tpl extends Request {
+    class Tpl {
         
         public static function zone($path, $transmit = array()) {
             $path = root(PATH_TEMPLATES."/$path.php");
@@ -8,7 +8,7 @@
                 extract($transmit);
                 include($path);
             else:
-                Console::log("Can't call zone '$path'", Console::LOG_TEMPLATE);
+                trigger_error("Can't call zone '$path'", E_USER_NOTICE);
             endif;
         }
         

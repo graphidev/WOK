@@ -100,10 +100,10 @@
         const CACHE_PUBLIC          = 'PUBLIC'; // Cache public
         const CACHE_PROTECTED       = 'PROTECTED'; // Cache for autheticaed only
         const CACHE_PRIVATE         = 'PRIVATE'; // Cache private
-        const CACHETIME_NULL        = 0; // Do not cache
-        const CACHETIME_LOW         = 1800; // 5 minutes
-        const CACHETIME_MEDIUM      = 2592000; // 12 hours
-        const CACHETIME_LONG        = 5184000; // 1 day
+        const DISABLE_CACHE         = 0; // Do not cache
+        const CACHETIME_SHORT       = 360; // 1 minutes
+        const CACHETIME_MEDIUM      = 216000; // 1 hour
+        const CACHETIME_LONG        = 5184000; // 24 hours
         
         /**
          * Frame constants
@@ -146,6 +146,8 @@
             
             if(!empty(self::$types[$type]))           
                 header("Content-type: ".self::$types[$type], true, $code);
+            else
+                header("Content-type: $type", true, $code);
         }
         
         /**
@@ -161,7 +163,7 @@
         /**
          * Send Cache headers
         **/
-        public static function cache($time = self::CACHETIME_LOW, $status = self::CACHE_PROTECTED) {
+        public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED) {
             // Private cache : do not cache
             if(!$time || $status == self::CACHE_PRIVATE):
                 $arguments = array(
@@ -227,7 +229,7 @@
         /**
          * Call a view file
         **/
-        public static function view($template, $status = 200, $cache = false) {            
+        public static function view($template, $status = 200, $cache = Response::DISABLE_CACHE) {            
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
                 self::status('html', $status);
                 self::_template($template, $cache);
@@ -252,35 +254,31 @@
         /**
          * Generate template output
         **/
-        private static function _template($file, $cache) {
-            $prefix = ($cache && !is_bool($cache) ? "$cache-" : '');
-            $template = root(PATH_TEMPLATES."/$file.php");
-            $cached = root(PATH_CACHE."/$prefix$file.html");
+        private static function _template($view, $cache) {
+            $language = Session::language();
+            $suffix = ($cache && !is_bool($cache) ? "-$cache" : '');
+            $template = root(PATH_TEMPLATES."/$view.php");
+            $cache = (!SYSTEM_DEBUG ? $cache : false);
+            $cached = root(PATH_CACHE."/$view$suffix-$language.html");
+            $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             
-            if($cache):
-                $callback = function($buffer) use(&$overwrite, $cached) {
-                    if($overwrite)
-                        file_put_contents($cached, $buffer);
-                    return $buffer;
-                };
-            else:
-                $callback = null;
-            endif;
+            
+            $callback = function($buffer) use(&$overwrite, $cached, $cache) {                
+                // Overwrite cached file
+                if($cache && $overwrite)
+                    file_put_contents($cached, $buffer);
+                    
+                return $buffer;
+            };
             
             ob_start($callback); // Keep output in a buffer
             
-                if($cache):
-                    if(file_exists($cached) 
-                       && filemtime($cached) > filemtime($template)
-                       && filemtime($cached) <= time()+TEMPLATES_CACHE_TIME):
-                        $overwrite = false;
-                        echo file_get_contents($cached);
-            
-                    else:
-                        extract(self::$data);
-                        include_once($template);
-                    endif;
+                if($cache && file_exists($cached) 
+                   && filemtime($cached) > filemtime($template)
+                   && filemtime($cached) <= time()+$time):
+                    $overwrite = false;
+                    readfile($cached);
 
                 else:
                     extract(self::$data);
@@ -290,7 +288,6 @@
 
             ob_end_flush(); // Generate output
         }
-        
         
         /**
          * Send JSON data
@@ -337,20 +334,12 @@
                     ));
                 endif;
                 
-                if(Request::get('range')):
-                    set_time_limit(0);
-                    $file = @fopen(root("/$path"), "rb");
-                    while(!feof($file)):
-                        print(@fread($file, 1024*8));
-                        ob_flush();
-                        flush();
-                    endwhile;
-                else:
-                    self::status(null, 416);
-                endif;
-            
+          
+                ob_clean();
+                readfile(root("/$path"));
+                    
             else:
-                self::view('404', 404);
+                self::view('404', 404, true);
             endif;            
         }
         

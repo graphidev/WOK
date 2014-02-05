@@ -2,13 +2,17 @@
 
     class Cookie {
         
+        const CRYPT_MODE = MCRYPT_MODE_CBC;
+        const CRYPT_ALGORITHM = MCRYPT_RIJNDAEL_256;
+        const LIFETIME = 13392000; // 6 monthes
+        
         /**
          * Define a cookie        
         **/
-        public static function set($name, $value, $duration = COOKIES_LIFETIME, $secured = false) {
+        public static function set($name, $value, $duration = Cookie::LIFETIME, $secured = false) {
                                     
             if(empty($duration))
-                $duration = COOKIES_LIFETIME;
+                $duration = Cookie::LIFETIME;
             
             $expire = time()+$duration;
             
@@ -67,7 +71,7 @@
          * Encrypt a cookie value
         **/
         private static function _encrypt($value, $expire) {
-            $module = mcrypt_module_open(COOKIES_CRYPT_ALGORITHM, '', COOKIES_CRYPT_MODE, '');
+            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
             $iv = self::_iv($expire, $module);
             mcrypt_generic_init($module, COOKIES_SALT, $iv);
                 
@@ -85,7 +89,7 @@
         private static function _decrypt($value) {
             list($value, $expire) = explode('|', $value);
             
-            $module = mcrypt_module_open(COOKIES_CRYPT_ALGORITHM, '', COOKIES_CRYPT_MODE, '');
+            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
             $iv = self::_iv(base64_decode($expire), $module);
             mcrypt_generic_init($module, COOKIES_SALT, $iv);
             
@@ -102,7 +106,7 @@
         **/
         private static function _iv($key, &$module) {
             $size = mcrypt_enc_get_iv_size($module);
-            $iv = md5($key);
+            $iv = sha1($key);
             
             if (strlen($iv) > $size)
                 $iv = substr($iv, 0, $size);

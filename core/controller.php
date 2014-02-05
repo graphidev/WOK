@@ -22,7 +22,7 @@
         /**
          * Assign a controller (function)
         **/
-        public static function assign($conditions, $action, $strict = false) {
+        public static function route($conditions, $action, $strict = false) {
             self::$queue[] = array($conditions, $action, $strict);
         }
         

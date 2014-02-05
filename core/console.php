@@ -7,6 +7,13 @@
         private static $logs        = array();
         
         /**
+         * Console configuration
+        **/
+        const ERRORS_REPORTING      = E_ALL;
+        const LOGS_FORMAT           = '[:time] [:type] :message';
+        
+        
+        /**
          * Logs types
         **/
         const LOG_DEFAULT       = 'DEFAULT'; // Default log
@@ -15,16 +22,17 @@
         const LOG_NOTICE        = 'NOTICE';
         const LOG_DEPRECATED    = 'DEPRECATED';
         const LOG_DEBUG         = 'DEBUG';
-        
+                
         
         /**
          * Redefine logs format
         **/
-        public function __construct() {
-            if(CONSOLE_HANDLER_LEVEL !== false):
-                error_reporting(CONSOLE_HANDLER_LEVEL);
+        public static function handle() {
+            if(!SYSTEM_DEBUG) // Run Console errors handler
                 set_error_handler('Console::handler');
-            endif;
+            
+            error_reporting(Console::ERRORS_REPORTING);
+            register_shutdown_function('Console::register');
         }
         
         public static function handler($type, $message, $file, $line){
@@ -46,7 +54,7 @@
                 default:
                     Console::log("$message in $file : line $line", Console::LOG_ERROR);
             }
-            
+
             return true;
         }
         
@@ -54,6 +62,7 @@
          * Add a log
         **/
         public static function log($message, $type = self::LOG_DEFAULT, $exit = false) {
+
             self::$logs[] = array(
                 'date'      => date('Y-m-d'),
                 'time'      => date('H:i:s'),
@@ -63,9 +72,7 @@
             );
             
             if($exit):
-                Console::register();
-                $response = new Response;
-                $response->view('503', 503);
+                Response::view('503', 503);
                 exit;
             endif;
         }
@@ -134,7 +141,7 @@
                 
                 foreach(self::$logs as $i => $log) {
                                 
-                    $row = CONSOLE_LOG_FORMAT . "\r\n";
+                    $row = Console::LOGS_FORMAT . PHP_EOL;
                     foreach($log as $param => $value) {                            
                         $row = str_replace(":$param", $value, $row);
                     }

@@ -53,4 +53,13 @@
         $characters = str_split($string);
         return implode('', array_reverse($characters));
     }
+
+    /**
+     * The unicode comptabile function of ucfirst
+    **/
+    function ucfirst($string) {
+        $letter = mb_strtoupper(mb_substr($string, 0, 1));
+        return $letter.mb_substr($string, 1);   
+    }
+
 ?>

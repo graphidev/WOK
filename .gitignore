@@ -4,5 +4,7 @@ files/tmp/*
 templates/*
 var/tmp/*
 var/logs/*
+var/cache/*
 controllers/*
+models/*
 locales/*

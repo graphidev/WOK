@@ -67,16 +67,49 @@
              * Add URI parameters and action
             **/
             foreach(parent::$manifest as $i => $request) {
+                
                 if(($request['regexp'] == self::$URI || preg_match('#^'.$request['regexp'].'$#isU', self::$URI))
                    && in_array(self::$method, $request['methods'])
-                   && ($request['domain'] == self::$domain || 
-                       (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))
+                   && ($request['domain'] == self::$domain 
+                       || (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))
                   && in_array(Session::language(), $request['languages'])):
                     
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
                         
                     foreach($request['parameters'] as $i => $param) {
+                        
+                        // URI parameters
+                        if($param['type'] == 'URI'):
+                        
+                            $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('URI'));
+                            if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
+                                self::$parameters['URI'][$param['name']] = $value;
+                                $break = true;
+                            else:
+                                $break = false;
+                            endif;
+                        
+                        // FILES parameters
+                        elseif($param['type'] == 'FILE' && isset(self::$parameters['FILES'][$param['name']])):
+                            $break = true;
+                        
+                        // Globals (GET, POST, ...) parameters
+                        elseif(isset(self::$parameters[$param['type']][$param['name']])):
+                        
+                            $value =&self::$parameters[$param['type']][$param['name']];
+
+                            if($param['type'] == 'FILE' || ($param['regexp'] == 'array' && is_array($value))
+                               || ($param['regexp'] == 'string' && is_string($value)) 
+                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)))
+                                $break = true;        
+                        
+                            else
+                                $break = false;
+                        
+                        endif;
+                        
+                        /*
                         switch($param['type']) {
                             case 'URI':
                             
@@ -95,6 +128,7 @@
                             case 'POST':
                             
                                 if(isset(self::$parameters['POST'][$param['name']])):
+                                    if($param['regexp'] == 'float' && is_float((float)
                                     if($param['regexp'] == 'array' && is_array(self::$parameters['POST'][$param['name']])):
                                         $break = true;
                                     elseif(preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']])):
@@ -127,6 +161,7 @@
                                 
                                 break;
                         }
+                        */
                             
                     }
                     

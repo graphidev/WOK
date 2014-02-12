@@ -21,11 +21,12 @@
                     foreach($data as $index => $value) {
                         $uri = str_replace(":$index", $value, $uri);
                     }
+                    return path($uri);
                     break;
                 endif;
             }
             
-            return $uri ? path($uri) : false;
+            return false;
         }
         
         

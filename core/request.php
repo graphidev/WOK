@@ -99,7 +99,7 @@
                         
                             $value =&self::$parameters[$param['type']][$param['name']];
 
-                            if($param['type'] == 'FILE' || ($param['regexp'] == 'array' && is_array($value))
+                            if($param['regexp'] == 'any' || $param['type'] == 'FILE' || ($param['regexp'] == 'array' && is_array($value))
                                || ($param['regexp'] == 'string' && is_string($value)) 
                                || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)))
                                 $break = true;        

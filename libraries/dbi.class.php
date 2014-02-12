@@ -33,7 +33,7 @@
         /**
          * Set the database to use
         **/
-        public function database($database) {
+        public static function database($database) {
             try {
                 self::exec("USE $database");
             } catch(Exception $e) {
@@ -60,14 +60,14 @@
         /**
          * Execute a query and return output
         **/
-        public static function query($sql, $values = array(), $output = PDO::FETCH_ASSOC) {
+        public static function query($sql, $values = array(), $format = PDO::FETCH_ASSOC) {
             $query = self::$interface->prepare($sql);
             $output = $query->execute($values);
                 
             if(!$output)
                 throw new Exception('[PDO:'.$query->errorCode().'] '.$query->errorInfo(), $query->errorCode(), $e);
             else
-                $output = $query->fetchAll($output);
+                $output = $query->fetchAll($format);
                 
             $query->closeCursor();
             return $output;

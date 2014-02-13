@@ -204,7 +204,7 @@
         /**
          * Redirect permanently or not (exit script)
         **/
-        public function redirect($target, $permanent = false) {
+        public static function redirect($target, $permanent = false) {
             $code = ($permanent ? 301 : 302);
             header("HTTP/1.1 $code ".self::$codes[$code], false, $code);
             header("Location: $target");

@@ -83,6 +83,14 @@
                 throw new Exception('DBI : interface not available');
         }
         
+        /**
+         * Return the current interface
+        **/
+        public static function getback() {
+            self::_checkInterface();
+            return self::$interface;
+        }
+        
     }
 
 ?>

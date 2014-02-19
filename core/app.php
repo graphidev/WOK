@@ -21,11 +21,12 @@
                     foreach($data as $index => $value) {
                         $uri = str_replace(":$index", $value, $uri);
                     }
+                    return path($uri);
                     break;
                 endif;
             }
             
-            return $uri ? path($uri) : false;
+            return false;
         }
         
         
@@ -75,22 +76,26 @@
                         $type = $param->hasAttribute('type') ? $param->getAttribute('type') : 'URI';
                         $regexp = $param->hasAttribute('regexp') && $param->getAttribute('regexp') != '' ? $param->getAttribute('regexp') : '.+';
                         
-                        switch($regexp) {
-                            case 'any':
-                                $regexp = '.+';
-                                break;
-                            case 'string':
-                                $regexp = '[a-z0-9_-]+';
-                                break;
-                            case 'integer':
-                                $regexp = '[0-9]+';
-                                break;
-                        }
-                        
-                        if($type == 'URI') // Replace URI parameters by parameter REGEXP in $url
-                            $uri_regexp = str_replace(":$name", "($regexp)", $uri_regexp);
+                        if($type == 'URI'):
                             
-                       $parameters[] = array(
+                            // Generate regexp from type
+                            switch($regexp) {
+                                case 'any':
+                                    $regexp = '.+';
+                                    break;
+                                case 'string':
+                                    $regexp = '[a-z0-9_-]+';
+                                    break;
+                                case 'integer':
+                                    $regexp = '[0-9]+';
+                                    break;
+                            }
+                        
+                            // Replace URI parameters by parameter REGEXP in $url
+                            $uri_regexp = str_replace(":$name", "($regexp)", $uri_regexp);
+                        endif;                    
+                            
+                        $parameters[] = array(
                             'name' => $name,
                             'type' => strtoupper($type),
                             'regexp' => $regexp,

@@ -41,9 +41,9 @@
      * Set manifest controllers
     **/
     Controller::route(Request::get('action') ? true : false, function() {
-        list($name, $action) = explode(':', Request::get('action'));
-        if(file_exists(root(PATH_CONTROLLERS."/$name.ctrl.php"))):
-            Controller::call($name, $action);
+        list($controller, $action) = explode(':', strtolower(Request::get('action')));
+        if(file_exists(root(PATH_CONTROLLERS."/$controller.ctrl.php"))):
+            Controller::call($controller, $action);
         else:
             trigger_error("Controller '$name' not found", E_USER_ERROR);
         endif;

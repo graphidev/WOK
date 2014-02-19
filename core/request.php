@@ -181,34 +181,18 @@
         **/ 
         public static function parameter($name, $method = null) {
             if(empty($method))
-                $method = self::get('method');
+                $method = self::$method;
             
             return (!empty(self::$parameters[$method][$name]) ? self::$parameters[$method][$name] : false);
         }
         
         /**
-         * Get POST parameters
+         * Check request informations
+         * Return it if available
         **/
-        public static function post($name) {
-            return self::parameter($name, 'POST');
+        public static function is($parameter) {
+            return (!empty(self::$$parameter) ? self::$$parameter : false);  
         }
-        
-        /**
-         * get GET parameters
-        **/
-        public static function get($name) {
-            return self::parameter($name, 'GET');
-        }
-        
-        
-        /**
-         * Get request information
-        **/
-        public static function get($name) {
-            return (!empty(self::$$name) ? self::$$name : false);   
-        }
-        
-        
         
         /**
          * Check secured connexion

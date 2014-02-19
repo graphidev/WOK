@@ -181,19 +181,18 @@
         **/ 
         public static function parameter($name, $method = null) {
             if(empty($method))
-                $method = self::get('method');
+                $method = self::$method;
             
             return (!empty(self::$parameters[$method][$name]) ? self::$parameters[$method][$name] : false);
         }
         
-        
         /**
-         * Get request information
+         * Check request informations
+         * Return it if available
         **/
-        public static function get($name) {
-            return (!empty(self::$$name) ? self::$$name : false);   
+        public static function is($parameter) {
+            return (!empty(self::$$parameter) ? self::$$parameter : false);  
         }
-        
         
         /**
          * Check secured connexion

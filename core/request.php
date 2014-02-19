@@ -186,6 +186,20 @@
             return (!empty(self::$parameters[$method][$name]) ? self::$parameters[$method][$name] : false);
         }
         
+        /**
+         * Get POST parameters
+        **/
+        public static function post($name) {
+            return self::parameter($name, 'POST');
+        }
+        
+        /**
+         * get GET parameters
+        **/
+        public static function get($name) {
+            return self::parameter($name, 'GET');
+        }
+        
         
         /**
          * Get request information
@@ -193,6 +207,7 @@
         public static function get($name) {
             return (!empty(self::$$name) ? self::$$name : false);   
         }
+        
         
         
         /**

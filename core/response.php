@@ -332,6 +332,8 @@
                         'Pragma' => 'public',
                         'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0'
                     ));
+                else:
+                    header('Content-Disposition: inline; filename="'.basename($path).'"');
                 endif;
                 
           

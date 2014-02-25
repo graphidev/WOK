@@ -14,7 +14,7 @@
      * Sytem informations
      * These informations are required in most of core classes
     **/
-    const SYSTEM_PROTOCOL               = 'http://'; // System default protocol
+    const SYSTEM_PROTOCOL               = 'http'; // System default protocol
     const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address
     const SYSTEM_DOMAIN_ALIAS           = ''; // Server alias domains (separate with spaces)
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path

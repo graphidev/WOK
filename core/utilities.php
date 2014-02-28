@@ -55,15 +55,15 @@
     /**
      * Parse an array to XML
     **/
-    function xml_encode($array, $xml){
+    function xml_encode($array, $xml = 'document'){
         if(!is_object($xml))
             $xml = new SimpleXMLElement("<$xml/>");
         
         foreach($array as $key => $value) {
             if(is_array($value)):
-                toXML($value, $xml->addChild($key));
+                xml_encode($value, $xml->addChild($key));
             else:
-                $xml->xml_encode($key, $value);
+                xml_encode($key, $value);
             endif;
         }
 

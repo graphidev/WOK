@@ -8,7 +8,6 @@
             - uri (required) : the URI access, add a colon before parameters
             - methods (default=ANY) : accepted request methods (REST)
             - action (required) : string for the action that should be called (null by default; controller:action or static)
-            - name (optional) : Used to call the request URI (if empty, the action's name is used)
             - languages (default=ANY) : authorized languages
 
             param (optional, recommended for URI parameters)
@@ -20,7 +19,7 @@
     
     -->
     
-    <request uri="test/:var/:id/:another" action="Test:page" name="testpage">
+    <request uri="test/:var/:id/:another" action="Test:page">
         <param name="var" regexp="string" />
         <param name="id" regexp="integer" />
         <param name="another" regexp="any" />

@@ -5,6 +5,7 @@ templates/*
 var/tmp/*
 var/logs/*
 var/cache/*
+var/manifest.xml
 controllers/*
 models/*
 locales/*

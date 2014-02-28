@@ -190,7 +190,7 @@
          * Check request informations
          * Return it if available
         **/
-        public static function is($parameter) {
+        public static function get($parameter) {
             return (!empty(self::$$parameter) ? self::$$parameter : false);  
         }
         

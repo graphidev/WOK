@@ -5,7 +5,6 @@
      * This file contains some utilities functions
     **/
 
-    
     /**
      * Analyse a folder and return files and subfolders
      * Return an array like :

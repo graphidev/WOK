@@ -52,6 +52,7 @@
         **/
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
         require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions
+        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers
         require_once SYSTEM_ROOT.PATH_CORE . '/utilities.php'; // Framework functions
         
         /**

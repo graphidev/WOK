@@ -303,7 +303,7 @@
         **/
         public static function xml($data = null, $status = 200) {
             self::status('xml', $status);
-            echo xml_encode(!empty($data) ? $data : self::$data, 'document');
+            echo xml_encode((!empty($data) ? $data : self::$data), 'document');
         }
         
         

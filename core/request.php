@@ -103,7 +103,8 @@
                                || $param['type'] == 'FILE' 
                                || ($param['regexp'] == 'array' && is_array($value))
                                || ($param['regexp'] == 'string' && is_string($value)) 
-                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)))
+                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value))
+                               || preg_match('#^'.$param['regexp'].'$#isU', $value))
                                 $break = true;        
                         
                             else

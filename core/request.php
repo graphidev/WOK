@@ -99,7 +99,9 @@
                         
                             $value =&self::$parameters[$param['type']][$param['name']];
 
-                            if($param['regexp'] == 'any' || $param['type'] == 'FILE' || ($param['regexp'] == 'array' && is_array($value))
+                            if($param['regexp'] == 'any' 
+                               || $param['type'] == 'FILE' 
+                               || ($param['regexp'] == 'array' && is_array($value))
                                || ($param['regexp'] == 'string' && is_string($value)) 
                                || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)))
                                 $break = true;        
@@ -108,60 +110,6 @@
                                 $break = false;
                         
                         endif;
-                        
-                        /*
-                        switch($param['type']) {
-                            case 'URI':
-                            
-                                $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('URI'));
-                                if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
-                                    self::$parameters['URI'][$param['name']] = $value;
-                                    $break = true;
-                                else:
-                                    $break = false;
-                                endif;
-                                
-                                $index++;
-                                
-                                break;
-                                
-                            case 'POST':
-                            
-                                if(isset(self::$parameters['POST'][$param['name']])):
-                                    if($param['regexp'] == 'float' && is_float((float)
-                                    if($param['regexp'] == 'array' && is_array(self::$parameters['POST'][$param['name']])):
-                                        $break = true;
-                                    elseif(preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['POST'][$param['name']])):
-                                        $break = true;
-                                    else:
-                                        $break = false;
-                                    endif;
-                                else:
-                                    $break = false;
-                                endif;
-                                
-                                break;
-                                
-                            case 'GET':
-                                
-                                if(isset(self::$parameters['GET'][$param['name']])
-                                   && preg_match('#^'.$param['regexp'].'$#isU', self::$parameters['GET'][$param['name']]))
-                                    $break = true;
-                                else
-                                    $break = false;
-                                
-                                break;
-                                    
-                            case 'FILE':
-                                
-                                if(isset(self::$parameters['FILES'][$param['name']]))
-                                    $break = true;
-                                else
-                                    $break = false;
-                                
-                                break;
-                        }
-                        */
                             
                     }
                     

@@ -135,4 +135,30 @@
         return $array;
     }
 
+
+    /**
+     * Get file MIME type
+     * @param string $file
+    **/
+    function get_mime_type($file) {
+		if(function_exists('finfo_open')):
+			$const = defined('FILEINFO_MIME_TYPE') ? FILEINFO_MIME_TYPE : FILEINFO_MIME;
+			$finfo = finfo_open($const);
+				return finfo_file($finfo, $file);
+			finfo_close($finfo);
+    
+		elseif(function_exists('mime_content_type')):
+			return mime_content_type($file);
+			
+		elseif(function_exists('exec')):
+			$mime = trim(exec('file -b --mime-type '.escapeshellarg($file)));
+			if (!$mime)
+		    	$mime = trim(exec('file --mime '.escapeshellarg($file)));
+		    if (!$mime)
+		    	$mime = trim(exec('file -bi '.escapeshellarg($file)));
+		    
+		    return $mime;
+		endif;
+	}
+
 ?>

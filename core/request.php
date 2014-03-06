@@ -62,7 +62,7 @@
                 
             if(!empty($_FILES)) // FILES parameters
                 self::$parameters['FILES'] = &$_FILES;
-                
+            
             /**
              * Add URI parameters and action
             **/
@@ -97,21 +97,23 @@
                         // Globals (GET, POST, ...) parameters
                         elseif(isset(self::$parameters[$param['type']][$param['name']])):
                         
-                            $value =&self::$parameters[$param['type']][$param['name']];
-
+                            $value = &self::$parameters[$param['type']][$param['name']];
+        
                             if($param['regexp'] == 'any' 
                                || $param['type'] == 'FILE' 
                                || ($param['regexp'] == 'array' && is_array($value))
                                || ($param['regexp'] == 'string' && is_string($value)) 
-                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value))
-                               || preg_match('#^'.$param['regexp'].'$#isU', $value))
-                                $break = true;        
-                        
-                            else
+                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)) 
+                               || preg_match('#^'.$param['regexp'].'$#isU', $value)):
+                                $break = true; 
+                                                        
+                            else:
                                 $break = false;
                         
+                            endif;
+                        
                         endif;
-                            
+                        
                     }
                     
                     if($break):

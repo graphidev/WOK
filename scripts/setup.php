@@ -99,6 +99,15 @@
 
     echo "\nGenerate required files and folders ...\n";
     foreach($languages as $i => $language) {
+        if(@mkdir(ACCESS_PATH.PATH_TMP))
+            echo "  ".PATH_TMP."\n";
+        
+        if(@mkdir(ACCESS_PATH.PATH_CONTROLLERS))
+            echo "  ".PATH_CONTROLLERS."\n";
+        
+        if(@mkdir(ACCESS_PATH.PATH_MODELS))
+            echo "  ".PATH_MODELS."\n";
+        
         if(@mkdir(ACCESS_PATH.PATH_LOCALES."/$language"))
             echo "  /locales/$language\n";
     }

@@ -263,16 +263,14 @@
             $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             
-            
-            $callback = function($buffer) use(&$overwrite, $cached, $cache) {                
+                        
+            ob_start(function($buffer) use(&$overwrite, $cached, $cache) {                
                 // Overwrite cached file
                 if($cache && $overwrite)
                     file_put_contents($cached, $buffer);
                     
                 return $buffer;
-            };
-            
-            ob_start($callback); // Keep output in a buffer
+            }); // Keep output in a buffer
             
                 if($cache && file_exists($cached) 
                    && filemtime($cached) > filemtime($template)

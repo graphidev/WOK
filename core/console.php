@@ -22,7 +22,7 @@
         const LOG_NOTICE        = 'NOTICE';
         const LOG_DEPRECATED    = 'DEPRECATED';
         const LOG_DEBUG         = 'DEBUG';
-                
+        
         
         /**
          * Redefine logs format
@@ -50,7 +50,11 @@
                 case E_USER_NOTICE:
                     Console::notice("$message in $file : line $line");
                     break;
-
+                
+                case E_USER_DEPRECATED:
+                    Console::deprecated("$message in $file : line $line");
+                    break;
+                    
                 default:
                     Console::log("$message in $file : line $line", Console::LOG_ERROR);
             }
@@ -165,19 +169,28 @@
                     fclose($file);
                 }
             
-            /**
-             * Send fatal errors by e-mail
-            **/
-            if(!empty($fatals) && defined(CONSOLE_FATAL_EMAILS) && CONSOLE_FATAL_EMAILS != null):
-                $emails = explode(' ', CONSOLE_FATAL_EMAILS);
-                $mail = new mail('['.SYSTEM_DOMAIN.'] Fatal error (log)');
-                $mail->from('debug@'.SYSTEM_DOMAIN, 'Debug', 'Automatic email. Do not respond.');
-                $mail->to($emails[0]);
-                $mail->Cc($emails);
-                $mail->content($fatals);
-                $mail->send();
-            endif;
+                /**
+                 * Send fatal errors by e-mail
+                **/
+                if(!empty($fatals)):
+                    
+                    try {
+                        
+                        $mail = new Mail('['.SYSTEM_DOMAIN.'] Fatal error(s)');
+                        $mail->from($_SERVER['SERVER_ADMIN'], 'Bug tracker');
+                        $mail->to($_SERVER['SERVER_ADMIN']);
+                        $mail->content($fatals);
+                        $mail->send();
+                        
+                    } catch(Exception $e) {
+                        
+                        Console::log('('.$e->getCode().') '. $e->getMessage(), self::LOG_ERROR);
+                        
+                    }
+            
+                endif;
                 
+            
             endif;
         }
         

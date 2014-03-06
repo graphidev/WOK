@@ -1,214 +1,179 @@
 <?php
 	
 	/**
-		Mail (class)
-		
-		@version 1.3
-		@date 2012-11-18
-		@author Sébastien ALEXANDRE 
-				
-		@required function mail() allowed
-		@required function get_mime_type()
-		
-	*/
+     * Mail (class)
+     *
+	 *	@version 2.0
+     *	@author Sébastien ALEXANDRE 
+     *
+     *	@require function mail() allowed
+	 *	@require function get_mime_type()
+    **/
 	
-	class mail {
-	 	private $template;	// mail model
-	 	private $addressee = array(); // Send to
-	 	private $Cc = array(); // Carbon copy
-	 	private $Bcc = array(); // Blind carbon copy
-	 	private $sender = array(); // Sender informations
-	 	private $object = null; // Message object
-	 	private $content = null; // Message content
-	 	private $attachments = null; // Attachments
-	 	private $signature; // Really ? Need a description ?
-	 	
+	class Mail {
+        
+        const BREAKLINE          = "\n"; // New line break
+        const MAX_LINES_LENGTH   = 76; // Max content lines length
+        const FORMAT_TEXT        = 'text/plain';
+        const FORMAT_HTML        = 'text/html';
+        
+        private $format          = 'text/plain';
+	 	private $To              = array(); // Send to
+	 	private $Cc              = array(); // Carbon copy
+	 	private $Bcc             = array(); // Blind carbon copy
+	 	private $sender          = array(); // Sender informations
+        private $reply           = null; // Reply address
+	 	private $object          = null; // Message object
+	 	private $content         = null; // Message content
+	 	private $attachments     = null; // Attachments
+        
+        /**
+         * Check email
+         * @param string    $email
+        **/
+        private function __checkEmail($email) {
+            if(!filter_var($email, FILTER_VALIDATE_EMAIL))
+                throw new InvalidArgumentException("Mail : Invalid e-mail '$email'");   
+        }
+        
 	 	/**
-	 		@ new / construct
-	 		@param (string) $object = message object
-	 	*/
+         * Generate a new mail
+         * @param string   $object
+	 	**/
 	 	public function __construct($object = null) {
 	 		$this->object($object);
 	 	}
 	 	
-	 	// -----------------------------------
-	 	
 	 	/**
-	 		@ template
-	 		@about define mail template and format
-	 		@param (string) $template = template file path
-	 		@parem (string) $format = mail format (html/text)
-	 	*/
-	 	public function template($template) {
-	 		if(file_exists($template)):
-	 			$this->template = @file_get_contents($template);
-	 		else:
-	 			$this->template = "%object%\n\n%content%\n\n%signature%";
-	 		endif;
-	 	}
-	 	
-	 	// -----------------------------------
-	 	
-	 	/**
-	 		@ object
-	 		@about define mail object
-	 		@param (string) $value = mail object
-	 	*/	 	
+	 	 * Define mail object
+         * @param string   $value
+	 	**/	 	
 	 	public function object($value) {
 	 		$this->object =  $value;
 	 	}
 	 	
-	 	// -----------------------------------
 	 	
 	 	/**
-	 		@ to
-	 		@about define addressee's informations.
-	 		@param (string) $mail = addressee's mail
-	 		@parem (string) $name = addressee's name (mail will be used if $name is not defined)
-	 	*/
-	 	public function to($mail, $name = null) {
-	 		$this->addressee['addr'] = $mail;
-	 		$this->addressee['name'] = (empty($name) ? $mail : $name);
+         * Define addressee's informations
+         * @param string    $mail
+         * @parem string    $name
+	 	**/
+	 	public function to($email, $name = null) {
+            $this->__checkEmail($email);
+            $this->To[] = (!empty($name) ? "\"$name\" <$email>" : $email);
 	 	}
 	 	
-	 	// -----------------------------------
-	 	
+
 	 	/**
-	 		@ Cc
-	 		@about define carbon copies mails
-	 		@param (mixed) $mail = mails addresses (array, or separate with a comma)
-	 	*/
-	 	public function Cc($mail) {
-	 		if(is_array($mail)):
-	 			$this->Cc = array_merge($this->Cc, $mail);
-	 		else:
-	 			$this->Cc[] = $mail;
-	 		endif;
+         * Define carbon copies contacts
+         * @param string    $mail
+         * @param string    $name
+         * @param bool      $bind
+	 	**/
+	 	public function Cc($email, $name = null, $bind = false) {
+            $this->__checkEmail($email);
+
+            if($bind)
+                $this->Bcc[] = (!empty($name) ? "\"$name\" <$email>" : $email);
+            else
+                $this->Cc[] = (!empty($name) ? "\"$name\" <$email>" : $email);
 	 	}
 	 	
-	 	// -----------------------------------
 	 	
 	 	/**
-	 		@ Bcc
-	 		@about define blind carbon copies mails
-	 		@param (mixed) $mail = mails addresses (array, or separate with a comma)
-	 	*/
-	 	public function Bcc($mail) {
-	 		if(is_array($mail)):
-	 			$this->Bcc = array_merge($this->Bcc, $mail);
-	 		else:
-	 			$this->Bcc[] = $mail;
-	 		endif;
+	 	 * Define sender informations
+	 	 *	@param string     $email
+	 	 *	@param string     $name
+	 	**/
+	 	public function from($email, $name = null) {
+            $this->sender = (!empty($name) ? "\"$name\" <$email>" : $email);
+            $this->reply = $email;
 	 	}
 	 	
-	 	// -----------------------------------
 	 	
 	 	/**
-	 		@ from
-	 		@about define sender informations
-	 		@param (string) $mail = sender's mail address
-	 		@param (string) $name = senders' name
-	 		@param (string $more = additional informations about the sender (added as signature)
-	 	*/
-	 	public function from($mail, $name, $more = null) {
-			$this->sender['name'] = $name;
-			$this->sender['addr'] = $mail;
-			
-			$this->signature = $this->sender['name']."\n".$this->sender['addr'];
-			if(!empty($more)):
-				$this->signature .= "\n".$more;
-			endif;
-	 	}
-	 	
-	 	// -----------------------------------
-	 	
-	 	/**
-	 		@ content
-	 		@about define message content
-	 		@param (string) $message = message content
-	 		@require method template()
-	 	*/
-	 	public function content($message) {
+         * Define message content
+         * @param string    $message
+         * @param string    $format
+	 	**/
+	 	public function content($message, $format = self::FORMAT_TEXT) {
 		 	$this->content = $message;
+            $this->format = $format;
 	 	}
-	 	
-	 	// -----------------------------------
-	 	
+	 		 	
 	 	/**
-	 		@ attachment
-	 		@about define attachement file
-	 		@param (string) $path = attachment file path
-	 	*/	 	
-	 	public function attachment($path, $name) {
+	 	 * Define attachement file
+	 	 * @param string     $path
+	 	 * @param string     $name
+	 	**/	 	
+	 	public function attachment($name, $path) {
+            
+            if(!file_exists($path))
+                throw new InvalidArgumentException('Mail : Attachment not found');
+            
 	 		$this->attachments[] = array(
 	 			'name' => $name,
 	 			'type' => \Compatibility\get_mime_type($path),
 	 			'content' => base64_encode(file_get_contents($path))
 	 		);
 	 	}
-	 	
-	 	// -----------------------------------
-	 	
+	 		 	
 	 	/**
-	 		@ send
-	 		@about try to send mail and return result
-	 		@required function construct() / object()
-	 		@required function to()
-	 		@required function sender()
-	 		@required function content()
-	 	*/
+	 	 * Try to send mail
+	 	 * @require function construct() / object()
+	 	 * @require  $To, $sender, $reply
+	 	**/
 	 	public function send() {
-	 	 	 		
-	 		// Required informations		
-	 		$rn = "\n"; // Newline
-	 		$boundary = '--'.sha1(uniqid(microtime(), true)).'--'.$rn; // Boundary
+            
+            if(empty($this->To) || empty($this->sender) || empty($this->reply))
+                throw new Exception("Mail : Addressee or sender not defined");
+            	 	 	 		
+	 		// Required informations	
+	 		$boundary = sha1(uniqid(microtime(), true)) . self::BREAKLINE; // Boundary
 	 		
 	 		// Mail headers
-	 		$headers = 'From: "'.utf8_decode($this->sender['name']).'" <'.$this->sender['addr'].'>'.$rn; // sender
-	 		$headers .= 'Reply-To: '.$this->sender['addr'].$rn; // Reply address
-	 		$headers .= 'Date: '.date('r').$rn; // Sending date
-	 		$headers .= 'Return-Path: <'.$this->sender['addr'].'>'.$rn;
-	 		$headers .= 'MIME-Version: 1.0'.$rn; // MIME version
-	 		
-	 		if(count($this->Cc) > 0): $headers .= 'Cc: '.implode(', ', $this->Cc).$rn; endif; // Carbon copy
-	 		if(count($this->Bcc) > 0): $headers .= 'Bcc: '.implode(', ', $this->Bcc).$rn; endif; // Blind carbon copy
-	 		
-	 		//$headers .= 'X-Mailer: PHP/'.PHP_VERSION.$rn; // Sending software (not adviced: consired as SPAM)
+	 		$headers = 'From: '.$this->sender . self::BREAKLINE; // sender
+	 		$headers .= 'Reply-To: '.$this->reply . self::BREAKLINE; // Reply address
+            $headers .= 'Return-Path: '.$this->reply . self::BREAKLINE;
+	 		if(!empty($this->Cc)): $headers .= 'Cc: '.implode(', ', $this->Cc) . self::BREAKLINE; endif; // Carbon copies
+	 		if(!empty($this->Bcc)): $headers .= 'Bcc: '.implode(', ', $this->Bcc) . self::BREAKLINE; endif; // Blind carbon copies
+            
+            $headers .= 'Date: '.date('r') . self::BREAKLINE; // Sending date
+	 		$headers .= 'MIME-Version: 1.0' . self::BREAKLINE; // MIME version
+	 		$headers .= 'X-Mailer: PHP/'.PHP_VERSION . self::BREAKLINE; // Sending software (not adviced: consired as SPAM)
 	 		$headers .= "Content-Type: multipart/mixed; boundary=$boundary"; // Content-Type
 	 		
-	 		// Default text message
-	 		$message = "--$boundary $rn";
-	 		$message .= "Content-type: text/plain; charset=\"utf-8\"$rn";
-	 		$message .= "Content-Transfer-Encoding: 8bit$rn$rn";
-	 		$message = $this->content.$rn.$rn.$this->signature.$rn.$rn;
-	 		
-	 		// HTML message
-	 		$message .= "--$boundary $rn";
-	 		$message .= "Content-type: text/html; charset=\"utf-8\"$rn";
-	 		$message .= "Content-Transfer-Encoding: 8bit$rn$rn";
-	 		
-	 		// Replace template tags by values
-	 		$search = array('%object%', '%content%', '%signature%'); // Tags
-	 		$replace = array($this->object, nl2br($this->content), nl2br($this->signature)); // Values
-	 		$content = str_replace($search, $replace, $this->template); // Replacement
-			$message .= $content.$rn.$rn;
-
+               
+            // Content headers
+            $message = "--$boundary";
+            $message .= "Content-type: ".$this->format."; charset=\"utf-8\"" . self::BREAKLINE;
+            $message .= "Content-Transfer-Encoding: 8bit" . self::BREAKLINE . self::BREAKLINE;
+            
+            // Text content
+            $message .= wordwrap($this->content, self::MAX_LINES_LENGTH, self::BREAKLINE, true) . self::BREAKLINE . self::BREAKLINE;            
+            
 	 		// Adding message attachment
 	 		if(!empty($this->attachments)):
 	 			foreach($this->attachments as $key => $attachment) {
-		 			$message .= "--$boundary $rn"; 
-		 			$message .= "Content-type:".$attachment['type'].";name=".$attachment['name'].$rn; // Type & name
-		 			$message .= "Content-Transfer-Encoding: base64$rn"; // Encoding method
-		 			$message .= "Content-Disposition:attachment; filename=\"".$attachment['name']."\"$rn$rn";
-		 			$message .= chunk_split($attachment['content']) . $rn . $rn; // File content
+                    
+                    // Attachement headers
+		 			$message .= "--$boundary";
+		 			$message .= "Content-type:".$attachment['type'].";name=\"".$attachment['name'].'"' . self::BREAKLINE; // Type & name
+		 			$message .= "Content-Transfer-Encoding: base64" . self::BREAKLINE; // Encoding method
+		 			$message .= "Content-Disposition:attachment" . self::BREAKLINE . self::BREAKLINE;
+                    
+                    // Attachment file
+		 			$message .= chunk_split($attachment['content']) . self::BREAKLINE . self::BREAKLINE; // File content
 		 		}
 	 		endif;
 	 		
-	 		$message .= "--$boundary $rn"; // End message
+	 		$message .= "--$boundary" . self::BREAKLINE; // End message
 	 		
-	  		// Send mail
-	 		return mail($this->addressee['addr'], $this->object, $message, $headers);
+	  		// Try to send mail and return result
+	 		if(!mail(implode(', ', $this->To), $this->object, $message, $headers))
+                throw new Exception('Mail : Failure while sending message');
 	 	}
+
 	 			
 	 }
  

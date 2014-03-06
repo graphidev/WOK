@@ -50,7 +50,11 @@
                 case E_USER_NOTICE:
                     Console::notice("$message in $file : line $line");
                     break;
-
+                
+                case E_USER_DEPRECATED:
+                    Console::deprecated("$message in $file : line $line");
+                    break;
+                    
                 default:
                     Console::log("$message in $file : line $line", Console::LOG_ERROR);
             }

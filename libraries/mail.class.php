@@ -3,11 +3,12 @@
 	/**
      * Mail (class)
      *
-	 *	@version 2.0
-     *	@author Sébastien ALEXANDRE 
+     * @version 2.2
+     * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
-     *	@require function mail() allowed
-	 *	@require function get_mime_type()
+     * @require native mail() function
+     * @require get_mime_type() function
     **/
 	
 	class Mail {
@@ -17,7 +18,7 @@
         const FORMAT_TEXT        = 'text/plain';
         const FORMAT_HTML        = 'text/html';
         
-        private $format          = 'text/plain';
+        private $format          = 'text/plain'; // Default format
 	 	private $To              = array(); // Send to
 	 	private $Cc              = array(); // Carbon copy
 	 	private $Bcc             = array(); // Blind carbon copy
@@ -26,26 +27,41 @@
 	 	private $object          = null; // Message object
 	 	private $content         = null; // Message content
 	 	private $attachments     = null; // Attachments
+        private $headers         = array();
+        
         
         /**
          * Check email
          * @param string    $email
         **/
-        private function __checkEmail($email) {
+        private function _checkEmail($email) {
             if(!filter_var($email, FILTER_VALIDATE_EMAIL))
                 throw new InvalidArgumentException("Mail : Invalid e-mail '$email'");   
         }
+        
         
 	 	/**
          * Generate a new mail
          * @param string   $object
 	 	**/
-	 	public function __construct($object = null) {
-	 		$this->object($object);
+	 	public function __construct($headers = array()) {
+            $this->headers($headers);
 	 	}
+        
+        
+        /**
+         * (Re)Define custom email headers
+         * @param array $headers
+        **/
+        public function headers($headers) {
+            $this->headers = array_merge(array(
+                'X-Mailer' =>  'PHP/'.PHP_VERSION
+            ), $headers);
+        }
+        
 	 	
 	 	/**
-	 	 * Define mail object
+	 	 * Define email object
          * @param string   $value
 	 	**/	 	
 	 	public function object($value) {
@@ -59,7 +75,7 @@
          * @parem string    $name
 	 	**/
 	 	public function to($email, $name = null) {
-            $this->__checkEmail($email);
+            $this->_checkEmail($email);
             $this->To[] = (!empty($name) ? "\"$name\" <$email>" : $email);
 	 	}
 	 	
@@ -71,7 +87,7 @@
          * @param bool      $bind
 	 	**/
 	 	public function Cc($email, $name = null, $bind = false) {
-            $this->__checkEmail($email);
+            $this->_checkEmail($email);
 
             if($bind)
                 $this->Bcc[] = (!empty($name) ? "\"$name\" <$email>" : $email);
@@ -90,7 +106,19 @@
             $this->reply = $email;
 	 	}
 	 	
-	 	
+        
+        /**
+         * Define message
+         * @param string $object
+         * @param string $content
+         * @param string $format
+        **/
+	 	public function message($object = null, $content = null, $format = self::FORMAT_TEXT) {
+            $this->object = $object;
+            $this->content($content, $format);
+        }
+        
+        
 	 	/**
          * Define message content
          * @param string    $message
@@ -100,31 +128,31 @@
 		 	$this->content = $message;
             $this->format = $format;
 	 	}
+        
 	 		 	
 	 	/**
 	 	 * Define attachement file
 	 	 * @param string     $path
 	 	 * @param string     $name
 	 	**/	 	
-	 	public function attachment($name, $path) {
-            
-            if(!file_exists($path))
+	 	public function attachment($name, $file) {
+            if(!file_exists($file))
                 throw new InvalidArgumentException('Mail : Attachment not found');
             
 	 		$this->attachments[] = array(
 	 			'name' => $name,
-	 			'type' => \Compatibility\get_mime_type($path),
-	 			'content' => base64_encode(file_get_contents($path))
+	 			'type' => get_mime_type($file),
+	 			'content' => base64_encode(file_get_contents($file))
 	 		);
 	 	}
+        
 	 		 	
 	 	/**
 	 	 * Try to send mail
 	 	 * @require function construct() / object()
 	 	 * @require  $To, $sender, $reply
 	 	**/
-	 	public function send() {
-            
+	 	public function send() {            
             if(empty($this->To) || empty($this->sender) || empty($this->reply))
                 throw new Exception("Mail : Addressee or sender not defined");
             	 	 	 		
@@ -140,9 +168,14 @@
             
             $headers .= 'Date: '.date('r') . self::BREAKLINE; // Sending date
 	 		$headers .= 'MIME-Version: 1.0' . self::BREAKLINE; // MIME version
-	 		$headers .= 'X-Mailer: PHP/'.PHP_VERSION . self::BREAKLINE; // Sending software (not adviced: consired as SPAM)
+            
+            // Custom headers
+            foreach($this->headers as $name => $value)
+	 		    $headers .= "$name: $value" . self::BREAKLINE; // Sending software (not adviced: consired as SPAM)
+            
+            
 	 		$headers .= "Content-Type: multipart/mixed; boundary=$boundary"; // Content-Type
-	 		
+            
                
             // Content headers
             $message = "--$boundary";

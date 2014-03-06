@@ -72,10 +72,4 @@
     **/
     Controller::invoke();
 
-
-    /**
-     * Register console logs
-    **/
-    Console::register();
-
 ?>

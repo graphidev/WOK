@@ -3,7 +3,7 @@
     /**
      * Mail (class)
      *
-     * @version 2.0
+     * @version 2.1
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
     **/
@@ -48,11 +48,14 @@
         **/
         public function __construct($options = array()) {
             $this->curl = curl_init();
-            $this->options($options);
             
             // Define default cURL agent
             $curl = curl_version();
-            $this->options[CURLOPT_USERAGENT] = 'cURL/'.$curl['version'] . ' ('.php_uname('s').' '.php_uname('r').' '.php_uname('m').')' . ' PHP/'.PHP_VERSION;
+            $this->setopt(CURLOPT_USERAGENT, 'cURL/'.$curl['version'] . ' ('.php_uname('s').' '.php_uname('r').' '.php_uname('m').')' . ' PHP/'.PHP_VERSION);
+            
+            // Redefine options
+            foreach($options as $key => $value)
+                $this->setopt($key, $value);
         }
         
         
@@ -61,10 +64,10 @@
          *
          * @param array     $options
         **/
-        public function options($options) {
-            foreach($options as $key => $value)
-                $this->options[$key] = $value;
+        public function setopt($key, $value) {
+            $this->options[$key] = $value;
         }
+        
         
         /**
          * Define custom request headers
@@ -87,7 +90,7 @@
             $this->options[CURLOPT_HTTPGET] = true;
             $this->options[CURLOPT_URL] = $url . http_build_query($data);
             
-            $this->exec($url, $headers);
+            $this->exec($url);
         }
         
         
@@ -103,7 +106,7 @@
             $this->options[CURLOPT_HTTPGET] = false;
             $this->options[CURLOPT_POSTFIELDS] = $data;
             
-            $this->exec($url, $headers);
+            $this->exec($url);
         }
         
         
@@ -125,7 +128,7 @@
             
             if(curl_errno($this->curl)) // Error while requesting
                 throw new Exception(curl_error($this->curl), curl_errno($this->curl));
-            
+                        
             return $this->output;
         }
         
@@ -140,42 +143,32 @@
             $this->options[CURLOPT_COOKIEJAR] = $path;
         }
         
+        
         /**
          * Return request response content
          *
          * @return mixed
         **/
-        public function response() {
+        public function content() {
             if(!$this->output)
                 throw new Exception('cUrl : Request must be executed before getting response');
             
             return $this->output;    
         }
         
+        
         /**
          * Get a cURL request information
          *
-         * @param string    $name
+         * @param string    $constant
          * @return mixed
         **/
-        public function info($name) {
-            $name = strtoupper(str_replace('-', '_', $name));
+        public function getinfo($constant = 0) {
+            if(!empty($constant))
+                return curl_getinfo($this->curl, $constant);
             
-            if(!defined("CURLINFO_$name"))
-               throw new InvalidArgumentException("cURL : Invalid argument $name for cURL::info method");
-                       
-            $info = curl_getinfo($this->curl, constant("CURLINFO_$name"));
-            return $info;
-        }
-        
-        
-        /**
-         * Get all cURL request informations
-         *
-         * @return mixed
-        **/
-        public function fetchInfos() {
-            return curl_getinfo($this->curl);    
+            else
+                return curl_getinfo($this->curl);
         }
         
         

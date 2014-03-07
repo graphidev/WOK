@@ -33,6 +33,18 @@
 		return SYSTEM_ROOT.$path;
 	}
 
+    
+    /**
+     * Shortcut to Locales::_e() method
+     *
+     * @param string    $path
+     * @param array     $data
+     * @return string
+    **/
+    function _e($path, $data = array()) {
+        return Locales::_e($path, $data);
+    }
+
 
     /**
      * Generate an XML string from an array

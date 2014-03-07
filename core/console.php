@@ -28,13 +28,26 @@
          * Redefine logs format
         **/
         public static function handle() {
+            error_reporting(Console::ERRORS_REPORTING);
+            
             if(!SYSTEM_DEBUG) // Run Console errors handler
                 set_error_handler('Console::handler');
-            
-            error_reporting(Console::ERRORS_REPORTING);
+               
+            set_exception_handler('Console::exception');
             register_shutdown_function('Console::register');
         }
         
+        /**
+         * Prevent exceptions errors
+         * Generate a notice error
+        **/
+        public static function exception($e) {
+            trigger_error($e, E_USER_NOTICE);
+        }
+        
+        /**
+         * Handle errors
+        **/
         public static function handler($type, $message, $file, $line){
             if(!(error_reporting() & $type)) return;
             

@@ -161,4 +161,20 @@
 		endif;
 	}
 
+    
+    /**
+     * Check directory path according to path
+     * Create directories if necessary
+     *
+     * param string     $path
+    **/
+    function checkdir($path, $mkdir = true) {
+        $exists = is_dir($path);
+            
+        if(!$exists && $mkdir) 
+            return mkdir($path, 0755, true); 
+        
+        return $exists;
+    }
+
 ?>

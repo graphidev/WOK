@@ -1,7 +1,7 @@
 <?php
     
     /**
-     * Mail (class)
+     * cURL (class)
      *
      * @version 2.1
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>

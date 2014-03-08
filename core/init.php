@@ -76,6 +76,12 @@
             $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
             
             /**
+             * Exceptions
+            **/
+            if(substr('InvalidArgumentException', -9) == 'Exception')
+                require_once SYSTEM_ROOT.PATH_CORE . '/exceptions.php';
+            
+            /**
              * Core libraries
             **/
             $name = strtolower($name);

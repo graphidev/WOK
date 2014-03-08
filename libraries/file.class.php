@@ -3,7 +3,7 @@
     /**
      * File (class)
      *
-     * @version 2.0
+     * @version 2.1
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
@@ -11,6 +11,7 @@
      * @require get_mime_type() function
      * @require checkdir() function
      * @require root() function
+     * @required ExtendedExceptions
      * @require UploadErrorException
      * @require ZipOpenException
     **/
@@ -43,13 +44,16 @@
                 
                     else:
                         if(!filter_var($file, FILTER_VALIDATE_URL, FILTER_FLAG_PATH_REQUIRED))
-                            throw new InvalidArgumentException("Invalid file URL ($file)");
+                            throw new ExtendedInvalidArgumentException("Invalid file URL ($file)", array(
+                                'argument' => 'url',
+                                'url' => $file
+                            ));
 
                         $this->_download($file);
                     endif;
                 
                 else: // Invalid file
-                    throw new InvalidArgumentException('Invalid argument $file');
+                    throw new ExtendedLogicException('Invalid argument');
 
                 endif;
             } catch(Exception $e) {
@@ -91,7 +95,7 @@
                 
             } catch(Exception $e) {
                 
-                throw new $e;
+                throw $e;
                 
             }
         }
@@ -128,7 +132,7 @@
         **/
         private function _local($file) {
             if(!is_readable($file))
-                throw new Exception("Not readable file ({$file})");
+                throw new ExtendedException("Not readable file ({$file})", array('file' => $file));
                 
             $this->origin       = 'local';
             $this->path         = $file;
@@ -166,13 +170,13 @@
                 $success = @rename($this->path, $destination);
              
             if(!$success)
-                throw new Exception("Unable to move/copy file {$this->path} to {$destination}");
+                throw new ExtendedException("Unable to move/copy file {$this->path} to {$destination}");
             
             if($copy):
                 try {
                     return new File($destination, true);
                 } catch(Exception $e) {
-                    throw new $e;
+                    throw $e;
                 }
             endif;
             
@@ -194,7 +198,7 @@
         **/
         public function remove() {
             if(!@unlink($this->path))
-               throw new Exception("Unable to remove file ({$this->path})", 504); 
+               throw new ExtendedException("Unable to remove file ({$this->path})", 504); 
         }
         
         
@@ -232,7 +236,7 @@
                 throw new ZipOpenException($code);
             
 			if(!$archive->addFile($this->path, "/$filename"))
-                throw new Exception("Unable to add {$filename} to {$destination}");
+                throw new ExtendedException("Unable to add {$filename} to {$destination}");
                 
 			$archive->close();
             
@@ -248,7 +252,7 @@
         **/
         public function __get($information) {
             if(!isset($this->$information))
-                throw new Exception("Invalid request information name ({$information})");
+                throw new ExtendedLogicException("Invalid request information name ({$information})");
             
             return $this->$information;
         }
@@ -272,7 +276,7 @@
     /**
      * Upload error exception
     **/
-    class UploadErrorException extends Exception {
+    class UploadErrorException extends ExtendedException {
         
         protected $data;
         
@@ -317,7 +321,7 @@
                     $message = 'Unknow upload error';
             }    
             
-            parent::__construct($message, $code, $previous);   
+            parent::__construct($message, $data, $code, $previous);   
         }
         
         public function getInfo($param) {
@@ -332,7 +336,7 @@
     /**
      * Zip error exception
     **/
-    class ZipOpenException extends Exception {        
+    class ZipOpenException extends ExtendedException {        
         
         public function __construct($code, $previous = null) {
             switch($code) {
@@ -377,7 +381,7 @@
                     $message = 'Unknow zip error';
             }            
             
-            parent::__construct($message, $code, $previous);   
+            parent::__construct($message, array(), $code, $previous);   
         }
         
     }

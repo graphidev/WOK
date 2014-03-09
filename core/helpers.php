@@ -175,18 +175,13 @@
 
     
     /**
-     * Check directory path according to path
-     * Create directories if necessary
+     * Check directory's path
+     * Create directory if not exists
      *
      * param string     $path
     **/
-    function checkdir($path, $mkdir = true) {
-        $exists = is_dir($path);
-            
-        if(!$exists && $mkdir) 
-            return mkdir($path, 0755, true); 
-        
-        return $exists;
+    function makedir($path, $mode = 0755) {
+        return is_dir($path) || @mkdir($path, $mode, true); 
     }
 
 ?>

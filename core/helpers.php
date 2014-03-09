@@ -184,4 +184,44 @@
         return is_dir($path) || @mkdir($path, $mode, true); 
     }
 
+    
+    /**
+     * Analyse a folder and return files and subfolders names
+     * Please use this function carefuly : it is recursive
+     * @param string    $path
+     * @param array     $ignore
+     * @return array
+	**/
+	function explore($dir, $ignore = array()) {
+        if(!is_readable($dir)) return false;
+        
+        $ignore     = array_merge($ignore, array('.', '..', '.DS_Store', 'Thumbs.db'));
+	    $handle     = opendir($dir);
+	    $array      = array();
+	    
+	    while(false !== ($entry = readdir($handle))):
+	        $entry = trim($entry);
+	        if(!in_array($entry, $ignore)):
+	            if(is_dir("$dir/$entry")):
+	                $array[$entry] = explore($dir.'/'.$entry, $ignore);
+	            endif;
+	                
+	        endif;
+	    endwhile;
+	    
+	    rewinddir($handle);
+	    
+	    while(false !== ($entry = readdir($handle))):
+	        if(!in_array($entry, $ignore)):
+	            if(is_file($dir.'/'.$entry)):
+	                $array[$entry] = $entry;
+	            endif;
+	        endif;
+	    endwhile;
+	    
+	    closedir($handle);
+	    
+	    return $array;
+	}
+
 ?>

@@ -287,11 +287,8 @@
      * Upload error exception
     **/
     class UploadErrorException extends ExtendedException {
-        
-        protected $data;
-        
+                
         public function __construct($file, $previous = null) {
-            $this->data = $file;
             
             switch($file['error']) {
                 
@@ -331,14 +328,7 @@
                     $message = 'Unknow upload error';
             }    
             
-            parent::__construct($message, $data, $code, $previous);   
-        }
-        
-        public function getInfo($param) {
-            if(!isset($data[$param]))
-                trigger_error(__METHOD__." Parameter $param does not exists", E_USER_ERROR);
-                
-            return $data[$param];
+            parent::__construct($message, $file, $code, $previous);   
         }
         
     }

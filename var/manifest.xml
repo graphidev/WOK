@@ -19,6 +19,8 @@
     
     -->
     
+    <request uri="email-attachment" action="static"></request>
+    
     <request uri="test/:var/:id/:another" action="Test:page">
         <param name="var" regexp="string" />
         <param name="id" regexp="integer" />

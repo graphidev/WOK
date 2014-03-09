@@ -3,7 +3,7 @@
     /**
      * File (class)
      *
-     * @version 2.1
+     * @version 2.2
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
@@ -241,7 +241,7 @@
 			$archive->close();
             
             @chmod($destination, 0644);
-            return $destination;
+            return new File($destination, true);
         }
         
         

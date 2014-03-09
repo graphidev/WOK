@@ -3,14 +3,13 @@
     /**
      * File (class)
      *
-     * @version 2.2
+     * @version 2.3
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
      * @require cURL class (v2.1)
      * @require get_mime_type() function
-     * @require checkdir() function
-     * @require root() function
+     * @require makedir() function
      * @required ExtendedExceptions
      * @require UploadErrorException
      * @require ZipOpenException
@@ -25,7 +24,7 @@
         private $name;
         private $mime;
 		private $size;
-        
+
         
         /**
          * Get file
@@ -39,7 +38,7 @@
                     $this->_upload($file);
 
                 elseif(is_string($file)): // Download file
-                    if($local):
+                    if(is_bool($local) && $local):
                         $this->_local($file);
                 
                     else:
@@ -49,7 +48,7 @@
                                 'url' => $file
                             ));
 
-                        $this->_download($file);
+                        $this->_download($file, $local);
                     endif;
                 
                 else: // Invalid file
@@ -67,22 +66,26 @@
          *
          * @param string    $url
         **/
-        private function _download($url) {
+        private function _download($url, $directory) {
             try {
+        
+                if(!makedir($directory))
+                    throw new ExtendedException("Unable to create temporary directory ({$directory} : check permissions)");
                 
+                if(!is_writable($directory))
+                    throw new ExtendedException("Temporary directory isn't writable ({$directory} : check permissions)");
+                    
                 $file = new cURL();
                 $file->exec($url);
                 
-                checkdir(root(PATH_TMP_FILES));
-                
                 $this->origin    = 'download';
-                $this->path      = root(PATH_TMP_FILES.'/'.uniqid().'.pdf');
+                $this->path      = "$directory/".uniqid();
                 $this->filename  = basename($url);
                 $this->extension = pathinfo($url, PATHINFO_EXTENSION);
                 $this->name      = basename($url, '.'.$this->extension);
                 $this->mime      = $file->getinfo(CURLINFO_CONTENT_TYPE);
-                $this->size      = $file->getinfo(CURLINFO_SIZE_DOWNLOAD);                
-                                
+                $this->size      = $file->getinfo(CURLINFO_SIZE_DOWNLOAD); 
+                
                 // Copy file to tmp
                 $resource = fopen($this->path, 'wb');
                 fwrite($resource, $file->content());
@@ -153,12 +156,17 @@
         
         /**
          * Move or copy file
+         * Warning : If the destination file already exists, it will be overwritten
          *
          * @param string    $destination
         **/
         public function move($destination, $copy = false) {
-            checkdir(dirname($destination), true); // Generate folders
             $destination = $this->_replace($destination); // Replace with file values
+            if(!makedir(dirname($destination))) // Generate folders
+                throw new ExtendedException("Unable to create directory {$destination} (check permissions)");
+            
+            if(!is_writable(dirname($destination)))
+                throw new ExtendedException("Destination directory isn't writable (".dirname($destination)." : check permissions)");
             
             if($this->origin == 'upload')
                 $success = @move_uploaded_file($this->path, $destination);
@@ -216,10 +224,12 @@
             
             if(empty($filename))
                 $filename = $this->filename;
-            
-            checkdir(dirname($destination), true); // Generate folders
+                    
             $destination = $this->_replace($destination); // Replace with file values            
             $filename = $this->_replace($filename);
+            
+            if(!makedir(dirname($destination))) // Generate folders
+                throw new ExtendedException("Unable to create directory {$destination} (check permissions)");
             
             if(is_bool($flags)):
                 if($flags)

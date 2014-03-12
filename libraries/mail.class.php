@@ -3,7 +3,7 @@
 	/**
      * Mail (class)
      *
-     * @version 2.3
+     * @version 2.4
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
@@ -106,6 +106,7 @@
 	 	 *	@param string     $name
 	 	**/
 	 	public function from($email, $name = null) {
+            $this->_checkEmail($email, 'From');
             $this->From = (!empty($name) ? "\"$name\" <$email>" : $email);
             $this->reply = $email;
 	 	}

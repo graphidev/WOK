@@ -30,8 +30,8 @@
          * @return mixed
         **/
         public function getData($name = null) {
-            if(!empty($data))
-                return $this->data['name'];
+            if(!empty($name))
+                return $this->data[$name];
             else
                 return $this->data;
         }
@@ -109,8 +109,8 @@
          * @return mixed
         **/
         public function getData($name = null) {
-            if(!empty($data))
-                return $this->data['name'];
+            if(!empty($name))
+                return $this->data[$name];
             else
                 return $this->data;
         }
@@ -188,8 +188,8 @@
          * @return mixed
         **/
         public function getData($name = null) {
-            if(!empty($data))
-                return $this->data['name'];
+            if(!empty($name))
+                return $this->data[$name];
             else
                 return $this->data;
         }

@@ -185,9 +185,11 @@
                 if($status == self::CACHE_PROTECTED):
                     $arguments[] = 'public, no-cache, must-revalidate';
                     header("Pragma: no-cache", true);
+                    header("Vary: Accept-Encoding", true);
                 else:
                     $arguments[] = 'public';
                     header("Pragma: cache", true);
+                    header("Vary: Accept-Encoding", true);
                 endif;
                 
                 $date = new DateTime(date('r', time()+$time));

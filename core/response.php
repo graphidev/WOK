@@ -3,92 +3,6 @@
     class Response extends \Request {
         protected static $data = array();
         
-        private static $types = array(
-            'default'   => 'text/html; charset=utf-8',
-            'text'      => 'text/plain; charset=utf-8',
-            'html'      => 'text/html; charset=utf-8',
-            'json'      => 'application/json; charset=utf-8',
-            'js'        => 'application/javascript; charset=utf-8',
-            'xml'       => 'application/xml; charset=utf-8',
-            'binary'    => 'application/octet-stream',
-        );
-        
-        private static $codes = array(
-            100 => "Continue", 
-            101 => "Switching Protocols", 
-            102 => "Processing", 
-            200 => "OK", 
-            201 => "Created", 
-            202 => "Accepted", 
-            203 => "Non-Authoritative Information", 
-            204 => "No Content", 
-            205 => "Reset Content", 
-            206 => "Partial Content", 
-            207 => "Multi-Status", 
-            300 => "Multiple Choices", 
-            301 => "Moved Permanently", 
-            302 => "Found", 
-            303 => "See Other", 
-            304 => "Not Modified", 
-            305 => "Use Proxy", 
-            306 => "(Unused)", 
-            307 => "Temporary Redirect", 
-            308 => "Permanent Redirect", 
-            400 => "Bad Request", 
-            401 => "Unauthorized", 
-            402 => "Payment Required",
-            403 => "Forbidden", 
-            404 => "Not Found", 
-            405 => "Method Not Allowed", 
-            406 => "Not Acceptable", 
-            407 => "Proxy Authentication Required", 
-            408 => "Request Timeout", 
-            409 => "Conflict", 
-            410 => "Gone", 
-            411 => "Length Required", 
-            412 => "Precondition Failed", 
-            413 => "Request Entity Too Large", 
-            414 => "Request-URI Too Long", 
-            415 => "Unsupported Media Type", 
-            416 => "Requested Range Not Satisfiable", 
-            417 => "Expectation Failed", 
-            418 => "I'm a teapot", 
-            419 => "Authentication Timeout", 
-            420 => "Enhance Your Calm", 
-            422 => "Unprocessable Entity", 
-            423 => "Locked", 
-            424 => "Failed Dependency", 
-            424 => "Method Failure", 
-            425 => "Unordered Collection", 
-            426 => "Upgrade Required", 
-            428 => "Precondition Required", 
-            429 => "Too Many Requests", 
-            431 => "Request Header Fields Too Large", 
-            444 => "No Response", 
-            449 => "Retry With", 
-            450 => "Blocked by Windows Parental Controls", 
-            451 => "Unavailable For Legal Reasons", 
-            494 => "Request Header Too Large", 
-            495 => "Cert Error", 
-            496 => "No Cert", 
-            497 => "HTTP to HTTPS", 
-            499 => "Client Closed Request", 
-            500 => "Internal Server Error", 
-            501 => "Not Implemented", 
-            502 => "Bad Gateway", 
-            503 => "Service Unavailable", 
-            504 => "Gateway Timeout", 
-            505 => "HTTP Version Not Supported", 
-            506 => "Variant Also Negotiates", 
-            507 => "Insufficient Storage", 
-            508 => "Loop Detected", 
-            509 => "Bandwidth Limit Exceeded", 
-            510 => "Not Extended", 
-            511 => "Network Authentication Required", 
-            598 => "Network read timeout error", 
-            599 => "Network connect timeout error"
-        );  
-        
         private static $mimes = array(
             'css' => 'text/css', 
             'js' => 'application/javascript'
@@ -113,22 +27,6 @@
         
         
         /**
-         * Generate default reponse settings
-        **/
-        public function __construct($data = array()) {
-            if(parent::$secured):
-                self::headers(array(
-                    'X-Content-Type-Options' =>     'nosniff',
-                    'Strict-Transport-Security' =>  'max-age=31536000',
-                    'X-XSS-Protection' =>           '1; mode=block'
-                ));
-            endif;
-            
-            self::cache();
-            self::assign($data);
-        }
-        
-        /**
          * Send custom headers
          * Custom headers must begin with X-
         **/
@@ -141,12 +39,10 @@
         /**
          * Define response status
         **/
-        public static function status($type, $code) {
-            header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
+        public static function status($code, $type = null) {
+            http_response_code($code);
             
-            if(!empty(self::$types[$type]))           
-                header("Content-type: ".self::$types[$type], true, $code);
-            else
+            if(!empty($type))
                 header("Content-type: $type", true, $code);
         }
         
@@ -206,12 +102,10 @@
         /**
          * Redirect permanently or not (exit script)
         **/
-        public static function redirect($target, $permanent = false) {
-            $code = ($permanent ? 301 : 302);
-            header("HTTP/1.1 $code ".self::$codes[$code], false, $code);
+        public static function redirect($target, $permanent = false) {        
+            http_response_code($permanent ? 301 : 302);
             header("Location: $target");
             
-            Console::register(); // Register logs before exit
             exit; // Prevent following script execution
         }
         
@@ -233,11 +127,11 @@
         **/
         public static function view($template, $status = 200, $cache = Response::DISABLE_CACHE) {            
             if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
-                self::status('html', $status);
+                self::status($status, 'text/html; charset=utf-8');
                 self::_template($template, $cache);
                 
             else:
-                self::status('html', 404);
+                self::status(404, 'text/html; charset=utf-8');
                 
                 if(file_exists(root(PATH_TEMPLATES."/404.php"))):
                     self::_template('404', $cache);
@@ -266,11 +160,11 @@
             $overwrite = true;
             
                         
-            ob_start(function($buffer) use(&$overwrite, $cached, $cache) {                
+            ob_start(function($buffer, $phase) use(&$overwrite, $cached, $cache) {              
                 // Overwrite cached file
                 if($cache && $overwrite)
                     file_put_contents($cached, $buffer);
-                    
+                
                 return $buffer;
             }); // Keep output in a buffer
             
@@ -292,8 +186,8 @@
         /**
          * Send JSON data
         **/
-        public static function json($data = null, $status = 200) {
-            self::status('json', $status);
+        public static function json(array $data, $status = 200) {
+            self::status($status, 'application/json; charset=utf-8');
             echo json_encode(!empty($data) ? $data : self::$data);
         }
         
@@ -302,7 +196,7 @@
          * Send XML data
         **/
         public static function xml($data = null, $status = 200) {
-            self::status('xml', $status);
+            self::status($status, 'application/xml; charset=utf-8');
             echo xml_encode((!empty($data) ? $data : self::$data), 'document');
         }
         
@@ -311,7 +205,7 @@
          * Send text
         **/
         public static function text($string, $status = 200) {
-            self::status('text', $status);
+            self::status($status, 'text/plain; charset=utf-8');
             echo $string;
         }
         
@@ -320,11 +214,12 @@
          * Send a file (also can be downloaded)
         **/
         public static function file($path, $download = false, $status = 200) {
-            if(file_exists(root("/$path"))):
-                $extension = pathinfo($path, PATHINFO_EXTENSION);
-                $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : \Compatibility\get_mime_type(root("/$path"));
             
-                self::status($mime, $status);
+            if(file_exists(root("$path"))):
+                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : get_mime_type(root("$path"));
+            
+                self::status($status, $mime);
             
                 if($download):
                     header('Content-Disposition: attachment; filename="'.basename($path).'"');
@@ -336,9 +231,9 @@
                     header('Content-Disposition: inline; filename="'.basename($path).'"');
                 endif;
                 
-          
-                ob_clean();
-                readfile(root("/$path"));
+                              
+                readfile(root("$path"));
+            
                     
             else:
                 self::view('404', 404, true);
@@ -350,7 +245,7 @@
          * Send binary datas
         **/
         public static function binary($data, $status = 200) {
-            self::status('binary', $status);
+            self::status($status, 'application/octet-stream');
             echo $data;
         }
         

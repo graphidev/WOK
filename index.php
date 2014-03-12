@@ -54,6 +54,7 @@
      * Set default homepage controller
     **/
     Controller::route(Request::get('URI') == '' ? true : false, function() {
+        Response::cache();
         Response::view('homepage', 200, true);
     }, true);
 

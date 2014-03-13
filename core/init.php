@@ -10,7 +10,7 @@
     
 	const WOK_MAJOR_VERSION        = 1; // Major version
 	const WOK_MINOR_VERSION        = 0; // Minor version
-	const WOK_RELEASE_VERSION      = 6; // Release version
+	const WOK_RELEASE_VERSION      = 8; // Release version
 	const WOK_EXTRA_RELEASE        = 'RC'; // Extra version
     
     // Define full WOK version (without extra release)
@@ -52,19 +52,7 @@
         **/
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
         require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions
-        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers
-        
-        /**
-         * Set default locale
-         * This information may be updated by using Locales
-        **/
-        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF8');
-
-        /**
-         * Start and send every required headers.
-        **/
-        if(!headers_sent())
-            @date_default_timezone_set(SYSTEM_TIMEZONE); // Define date timezone        
+        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers     
 
         /**
          * Autoload libraries

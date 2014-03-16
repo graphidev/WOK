@@ -96,12 +96,6 @@
                 require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php";
         });
 
-        /**
-         * Particular cases which require some adjustements or conditions
-        **/
-        if(!function_exists('json_decode') && !function_exists('json_encode'))
-			require_once SYSTEM_ROOT.PATH_CORE . "/json.php"; // JSON functions
-        
         
         /**
          * Start handling errors

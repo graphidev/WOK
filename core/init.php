@@ -65,7 +65,7 @@
             /**
              * Exceptions
             **/
-            if(substr('InvalidArgumentException', -9) == 'Exception')
+            if(substr($name, -9) == 'Exception')
                 require_once SYSTEM_ROOT.PATH_CORE . '/exceptions.php';
             
             /**

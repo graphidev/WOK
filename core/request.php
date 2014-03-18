@@ -90,6 +90,8 @@
                                 $break = false;
                             endif;
                         
+                            $index++;
+                        
                         // FILES parameters
                         elseif($param['type'] == 'FILE' && isset(self::$parameters['FILES'][$param['name']])):
                             $break = true;

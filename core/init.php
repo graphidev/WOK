@@ -51,7 +51,7 @@
          * We can load settings and required libraries
         **/
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
-        require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions
+        require_once SYSTEM_ROOT.PATH_CORE . '/utf8.php'; // UTF-8 compatible functions
         require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers     
 
         /**

@@ -129,7 +129,7 @@
      * @param   string  $path
      * @return  mixed   
     **/
-    function array_value($array, $path) {
+    function array_value($path, $array) {
         if(!empty($path)) {
             
             $keys = explode('.', $path);

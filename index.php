@@ -33,7 +33,7 @@
      * Set static pages controller (special)
     **/
     Controller::route(Request::get('action') == 'static', function() {
-        Response::view(Request::get('URI'), 200, true);
+        Response::view(Request::uri(), 200, true);
     }, true);
 
 
@@ -53,7 +53,7 @@
     /**
      * Set default homepage controller
     **/
-    Controller::route(Request::get('URI') == '' ? true : false, function() {
+    Controller::route(Request::uri() == '' ? true : false, function() {
         Response::cache();
         Response::view('homepage', 200, true);
     }, true);

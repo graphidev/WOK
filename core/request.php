@@ -7,12 +7,10 @@
     
     class Request extends App {
         
-        protected static $URI         = false;
+        protected static $uri           = null;
         protected static $domain        = null;
         protected static $method        = null;
         protected static $port          = null;
-        protected static $secured       = null;
-        protected static $ajax          = null;
         protected static $range         = null;
         protected static $format        = null;
         protected static $action        = null;
@@ -28,18 +26,16 @@
         **/
         public function __construct() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
-            $static         = preg_replace('#(/[a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
+            $static         = preg_replace('#/([a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
                 
             /**
              * Define global request informations
             **/
             self::$domain        = $_SERVER['HTTP_HOST'];
-            self::$method        = strtoupper($_SERVER['REQUEST_METHOD']);
+            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);
+            self::$uri           = $static;
             self::$port          = $_SERVER['SERVER_PORT'];
-            self::$URI           = str_replace(path(), '', path($static));
-            self::$secured       = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
-            self::$ajax          = (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');
             self::$range         = (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);
             self::$format        = pathinfo($static, PATHINFO_EXTENSION);
                     
@@ -68,10 +64,9 @@
             **/
             foreach(parent::$manifest as $i => $request) {
                 
-                if(($request['regexp'] == self::$URI || preg_match('#^'.$request['regexp'].'$#isU', self::$URI))
+                if(($request['regexp'] == self::$uri || preg_match('#^'.$request['regexp'].'$#isU', self::$uri))
                    && in_array(self::$method, $request['methods'])
-                   && ($request['domain'] == self::$domain 
-                       || (self::$domain != SYSTEM_DOMAIN && in_array($request['domain'], explode(' ', SYSTEM_DOMAIN_ALIAS))))
+                   && $request['domain'] == self::$domain
                   && in_array(Session::language(), $request['languages'])):
                     
                     $break = (count($request['parameters']) ? false : true);
@@ -131,50 +126,83 @@
         
         /**
          * Get request parameter
+         * @param string    $name
+         * @param string    $method
+         * @return mixed
         **/ 
         public static function parameter($name, $method = null) {
             if(empty($method))
                 $method = self::$method;
             
-            return (!empty(self::$parameters[$method][$name]) ? self::$parameters[$method][$name] : false);
+            return (!empty(self::$parameters[$method][$name]) ? array_value($name, self::$parameters[$method]) : false);
         }
         
         /**
          * Check request informations
-         * Return it if available
+         * @return mixed
         **/
-        public static function get($parameter) {
-            return (!empty(self::$$parameter) ? self::$$parameter : false);  
+        public static function get($information) {
+            return (isset(self::$$information) ? self::$$information : false);  
+        }
+        
+        /**
+         * Get header's parameter value
+         * @return string
+        **/
+        public static function header($parameter, $default = false) {
+            return (isset($_SERVER[$parameter]) ? $parameter : $default);     
         }
         
         /**
          * Check secured connexion
+         * @return boolean
         **/
-        public static function secured() {
-            return self::$secured;     
+        public static function secure() {
+            return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');     
         }
         
         
         /**
-         * Check secured connexion
+         * Check XML HTTP Request life
+         * @return boolean
         **/
         public static function ajax() {
-            return self::$ajax;     
+            return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');     
         }
         
         
         /**
-         * Check secured connexion
+         * Check or get method
+         * @param string $verify
+         * @return mixed (boolean, string)
         **/
-        public static function method() {
-            return self::$method;     
+        public static function method($verify = null) {
+            if(!empty($verify)):
+                return (self::$method == mb_strtoupper($verify));
+            else:
+                return self::$method;
+            endif;
         }
         
         /**
-         * Check secured connexion
+         * Check or get format (use uri extension)
+         * @param string $verify
+         * @return mixed
         **/
-        public static function URI() {
-            return self::$URI;     
+        public static function format($verify = null) {
+            if(!empty($verify)):
+                return (self::$format == $verify);
+            else:
+                return self::$format;
+            endif;
+        }
+        
+        /**
+         * Get request URI (without host)
+         * @return string
+        **/
+        public static function uri() {
+            return self::$uri;     
         }
 
     }

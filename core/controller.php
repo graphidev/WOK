@@ -44,23 +44,23 @@
         private static function execute($conditions, $action, $strict = false) {
              if(is_bool($conditions)):
                 if($conditions): 
-                    return $action(Request::get('URI')) or $strict; 
+                    return $action(Request::uri()) or $strict; 
                 endif;
             
             elseif(is_string($conditions)):
-                if($conditions == Request::get('URI')):
-                    return $action(Request::get('URI')) or $strict;
+                if($conditions == Request::uri()):
+                    return $action(Request::uri()) or $strict;
                 endif;
             
             elseif(is_callable($conditions)):
-                if($conditions(Request::get('URI'))):
-                    return $action(Request::get('URI')) or $strict;
+                if($conditions(Request::uri())):
+                    return $action(Request::uri()) or $strict;
                 endif;
             
             elseif(is_array($conditions)):
                 $end = false;
                 foreach($conditions as $index => $value ) {
-                    $end = self::execute($value, $action, Request::get('URI'));
+                    $end = self::execute($value, $action, Request::uri());
                 }
                 return $end;
                         

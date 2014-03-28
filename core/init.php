@@ -96,13 +96,6 @@
                 require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php";
         });
 
-        
-        /**
-         * Start handling errors
-        **/
-        Console::handle();
-        
-
         /**
          * Once everything is fine loaded, we call the options file.
          * This one will be used to add your own stuffs.
@@ -110,6 +103,13 @@
         if(file_exists(SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once(SYSTEM_ROOT.PATH_VAR.'/options.php');
         
+        /**
+         * Initialized required tools
+        **/
+        Console::handle(); // Listen to errors
+        new Session; // Start session
+        
+
     endif;
 
     /**

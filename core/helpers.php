@@ -121,15 +121,34 @@
          return $output;
     }
 
+    /**
+     * Set a multi-dimensional associative array value from a string
+     *
+     * @param   string  $path
+     * @param   mixed   $value
+     * @param   array   $array
+     * @return  array
+    **/
+    function array_set($path, $value, &$array = array()) {
+        $segments = explode('.', $path);
+        
+        foreach($segments as $index){
+            $array[$index] = null;
+            $array = &$array[$index];
+        }
+        
+        $array = $value;
+        return $array;
+    }
 
     /**
      * Get a multi-dimensional associative array value from a string
      *
-     * @param   array   $array
      * @param   string  $path
+     * @param   array   $array
      * @return  mixed   
     **/
-    function array_value($path, $array) {
+    function array_value($path, $array, $default = null) {
         if(!empty($path)) {
             
             $keys = explode('.', $path);
@@ -138,7 +157,7 @@
                 if (isset($array[$key]))
                     $array = $array[$key];
                 else
-                    return null;
+                    return $default;
                 
             }
             
@@ -147,6 +166,30 @@
         return $array;
     }
 
+    /**
+     * Delete a multi-dimensional associative array index
+     *
+     * @param   string  $path
+     * @param   array   $array
+     * @return  boolean   
+    **/
+    function array_unset($path, &$array) {
+        $segments = explode('.', $path);
+        $last = count($segments)-1;
+        foreach($segments as $i => $index){
+            if(!isset($array[$index]))
+                return false;
+            
+            if($i < $last)
+                $array = &$array[$index];
+        }
+                
+        if(!isset($array[$segments[$last]]))
+            return false;
+        
+        unset($array[$segments[$last]]);
+        return true;
+    }
 
     /**
      * Get file MIME type

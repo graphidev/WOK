@@ -7,13 +7,10 @@
     
     class Request extends App {
         
-        protected static $uri           = null;
-        protected static $domain        = null;
-        protected static $method        = null;
-        protected static $port          = null;
-        protected static $range         = null;
-        protected static $format        = null;
-        protected static $action        = null;
+        protected static $uri       = '';
+        protected static $method    = '';
+        protected static $format    = '';
+        protected static $action    = '';
         protected static $parameters    = array(
             'URI' => array(),
             'GET' => array(),
@@ -32,12 +29,9 @@
             /**
              * Define global request informations
             **/
-            self::$domain        = $_SERVER['HTTP_HOST'];
-            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);
             self::$uri           = $static;
-            self::$port          = $_SERVER['SERVER_PORT'];
-            self::$range         = (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);
             self::$format        = pathinfo($static, PATHINFO_EXTENSION);
+            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
                     
             /**
              * Define request parameters
@@ -66,8 +60,8 @@
                 
                 if(($request['regexp'] == self::$uri || preg_match('#^'.$request['regexp'].'$#isU', self::$uri))
                    && in_array(self::$method, $request['methods'])
-                   && $request['domain'] == self::$domain
-                  && in_array(Session::language(), $request['languages'])):
+                   && $request['domain'] == self::domain()
+                  && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))):
                     
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
@@ -138,11 +132,33 @@
         }
         
         /**
-         * Check request informations
-         * @return mixed
+         * Get FILES parameter
+         * @param string    $name
+         * @return string
+        **/
+        public static function file($name) {
+            return self::parameter($name, 'FILES');  
+        }
+        
+        /**
+         * Get FILES parameter
+         * @param string    $name
+         * @return string
+        **/
+        public static function segment($name) {
+            return self::parameter($name, 'URI');  
+        }
+        
+        /**
+         * Get GET parameter
+         * @param string    $name
+         * @return string
         **/
         public static function get($information) {
-            return (isset(self::$$information) ? self::$$information : false);  
+            if(!isset(self::$$information))
+                trigger_error("Undefined parameter Request::\$$information", E_USER_ERROR);
+            
+            return self::$$information;
         }
         
         /**
@@ -203,6 +219,18 @@
         **/
         public static function uri() {
             return self::$uri;     
+        }
+        
+        public static function domain() {
+            return $_SERVER['HTTP_HOST']; 
+        }
+        
+        public static function port() {
+            return $_SERVER['SERVER_PORT'];   
+        }
+        
+        public static function range() {
+            return (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);   
         }
 
     }

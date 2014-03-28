@@ -4,71 +4,86 @@
         
         const CRYPT_MODE = MCRYPT_MODE_CBC;
         const CRYPT_ALGORITHM = MCRYPT_RIJNDAEL_256;
-        const LIFETIME = 13392000; // 6 monthes
+        
         
         /**
-         * Define a cookie        
+         * Define a cookie
+         * @param string    $name
+         * @param string    $value
+         * @param integer   $duration
+         * @param domain    $domain
+         * @return boolean
         **/
-        public static function set($name, $value, $duration = Cookie::LIFETIME, $secured = false) {
-                                    
-            if(empty($duration))
-                $duration = Cookie::LIFETIME;
+        public static function set($name, $value, $duration = 0, $crypt = false, $domain = null) {            
+            $expire = (!empty($duration) ? time()+$duration : $duration);
             
-            $expire = time()+$duration;
-            
-            if($secured)
+            if(Request::secure() || $crypt)
                 $value = self::_encrypt($value, $expire);
             
-            $directory = SYSTEM_DIRECTORY != '' ? SYSTEM_DIRECTORY : '/';
-            $https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
+            $path = SYSTEM_DIRECTORY != '' ? SYSTEM_DIRECTORY : '/';
             
-            $alias = explode(' ', SYSTEM_DOMAIN_ALIAS);
-            foreach($alias as $i => $domain) {
-                setcookie($name, $value, $expire, $directory, $domain, $https, $secured);
-            }
+            return setcookie($name, $value, $expire, $path, $domain, Request::secure(), Request::secure());
             
-            return setcookie($name, $value, $expire, $directory, SYSTEM_DOMAIN, $https, $secured);
-        }
-                
-        /**
-         * Get cookie existance
-        **/
-        public static function exists($name, $strict = false) {
-            if($strict && !empty($_COOKIE[$name])):
-                return true;
-            else:
-                return isset($_COOKIE[$name]);
-            endif;
         }
         
         /**
          * Get cookie value
+         * @param string    $name
+         * @param boolean   $decrypt
+         * @return mixed
         **/
         public static function get($name, $decrypt = false) {
-            if(self::exists($name, true))
-                return  $decrypt ? self::_decrypt($_COOKIE[$name]) : $_COOKIE[$name];
+            if(self::exists($name))
+                return ($decrypt ? self::_decrypt($_COOKIE[$name]) : $_COOKIE[$name]);
             else
                 return false;
         }
         
         /**
+         * Get cookie existance
+         * @param string    $name
+         * @param boolean   $strict
+         * @return boolean
+        **/
+        public static function exists($name, $strict = false) {
+            if($strict && !empty($_COOKIE[$name]))
+                return true;
+            else
+                return isset($_COOKIE[$name]);
+        }
+        
+        /**
          * Delete a cookie
+         * @param string    $name
+         * @return boolean
         **/
         public static function destroy($name) {
-            $https = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
-            $directory = SYSTEM_DIRECTORY != '' ? SYSTEM_DIRECTORY : '/'; 
-                        
-            $alias = explode(' ', SYSTEM_DOMAIN_ALIAS);
-            foreach($alias as $i => $domain) {
-                setcookie($name, '', time(), $directory, $domain, $https);
-            }
-            
-            return setcookie($name, '', time(), $directory, SYSTEM_DOMAIN, $https);
+            return setcookie($name, '', 1);
+        }
+        
+        /**
+         * Destroy all cookies
+        **/
+        public static function clean() {
+            $cookies = array_keys($_COOKIE);
+            for($i=0; $i < count($cookies); $i++) 
+                setcookie($cookies[$i], '',time()-1);  
+        }
+        
+        /**
+         * Get all cookies
+         * @return array
+        **/
+        public static function all() {
+            return $_COOKIE;    
         }
         
         
         /**
          * Encrypt a cookie value
+         * @param string    $value
+         * @param integer   $expire
+         * @return string
         **/
         private static function _encrypt($value, $expire) {
             $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
@@ -85,6 +100,8 @@
         
         /**
          * Decrypt a cookie value
+         * @param string    $value
+         * @return string
         **/
         private static function _decrypt($value) {
             list($value, $expire) = explode('|', $value);
@@ -103,6 +120,9 @@
         
         /**
          * Generate an IV to crypt and decrypt
+         * @param string    $key
+         * @param resource
+         * @return 
         **/
         private static function _iv($key, &$module) {
             $size = mcrypt_enc_get_iv_size($module);

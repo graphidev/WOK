@@ -1,6 +1,6 @@
 <?php
     
-    class Response extends \Request {
+    class Response {
         protected static $data = array();
         
         private static $mimes = array(
@@ -151,11 +151,10 @@
          * Generate template output
         **/
         private static function _template($view, $cache) {
-            $language = Session::language();
             $suffix = ($cache && !is_bool($cache) ? "-$cache" : '');
             $template = root(PATH_TEMPLATES."/$view.php");
             $cache = (!SYSTEM_DEBUG ? $cache : false);
-            $cached = root(PATH_CACHE."/$view$suffix-$language.html");
+            $cached = root(PATH_CACHE."/$view$suffix-".Session::get('language').".html");
             $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
             $overwrite = true;
             

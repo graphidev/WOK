@@ -2,20 +2,17 @@
 
     /**
      * This is the option file. 
-     * It allow you to add some configuration constants and functions
+     * It allow you to use some configuration functions
+     * You also can define some constants here
     **/
 
     /**
-      * Set default locale
+      * Set default locale and time zone
       * This information may be updated by using Locales
     **/
     setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF8');
+    @date_default_timezone_set(SYSTEM_TIMEZONE);
 
-    /**
-     * Start and send every required headers.
-    **/
-    if(!headers_sent())
-        @date_default_timezone_set(SYSTEM_TIMEZONE); // Define date timezone   
 
     /**
      * Allow zlib compression

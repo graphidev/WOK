@@ -3,7 +3,7 @@
 	/**
      * Mail (class)
      *
-     * @version 2.4
+     * @version 2.5
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
@@ -11,7 +11,7 @@
      * @require get_mime_type() function
      * @require ExtendedExceptions
     **/
-	
+
 	class Mail {
         
         const BREAKLINE          = "\n"; // New line break
@@ -36,11 +36,14 @@
          * @param string    $email
         **/
         private function _checkEmail($email, $field) {
-            if(!filter_var($email, FILTER_VALIDATE_EMAIL))
-                throw new ExtendedInvalidArgumentException("Invalid e-mail", array(
+            if(!filter_var($email, FILTER_VALIDATE_EMAIL)):            
+                $e = new ExtendedInvalidArgumentException("Invalid e-mail", array(
                     'argument'  => $field,
                     'value'     => $email
-                ));   
+                ));
+                $e->setCallFromTrace(2);
+                throw $e;
+            endif;
         }
         
         
@@ -49,7 +52,9 @@
          * @param string   $object
 	 	**/
 	 	public function __construct($headers = array()) {
-            $this->headers($headers);
+            $this->headers(array_merge(array(
+                'X-Mailer' =>  'PHP/'.PHP_VERSION
+            ), $headers));
 	 	}
         
         
@@ -58,9 +63,7 @@
          * @param array $headers
         **/
         public function headers($headers) {
-            $this->headers = array_merge(array(
-                'X-Mailer' =>  'PHP/'.PHP_VERSION
-            ), $headers);
+            $this->headers = array_merge($this->headers, $headers);
         }
         
 	 	
@@ -141,11 +144,14 @@
 	 	 * @param string     $name
 	 	**/	 	
 	 	public function attachment($name, $file) {
-            if(!is_readable($file))
-                throw new ExtendedInvalidArgumentException('Unreadable file', array(
+            if(!is_readable($file)):
+                $e = new ExtendedInvalidArgumentException('Unreadable file', array(
                     'argument'  => 'file', 
                     'value'     => $file
                 ));
+                $e->setCallFromTrace();
+                throw $e;
+            endif;
             
 	 		$this->attachments[] = array(
 	 			'name' => $name,
@@ -161,8 +167,11 @@
 	 	 * @require  $To, $From, $reply
 	 	**/
 	 	public function send() {            
-            if(empty($this->To))
-                throw new ExtendedLogicException("Addressee not defined : Mail::to() must be called before Mail::send()");
+            if(empty($this->To)):
+                $e = new ExtendedLogicException("Addressee undefined : define it before sending message");
+                $e->setCallFromTrace();
+                throw $e;
+            endif;
             
             if(empty($this->From))
                 $this->from($_SERVER['SERVER_ADMIN']);
@@ -214,8 +223,11 @@
 	 		$message .= "--$boundary" . self::BREAKLINE; // End message
 	 		
 	  		// Try to send mail and return result
-	 		if(!@mail(implode(', ', $this->To), $this->object, $message, $headers))
-                throw new ExtendedException('Unable to send e-mail');
+	 		if(!@mail(implode(', ', $this->To), $this->object, $message, $headers)):
+                $e = new ExtendedException('Unable to send e-mail');
+                $e->setCallFromTrace();
+                throw $e;
+            endif;
 	 	}
 
 	 			

@@ -25,6 +25,16 @@
         }
         
         /**
+         * Redefine protected $file and $line
+         * @param $level
+        **/
+        public function setCallFromTrace($level = 1) {
+            $level--;
+            $this->file = $this->trace[$level]['file'];   
+            $this->line = $this->trace[$level]['line'];
+        }
+        
+        /**
          * Return defined data
          * @param string    $name
          * @return mixed
@@ -104,6 +114,16 @@
         }
         
         /**
+         * Redefine protected $file and $line
+         * @param $level
+        **/
+        public function setCallFromTrace($level = 1) {
+            $level--;
+            $this->file = $this->trace[$level]['file'];   
+            $this->line = $this->trace[$level]['line'];
+        }
+        
+        /**
          * Return defined data
          * @param string    $name
          * @return mixed
@@ -180,6 +200,16 @@
             $this->data = $data;
 
             parent::__construct($message, $code, $previous);
+        }
+        
+        /**
+         * Redefine protected $file and $line
+         * @param $level
+        **/
+        public function setCallFromTrace($level = 1) {  
+            $level--;
+            $this->file = $this->trace[$level]['file'];   
+            $this->line = $this->trace[$level]['line'];
         }
         
         /**

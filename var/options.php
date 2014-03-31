@@ -20,4 +20,13 @@
     **/
     ini_set("zlib.output_compression", "On");
 
+    
+    /**
+     * End callback
+     * this function will be called at the end of PHP execution
+    **/
+    register_shutdown_function(function() {
+        Console::register(); // Register errors logs  
+    });
+
 ?>

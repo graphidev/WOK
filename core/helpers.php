@@ -324,8 +324,16 @@
             return $code;
         }
     endif;
-
-
+    
+    /**
+     * Check if the variable is a closure function
+     * @param mixed     $function
+     * @return boolean
+    **/
+    function is_function(&$variable) {
+        return (is_object($variable) && ($variable instanceof Closure));
+    }
+    
     /**
      * Determine if PHP is running via CLI
      * @return boolean

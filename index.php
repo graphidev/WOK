@@ -63,7 +63,8 @@
      * Ongoing maintenance 
     **/
     Controller::route(SYSTEM_MAINTENANCE, function() {
-        Response::view('maintenance', 503, true);
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance');
+        Response::view('maintenance', 503);
     }, true);
 
 
@@ -71,7 +72,8 @@
      * Set static pages controller (special)
     **/
     Controller::route(Request::get('action') == 'static', function() {
-        Response::view(Request::uri(), 200, true);
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, str_replace('/', '-', Request::uri()));
+        Response::view(Request::uri(), 200);
     }, true);
 
 
@@ -92,8 +94,8 @@
      * Set default homepage controller
     **/
     Controller::route(Request::uri() == '' ? true : false, function() {
-        Response::cache();
-        Response::view('homepage', 200, true);
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'homepage');
+        Response::view('homepage', 200);
     }, true);
 
 
@@ -102,7 +104,8 @@
      * Just send a 404 response
     **/
     Controller::route(true, function() {
-        Response::view('404', 404, true);
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');
+        Response::view('404', 404);
     }, true);
 
 
@@ -110,5 +113,11 @@
      * Invoke the controller queue
     **/
     Controller::invoke();
+
+    
+    /**
+     * Output response
+    **/
+    Response::output();
 
 ?>

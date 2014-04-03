@@ -163,10 +163,13 @@
         
         /**
          * Get header's parameter value
-         * @return string
+         * @return mixed
         **/
-        public static function header($parameter, $default = false) {
-            return (isset($_SERVER[$parameter]) ? $parameter : $default);     
+        public static function header($parameter, $split = false) {
+            if(!isset($_SERVER[$parameter]))
+                trigger_error("Request header $parameter does not exists", E_USER_ERROR);
+                
+            return ($split ? explode(',', $_SERVER[$parameter]) : $_SERVER[$parameter]);     
         }
         
         /**

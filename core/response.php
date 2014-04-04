@@ -150,6 +150,8 @@
                    && filemtime(self::$cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))
                    && filemtime(self::$cachefile) <= time() + self::$cachetime):
                     
+                    http_response_code(304);
+                    header('Content-type: text/html; charset=utf8', true, 304);
                     readfile(self::$cachefile);
 
                 else: // Generate view

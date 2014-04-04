@@ -109,7 +109,7 @@
                     $headers['Pragma'] = 'no-cache';
                     
                 else: // Public : cache if possible
-                    $headers['Cache-Control'] .= 'public';
+                    $headers['Cache-Control'] .= ', public';
                     $headers['Pragma'] = 'cache';
 
                 endif;

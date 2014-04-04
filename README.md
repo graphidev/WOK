@@ -16,6 +16,7 @@ As I said, no extra-features would be present. But there is some of them that I 
 - Multi platform (working on Windows and Unix-based systems)
 - MVC structure
 - URL rewriting
+- System environments (Debug, maintenance, production) 
 - Default behavior (for static pages)
 - Router using HTTP and URI parameters conditions
 - Response with file cache system and HTTP caching

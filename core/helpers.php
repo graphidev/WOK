@@ -267,6 +267,30 @@
 	    return $array;
 	}
 
+    
+    /**
+     * Prevent magic quotes 
+     * (Note: Magic quotes deprecated as of PHP 5.3 and removed as of PHP 5.4)
+     * 
+     * @param mixed $input
+     * @return mixed
+    **/
+    function strip_magic_quotes($input) {
+		if(get_magic_quotes_gpc()):
+			if(is_array($input)):
+            
+				foreach($input as $k => $v) 
+					$input[$k] = stripslashes($v);
+        
+			else:
+        
+				$input = stripslashes($input);
+        
+			endif;
+		endif;
+	
+		return $input;
+	}
 
     /**
      * Generate header status (PHP < 5.4)

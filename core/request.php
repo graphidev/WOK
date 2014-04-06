@@ -37,7 +37,7 @@
              * Define request parameters
             **/
             if(!empty($_GET)): // GET parameters
-                self::$parameters['GET'] = &$_GET;
+                self::$parameters['GET'] = strip_magic_quotes($_GET);
             
             elseif(!empty($additional)):
                 foreach(explode('&', $additional) as $i => $parameter) {
@@ -48,7 +48,7 @@
             endif;
                 
             if(!empty($_POST)) // POST parameters
-                self::$parameters['POST'] = &$_POST;
+                self::$parameters['POST'] = strip_magic_quotes($_POST);
                 
             if(!empty($_FILES)) // FILES parameters
                 self::$parameters['FILES'] = &$_FILES;

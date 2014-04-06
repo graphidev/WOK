@@ -34,7 +34,7 @@
         **/
         public static function get($name, $decrypt = false) {
             if(self::exists($name))
-                return ($decrypt ? self::_decrypt($_COOKIE[$name]) : $_COOKIE[$name]);
+                return ($decrypt ? self::_decrypt(strip_magic_quotes($_COOKIE[$name])) : strip_magic_quotes($_COOKIE[$name]));
             else
                 return false;
         }
@@ -65,7 +65,7 @@
          * Destroy all cookies
         **/
         public static function clean() {
-            $cookies = array_keys($_COOKIE);
+            $cookies = array_keys(strip_magic_quotes($_COOKIE));
             for($i=0; $i < count($cookies); $i++) 
                 setcookie($cookies[$i], '',time()-1);  
         }
@@ -75,7 +75,7 @@
          * @return array
         **/
         public static function all() {
-            return $_COOKIE;    
+            return strip_magic_quotes($_COOKIE);    
         }
         
         

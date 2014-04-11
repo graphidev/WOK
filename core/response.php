@@ -65,7 +65,7 @@
          * Define response content handler
          * @param closure   $function
         **/
-        public function handler($function) {
+        public static function handler($function) {
             if(!is_function($function))
                 trigger_error('Parameter in Response::handler must be a function', E_USER_ERROR);
             
@@ -164,10 +164,16 @@
 
                     // Generate cache view
                     ob_start(function($buffer, $phase) {
+                        
+                        if(!is_null(self::$handler)):
+                            $execute = self::$handler;
+                            $buffer = $execute($buffer, self::$data, self::$code);
+                        endif;
+                        
                         if(!empty(self::$cachetime))
-                            file_put_contents(self::$cachefile, $buffer);   
-
-                        self::$content = $buffer;
+                            file_put_contents(self::$cachefile, $buffer);
+                        
+                        self::$content = $buffer;                                      
                         return $buffer;
                     });
 
@@ -273,13 +279,7 @@
             http_response_code(self::$code);
             foreach(self::$headers as $name => $value) {
                 @header("$name: $value", true);
-            }
-                        
-            // Apply treatment on content
-            if(is_function(self::$handler)):
-                $execute = self::$handler;
-                $execute(self::$content, self::$data, self::$code);
-            endif;
+            }            
             
             // Output content
             if(is_function(self::$content)):
@@ -287,6 +287,16 @@
                 $execute();
             
             else:
+                if(is_function(self::$data)): 
+                    $execute = self::$data;
+                    self::$data = $execute();
+                endif;
+            
+                if(is_function(self::$handler)):
+                   $execute = self::$handler;
+                   self::$content = $execute(self::$content, self::$data, self::$code);
+                endif;
+
                 echo self::$content;
             
             endif;

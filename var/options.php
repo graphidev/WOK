@@ -8,9 +8,9 @@
 
     /**
       * Set default locale and time zone
-      * This information may be updated by using Locales
+      * Theses informations may be updated by using Locales
     **/
-    setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF8');
+    setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF-8');
     @date_default_timezone_set(SYSTEM_TIMEZONE);
 
 

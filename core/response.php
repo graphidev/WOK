@@ -143,15 +143,14 @@
             if(!file_exists(root(PATH_TEMPLATES."/$template.php")))
                 trigger_error("Template $template not found", E_USER_ERROR);
             
-            self::$content = function() use($template) {
+            self::$content = function() use($template, $status) {
                 
                 // Output cached view
                 if(!empty(self::$cachetime) && file_exists(self::$cachefile) 
                    && filemtime(self::$cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))
                    && filemtime(self::$cachefile) <= time() + self::$cachetime):
                     
-                    http_response_code(304);
-                    header('Content-type: text/html; charset=utf8', true, 304);
+                    self::status($status, 'text/html; charset=utf8');
                     readfile(self::$cachefile);
 
                 else: // Generate view

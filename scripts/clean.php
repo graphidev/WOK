@@ -1,5 +1,6 @@
 <?php // Remove temporary files
-    require "cli.php";
+    
+    require_once 'cli.php';
     
 
     /**
@@ -21,14 +22,16 @@
             if(is_array($value)):
                 remove($value, "$path/$name");
                 $deleted = @rmdir("$path/$name");
-            else:
+            elseif($name != '.htaccess'):
                 $deleted = @unlink("$path/$name");
             endif;
             
-            if($deleted)
-                echo '[DELETED] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
-            else
-                echo '[ERROR] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
+            if(isset($deleted)):
+                if($deleted)
+                    echo '[DELETED] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
+                else
+                    echo '[ERROR] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
+            endif;
         }
     }
 

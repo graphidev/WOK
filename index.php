@@ -15,25 +15,27 @@
 
         Session::set('language', Cookie::get('language'));
 
-    elseif(!Session::has('language')):
+    else:
         
         $languages  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
         $accepted   = explode(' ', SYSTEM_LANGUAGES);
-
+        
         foreach($languages as $i => $code) {
             
             if(in_array($code, $accepted)):
                 $language = $code;
                 break;
+            else:
+                $language = null;
             endif;
             
         }
-
-        if(!isset($language))
+    
+        if(empty($language))
             $language = SYSTEM_DEFAULT_LANGUAGE;
-
+        
         Session::set('language', $language);
-        Cookie::set('language', $language);        
+        Cookie::set('language', $language, 15811200);        
 
     endif;
 

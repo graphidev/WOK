@@ -267,6 +267,32 @@
 	    return $array;
 	}
 
+
+    /**
+     * Encode a path (such as url_encode() function)
+     * @param string    $path
+    **/
+    function path_encode($string) {
+        
+        $string = str_replace(array( // Characters replacements
+            'á','à','â','ã','ª','ä','å','Á','À','Â','Ã','Ä','é','è','ê','ë','É','È','Ê','Ë',
+            'í','ì','î','ï','Í','Ì','Î','Ï','œ','ò','ó','ô','õ','º','ø','Ø','Ó','Ò','Ô','Õ',
+            'ú','ù','û','Ú','Ù','Û','ç','Ç','Ñ','ñ'
+        ),array(
+            'a','a','a','a','a','a','a','A','A','A','A','A','e','e','e','e','E','E','E','E',
+            'i','i','i','i','I','I','I','I','oe','o','o','o','o','o','o','O','O','O','O','O',
+            'u','u','u','U','U','U','c','C','N','n'
+        ), $string); 
+        
+        // Special characters replaced with a dash
+        $string = str_replace(array(' ', '/', '+'), '-', $string);
+        
+        // Remove not authorized characters
+        $string = preg_replace('#[^a-z0-9_-]#i', '', $string);
+        
+        return urlencode($string);   
+    }
+
     
     /**
      * Prevent magic quotes 

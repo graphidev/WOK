@@ -1,93 +1,15 @@
 <?php
     
-    class Response extends \Request {
-        protected static $data = array();
+    class Response {
         
-        private static $types = array(
-            'default'   => 'text/html; charset=utf-8',
-            'text'      => 'text/plain; charset=utf-8',
-            'html'      => 'text/html; charset=utf-8',
-            'json'      => 'application/json; charset=utf-8',
-            'js'        => 'application/javascript; charset=utf-8',
-            'xml'       => 'application/xml; charset=utf-8',
-            'binary'    => 'application/octet-stream',
-        );
+        private static $headers     = array();
+        private static $content     = null;
+        private static $code        = 200;
+        private static $data        = array();
+        private static $handler     = null;
+        private static $cachetime   = null;
+        private static $cachefile   = null;
         
-        private static $codes = array(
-            100 => "Continue", 
-            101 => "Switching Protocols", 
-            102 => "Processing", 
-            200 => "OK", 
-            201 => "Created", 
-            202 => "Accepted", 
-            203 => "Non-Authoritative Information", 
-            204 => "No Content", 
-            205 => "Reset Content", 
-            206 => "Partial Content", 
-            207 => "Multi-Status", 
-            300 => "Multiple Choices", 
-            301 => "Moved Permanently", 
-            302 => "Found", 
-            303 => "See Other", 
-            304 => "Not Modified", 
-            305 => "Use Proxy", 
-            306 => "(Unused)", 
-            307 => "Temporary Redirect", 
-            308 => "Permanent Redirect", 
-            400 => "Bad Request", 
-            401 => "Unauthorized", 
-            402 => "Payment Required",
-            403 => "Forbidden", 
-            404 => "Not Found", 
-            405 => "Method Not Allowed", 
-            406 => "Not Acceptable", 
-            407 => "Proxy Authentication Required", 
-            408 => "Request Timeout", 
-            409 => "Conflict", 
-            410 => "Gone", 
-            411 => "Length Required", 
-            412 => "Precondition Failed", 
-            413 => "Request Entity Too Large", 
-            414 => "Request-URI Too Long", 
-            415 => "Unsupported Media Type", 
-            416 => "Requested Range Not Satisfiable", 
-            417 => "Expectation Failed", 
-            418 => "I'm a teapot", 
-            419 => "Authentication Timeout", 
-            420 => "Enhance Your Calm", 
-            422 => "Unprocessable Entity", 
-            423 => "Locked", 
-            424 => "Failed Dependency", 
-            424 => "Method Failure", 
-            425 => "Unordered Collection", 
-            426 => "Upgrade Required", 
-            428 => "Precondition Required", 
-            429 => "Too Many Requests", 
-            431 => "Request Header Fields Too Large", 
-            444 => "No Response", 
-            449 => "Retry With", 
-            450 => "Blocked by Windows Parental Controls", 
-            451 => "Unavailable For Legal Reasons", 
-            494 => "Request Header Too Large", 
-            495 => "Cert Error", 
-            496 => "No Cert", 
-            497 => "HTTP to HTTPS", 
-            499 => "Client Closed Request", 
-            500 => "Internal Server Error", 
-            501 => "Not Implemented", 
-            502 => "Bad Gateway", 
-            503 => "Service Unavailable", 
-            504 => "Gateway Timeout", 
-            505 => "HTTP Version Not Supported", 
-            506 => "Variant Also Negotiates", 
-            507 => "Insufficient Storage", 
-            508 => "Loop Detected", 
-            509 => "Bandwidth Limit Exceeded", 
-            510 => "Not Extended", 
-            511 => "Network Authentication Required", 
-            598 => "Network read timeout error", 
-            599 => "Network connect timeout error"
-        );  
         
         private static $mimes = array(
             'css' => 'text/css', 
@@ -105,118 +27,31 @@
         const CACHETIME_MEDIUM      = 216000; // 1 hour
         const CACHETIME_LONG        = 5184000; // 24 hours
         
-        /**
-         * Frame constants
-        **/
-        const FRAME_DENY            = 'DENY';
-        const FRAME_ORIGIN          = 'SAMEORIGIN';
-        
-        
-        /**
-         * Generate default reponse settings
-        **/
-        public function __construct($data = array()) {
-            if(parent::$secured):
-                self::headers(array(
-                    'X-Content-Type-Options' =>     'nosniff',
-                    'Strict-Transport-Security' =>  'max-age=31536000',
-                    'X-XSS-Protection' =>           '1; mode=block'
-                ));
-            endif;
-            
-            self::cache();
-            self::assign($data);
-        }
         
         /**
          * Send custom headers
          * Custom headers must begin with X-
+         * @param array     $headers
         **/
         public static function headers($headers) {
-            foreach($headers as $name => $value) {
-                @header("$name: $value", true);
-            }
+            self::$headers = array_merge($headers, self::$headers);
         }
                 
         /**
-         * Define response status
+         * Define response header status
+         * @param integer   $code
+         * @param string    $type
         **/
-        public static function status($type, $code) {
-            header("HTTP/1.1 $code " .self::$codes[$code], true, $code);
-            
-            if(!empty(self::$types[$type]))           
-                header("Content-type: ".self::$types[$type], true, $code);
-            else
-                header("Content-type: $type", true, $code);
-        }
-        
-        /**
-         * Iframe response configuration
-        **/
-        public static function frame($status = self::FRAME_ORIGIN) {
-            if(is_array($status))
-                header('X-Frame-Options: ALLOW-FROM '.implode(' ', $status));
-            else
-                header("X-Frame-Options : $status");
-        }
-        
-        /**
-         * Send Cache headers
-        **/
-        public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED) {
-            // Private cache : do not cache
-            if(!$time || $status == self::CACHE_PRIVATE):
-                $arguments = array(
-                    'private', // Private resource, do not cache
-                    'no-cache', // Never cache resource
-                    'no-store', // Never cache resource, even on hard drive
-                    'must-revalidate', // Always check resource
-                    'proxy-revalidate', // Always Check resource, even middle proxys
-                    
-                );
-                header("Pragma: no-cache", true);
-            
-            // Protected or public cache
-            elseif($time):
-                $arguments = array(
-                    "max-age=$time", // Max resource age (for browsers)
-                    "s-maxage=$time", // Max resource age (for middle caches)
-                );
-                if($status == self::CACHE_PROTECTED):
-                    $arguments[] = 'public, no-cache, must-revalidate';
-                    header("Pragma: no-cache", true);
-                else:
-                    $arguments[] = 'public';
-                    header("Pragma: cache", true);
-                endif;
+        public static function status($code, $type = null) {
+            self::$code = $code;
                 
-                $date = new DateTime(date('r', time()+$time));
-                $date->setTimezone(new DateTimeZone('GMT'));
-                header("Expires: ".$date->format('r'), true);
-            endif;
-            
-            // Send headers
-            $arguments[] = 'no-transform'; // Never transform outputed data
-            header('Cache-Control: '.implode(', ', $arguments), true);
+            if(!empty($type))  
+                self::headers(array('Content-type' => $type));
         }
         
-        
         /**
-         * Redirect permanently or not (exit script)
-        **/
-        public static function redirect($target, $permanent = false) {
-            $code = ($permanent ? 301 : 302);
-            header("HTTP/1.1 $code ".self::$codes[$code], false, $code);
-            header("Location: $target");
-            
-            Console::register(); // Register logs before exit
-            exit; // Prevent following script execution
-        }
-        
-        
-        /**
-         * define datas
-         * Working only with view method
+         * Define data to use for response
+         * @param mixed   $data
         **/
         public static function assign($data) {
             if(is_array($data))
@@ -227,102 +62,181 @@
         
         
         /**
-         * Call a view file
+         * Define response content handler
+         * @param closure   $function
         **/
-        public static function view($template, $status = 200, $cache = Response::DISABLE_CACHE) {            
-            if(file_exists(root(PATH_TEMPLATES."/$template.php")) && $template != '404'):  
-                self::status('html', $status);
-                self::_template($template, $cache);
-                
-            else:
-                self::status('html', 404);
-                
-                if(file_exists(root(PATH_TEMPLATES."/404.php"))):
-                    self::_template('404', $cache);
-                
-                else:
-                    if($template != '503')
-                        trigger_error("$template template does not exists", E_USER_WARNING);
-                    else
-                        Console::log("$template template does not exists", Console::LOG_ERROR);
-                
-                endif;
-                
-            endif;
-        }
+        public static function handler($function) {
+            if(!is_function($function))
+                trigger_error('Parameter in Response::handler must be a function', E_USER_ERROR);
+            
+            self::$handler = $function;
+        }        
+        
         
         /**
-         * Generate template output
+         * Redirect permanently or not
+         *
+         * @param string    $target
+         * @param boolean   $permanent
         **/
-        private static function _template($view, $cache) {
-            $language = Session::language();
-            $suffix = ($cache && !is_bool($cache) ? "-$cache" : '');
-            $template = root(PATH_TEMPLATES."/$view.php");
-            $cache = (!SYSTEM_DEBUG ? $cache : false);
-            $cached = root(PATH_CACHE."/$view$suffix-$language.html");
-            $time = (is_int($cache) ? $cache : Response::CACHETIME_SHORT);
-            $overwrite = true;
+        public static function redirect($target, $permanent = false) {       
+            self::$code = ($permanent ? 301 : 302);
+            self::headers(array('Location'=> $target));
+        }
+        
+        
+        /**
+         * Generate response cache
+         * Use headers and file
+         * @param integer   $time
+         * @param string    $status
+         * @param mixed     $file
+        **/
+        public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED, $file = false) {
+            // Private cache : do not cache
+            if(!$time || $status == self::CACHE_PRIVATE):
+                $headers = array(
+                    'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
+                    'Pragma'         => 'no-cache'
+                );
             
-                        
-            ob_start(function($buffer) use(&$overwrite, $cached, $cache) {                
-                // Overwrite cached file
-                if($cache && $overwrite)
-                    file_put_contents($cached, $buffer);
+            // Public
+            elseif($time):
+                $headers['Cache-Control'] =  "max-age=$time, s-maxage=$time";
+            
+                if($status == self::CACHE_PROTECTED): // Public but do not cache
+                    $headers['Cache-Control'] .= ', public, no-cache, must-revalidate';
+                    $headers['Pragma'] = 'no-cache';
                     
-                return $buffer;
-            }); // Keep output in a buffer
-            
-                if($cache && file_exists($cached) 
-                   && filemtime($cached) > filemtime($template)
-                   && filemtime($cached) <= time()+$time):
-                    $overwrite = false;
-                    readfile($cached);
+                else: // Public : cache if possible
+                    $headers['Cache-Control'] .= ', public';
+                    $headers['Pragma'] = 'cache';
 
-                else:
+                endif;
+                
+                $date = new DateTime(date('r', time()+$time));
+                $date->setTimezone(new DateTimeZone('GMT'));
+                $headers['Expires'] = $date->format('r');
+            endif;
+            
+            // Send headers
+            $headers['Cache-Control'] .= ', no-transform'; // Never transform outputed data
+            $headers['Vary'] = 'Accept-Encoding';
+            
+            self::headers($headers); 
+            
+            if($file && !SYSTEM_DEBUG): // Cache file
+                self::$cachetime = $time;            
+                self::$cachefile = root(PATH_CACHE."/$file-".Session::get('language').".html");
+            endif;
+            
+        }        
+        
+        /**
+         * Call a view file
+         * @param string    $template
+         * @param integer   $status
+        **/
+        public static function view($template, $status = 200) {
+            self::status($status, 'text/html; charset=utf-8');
+            
+            if(!file_exists(root(PATH_TEMPLATES."/$template.php")))
+                trigger_error("Template $template not found", E_USER_ERROR);
+            
+            self::$content = function() use($template, $status) {
+                
+                // Output cached view
+                if(!empty(self::$cachetime) && file_exists(self::$cachefile) 
+                   && filemtime(self::$cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))
+                   && filemtime(self::$cachefile) <= time() + self::$cachetime):
+                    
+                    self::status($status, 'text/html; charset=utf8');
+                    readfile(self::$cachefile);
+
+                else: // Generate view
+                    
+                    // Execute data's requests
+                    if(is_function(self::$data)): 
+                        $execute = self::$data;
+                        self::$data = $execute();
+                    endif;
+
+                    // Generate cache view
+                    ob_start(function($buffer, $phase) {
+                        
+                        if(!is_null(self::$handler)):
+                            $execute = self::$handler;
+                            $buffer = $execute($buffer, self::$data, self::$code);
+                        endif;
+                        
+                        if(!empty(self::$cachetime))
+                            file_put_contents(self::$cachefile, $buffer);
+                        
+                        self::$content = $buffer;                                      
+                        return $buffer;
+                    });
+
                     extract(self::$data);
-                    include_once($template);
-            
-                endif; 
+                    include root(PATH_TEMPLATES."/$template.php");
+                
+                    ob_end_flush();
 
-            ob_end_flush(); // Generate output
+
+                endif; 
+            
+            };  
+        
         }
         
         /**
          * Send JSON data
+         * @param array     $data
+         * @param integer   $status
         **/
-        public static function json($data = null, $status = 200) {
-            self::status('json', $status);
-            echo json_encode(!empty($data) ? $data : self::$data);
+        public static function json(array $data, $status = 200) {
+            self::status($status, 'application/json; charset=utf-8');
+            self::$content = json_encode(!empty($data) ? $data : self::$data);
         }
         
         
         /**
          * Send XML data
+         * @param array     $array
+         * @param integer   $status
         **/
-        public static function xml($data = null, $status = 200) {
-            self::status('xml', $status);
-            echo xml_encode((!empty($data) ? $data : self::$data), 'document');
+        public static function xml(array $array = null, $status = 200) {
+            if(!empty($array))
+                self::$data = $array;
+            
+            self::status($status, 'application/xml; charset=utf-8');
+            self::$content = xml_encode(self::$data, 'document');
         }
         
         
         /**
          * Send text
+         * @param string    $string
+         * @param integer   $status
         **/
         public static function text($string, $status = 200) {
-            self::status('text', $status);
-            echo $string;
+            self::status($status, 'text/plain; charset=utf-8');
+            self::$content = $string;
         }
         
         
         /**
-         * Send a file (also can be downloaded)
+         * Send a file (also can force download)
+         * @param string    $path
+         * @param boolean   $download
+         * @param integer   $status
         **/
         public static function file($path, $download = false, $status = 200) {
-            if(file_exists(root("/$path"))):
-                $extension = pathinfo($path, PATHINFO_EXTENSION);
-                $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : \Compatibility\get_mime_type(root("/$path"));
             
-                self::status($mime, $status);
+            if(file_exists(root("$path"))):
+                $extension = pathinfo($path, PATHINFO_EXTENSION);
+                $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : get_mime_type(root("$path"));
+            
+                self::status($status, $mime);
             
                 if($download):
                     header('Content-Disposition: attachment; filename="'.basename($path).'"');
@@ -334,9 +248,10 @@
                     header('Content-Disposition: inline; filename="'.basename($path).'"');
                 endif;
                 
-          
-                ob_clean();
-                readfile(root("/$path"));
+                self::$content = function() {            
+                    readfile(root("$path"));
+                };
+            
                     
             else:
                 self::view('404', 404, true);
@@ -346,10 +261,45 @@
         
         /**
          * Send binary datas
+         * @param mixed     $data
+         * @param integer   $status
         **/
         public static function binary($data, $status = 200) {
-            self::status('binary', $status);
-            echo $data;
+            self::status($status, 'application/octet-stream');
+            self::$content = $data;
+        }
+        
+        /**
+         * Output response
+        **/
+        public static function output() {
+            
+            // Send headers
+            http_response_code(self::$code);
+            foreach(self::$headers as $name => $value) {
+                @header("$name: $value", true);
+            }            
+            
+            // Output content
+            if(is_function(self::$content)):
+                $execute = self::$content;
+                $execute();
+            
+            else:
+                if(is_function(self::$data)): 
+                    $execute = self::$data;
+                    self::$data = $execute();
+                endif;
+            
+                if(is_function(self::$handler)):
+                   $execute = self::$handler;
+                   self::$content = $execute(self::$content, self::$data, self::$code);
+                endif;
+
+                echo self::$content;
+            
+            endif;
+                        
         }
         
     }

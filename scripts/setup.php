@@ -84,7 +84,6 @@
     $settings = setSetting('SYSTEM_DIRECTORY', $directory, $settings);
     $settings = setSetting('SYSTEM_TIMEZONE', $timezone, $settings);
     $settings = setSetting('SYSTEM_LANGUAGES', implode(' ', $languages), $settings);
-    $settings = setSetting('SYSTEM_DEFAULT_LANGUAGES', $languages[0], $settings);
 
     $settings = setSetting('SESSIONS_SALT', substr(sha1(uniqid('sess_')), -20), $settings);
     $settings = setSetting('TOKENS_SALT', substr(sha1(uniqid('tok_')), -20), $settings);

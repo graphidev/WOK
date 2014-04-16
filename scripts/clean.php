@@ -1,5 +1,6 @@
 <?php // Remove temporary files
-    require "cli.php";
+    
+    require_once 'cli.php';
     
 
     /**
@@ -21,14 +22,16 @@
             if(is_array($value)):
                 remove($value, "$path/$name");
                 $deleted = @rmdir("$path/$name");
-            else:
+            elseif($name != '.htaccess'):
                 $deleted = @unlink("$path/$name");
             endif;
             
-            if($deleted)
-                echo '[DELETED] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
-            else
-                echo '[ERROR] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
+            if(isset($deleted)):
+                if($deleted)
+                    echo '[DELETED] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
+                else
+                    echo '[ERROR] '.str_replace(ACCESS_PATH, '', $path)."/$name\n";
+            endif;
         }
     }
 
@@ -37,7 +40,7 @@
      * Clean tmp folder
     **/
     if(in_array('-tmp', $_args) || in_array('-all', $_args)): 
-        $tmp = tree(ACCESS_PATH.PATH_TMP);
+        $tmp = explore(ACCESS_PATH.PATH_TMP);
         
         echo "Clean ".PATH_TMP." ...\n";
         if(!empty($tmp)):
@@ -53,7 +56,7 @@
     **/
     if(in_array('-logs', $_args) || in_array('-all', $_args)): 
         
-        $tmp = tree(ACCESS_PATH.PATH_LOGS);
+        $tmp = explore(ACCESS_PATH.PATH_LOGS);
         
         echo "Clean ".PATH_LOGS." ...\n";
         if(!empty($tmp)):
@@ -71,7 +74,7 @@
     **/
     if(in_array('-cache', $_args) || in_array('-all', $_args)): 
         
-        $tmp = tree(ACCESS_PATH.PATH_CACHE);
+        $tmp = explore(ACCESS_PATH.PATH_CACHE);
 
         echo "Clean ".PATH_CACHE." ...\n";
         if(!empty($tmp)):

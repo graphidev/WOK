@@ -33,6 +33,18 @@
 		return SYSTEM_ROOT.$path;
 	}
 
+    
+    /**
+     * Shortcut to Locales::_e() method
+     *
+     * @param string    $path
+     * @param array     $data
+     * @return string
+    **/
+    function _e($path, $data = array()) {
+        return Locales::_e($path, $data);
+    }
+
 
     /**
      * Generate an XML string from an array
@@ -109,15 +121,34 @@
          return $output;
     }
 
+    /**
+     * Set a multi-dimensional associative array value from a string
+     *
+     * @param   string  $path
+     * @param   mixed   $value
+     * @param   array   $array
+     * @return  array
+    **/
+    function array_set($path, $value, &$array = array()) {
+        $segments = explode('.', $path);
+        
+        foreach($segments as $index){
+            $array[$index] = null;
+            $array = &$array[$index];
+        }
+        
+        $array = $value;
+        return $array;
+    }
 
     /**
      * Get a multi-dimensional associative array value from a string
      *
-     * @param   array   $array
      * @param   string  $path
+     * @param   array   $array
      * @return  mixed   
     **/
-    function array_value($array, $path) {
+    function array_value($path, $array, $default = null) {
         if(!empty($path)) {
             
             $keys = explode('.', $path);
@@ -126,7 +157,7 @@
                 if (isset($array[$key]))
                     $array = $array[$key];
                 else
-                    return null;
+                    return $default;
                 
             }
             
@@ -135,6 +166,30 @@
         return $array;
     }
 
+    /**
+     * Delete a multi-dimensional associative array index
+     *
+     * @param   string  $path
+     * @param   array   $array
+     * @return  boolean   
+    **/
+    function array_unset($path, &$array) {
+        $segments = explode('.', $path);
+        $last = count($segments)-1;
+        foreach($segments as $i => $index){
+            if(!isset($array[$index]))
+                return false;
+            
+            if($i < $last)
+                $array = &$array[$index];
+        }
+                
+        if(!isset($array[$segments[$last]]))
+            return false;
+        
+        unset($array[$segments[$last]]);
+        return true;
+    }
 
     /**
      * Get file MIME type
@@ -160,5 +215,181 @@
 		    return $mime;
 		endif;
 	}
+
+    
+    /**
+     * Check directory's path
+     * Create directory if not exists
+     *
+     * param string     $path
+    **/
+    function makedir($path, $mode = 0755) {
+        return is_dir($path) || @mkdir($path, $mode, true); 
+    }
+
+    
+    /**
+     * Analyse a folder and return files and subfolders names
+     * Please use this function carefuly : it is recursive
+     * @param string    $path
+     * @param array     $ignore
+     * @return array
+	**/
+	function explore($dir, $ignore = array()) {
+        if(!is_readable($dir)) return false;
+        
+        $ignore     = array_merge($ignore, array('.', '..', '.DS_Store', 'Thumbs.db'));
+	    $handle     = opendir($dir);
+	    $array      = array();
+	    
+	    while(false !== ($entry = readdir($handle))):
+	        $entry = trim($entry);
+	        if(!in_array($entry, $ignore)):
+	            if(is_dir("$dir/$entry")):
+	                $array[$entry] = explore($dir.'/'.$entry, $ignore);
+	            endif;
+	                
+	        endif;
+	    endwhile;
+	    
+	    rewinddir($handle);
+	    
+	    while(false !== ($entry = readdir($handle))):
+	        if(!in_array($entry, $ignore)):
+	            if(is_file($dir.'/'.$entry)):
+	                $array[$entry] = $entry;
+	            endif;
+	        endif;
+	    endwhile;
+	    
+	    closedir($handle);
+	    
+	    return $array;
+	}
+
+
+    /**
+     * Encode a path (such as url_encode() function)
+     * @param string    $path
+    **/
+    function path_encode($string) {
+        
+        $string = str_replace(array( // Characters replacements
+            'á','à','â','ã','ª','ä','å','Á','À','Â','Ã','Ä','é','è','ê','ë','É','È','Ê','Ë',
+            'í','ì','î','ï','Í','Ì','Î','Ï','œ','ò','ó','ô','õ','º','ø','Ø','Ó','Ò','Ô','Õ',
+            'ú','ù','û','Ú','Ù','Û','ç','Ç','Ñ','ñ'
+        ),array(
+            'a','a','a','a','a','a','a','A','A','A','A','A','e','e','e','e','E','E','E','E',
+            'i','i','i','i','I','I','I','I','oe','o','o','o','o','o','o','O','O','O','O','O',
+            'u','u','u','U','U','U','c','C','N','n'
+        ), $string); 
+        
+        // Special characters replaced with a dash
+        $string = str_replace(array(' ', '/', '+'), '-', $string);
+        
+        // Remove not authorized characters
+        $string = preg_replace('#[^a-z0-9_-]#i', '', $string);
+        
+        return urlencode($string);   
+    }
+
+    
+    /**
+     * Prevent magic quotes 
+     * (Note: Magic quotes deprecated as of PHP 5.3 and removed as of PHP 5.4)
+     * 
+     * @param mixed $input
+     * @return mixed
+    **/
+    function strip_magic_quotes($input) {
+		if(get_magic_quotes_gpc()):
+			if(is_array($input)):
+            
+				foreach($input as $k => $v) 
+					$input[$k] = stripslashes($v);
+        
+			else:
+        
+				$input = stripslashes($input);
+        
+			endif;
+		endif;
+	
+		return $input;
+	}
+
+    /**
+     * Generate header status (PHP < 5.4)
+     * @param integer   $code
+     * @return integer
+    **/
+    if(!function_exists('http_response_code')):
+        function http_response_code($code) {
+            switch($code) {
+                case 100: $message = 'Continue'; break;
+                case 101: $message = 'Switching Protocols'; break;
+                case 200: $message = 'OK'; break;
+                case 201: $message = 'Created'; break;
+                case 202: $message = 'Accepted'; break;
+                case 203: $message = 'Non-Authoritative Information'; break;
+                case 204: $message = 'No Content'; break;
+                case 205: $message = 'Reset Content'; break;
+                case 206: $message = 'Partial Content'; break;
+                case 300: $message = 'Multiple Choices'; break;
+                case 301: $message = 'Moved Permanently'; break;
+                case 302: $message = 'Moved Temporarily'; break;
+                case 303: $message = 'See Other'; break;
+                case 304: $message = 'Not Modified'; break;
+                case 305: $message = 'Use Proxy'; break;
+                case 400: $message = 'Bad Request'; break;
+                case 401: $message = 'Unauthorized'; break;
+                case 402: $message = 'Payment Required'; break;
+                case 403: $message = 'Forbidden'; break;
+                case 404: $message = 'Not Found'; break;
+                case 405: $message = 'Method Not Allowed'; break;
+                case 406: $message = 'Not Acceptable'; break;
+                case 407: $message = 'Proxy Authentication Required'; break;
+                case 408: $message = 'Request Time-out'; break;
+                case 409: $message = 'Conflict'; break;
+                case 410: $message = 'Gone'; break;
+                case 411: $message = 'Length Required'; break;
+                case 412: $message = 'Precondition Failed'; break;
+                case 413: $message = 'Request Entity Too Large'; break;
+                case 414: $message = 'Request-URI Too Large'; break;
+                case 415: $message = 'Unsupported Media Type'; break;
+                case 500: $message = 'Internal Server Error'; break;
+                case 501: $message = 'Not Implemented'; break;
+                case 502: $message = 'Bad Gateway'; break;
+                case 503: $message = 'Service Unavailable'; break;
+                case 504: $message = 'Gateway Time-out'; break;
+                case 505: $message = 'HTTP Version not supported'; break;
+                default:
+                    $code = 200;
+                    $message = 'OK';
+                break;
+            }
+
+            $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1');
+            header("$protocol $code $message", true, $code);
+            return $code;
+        }
+    endif;
+    
+    /**
+     * Check if the variable is a closure function
+     * @param mixed     $function
+     * @return boolean
+    **/
+    function is_function(&$variable) {
+        return (is_object($variable) && ($variable instanceof Closure));
+    }
+    
+    /**
+     * Determine if PHP is running via CLI
+     * @return boolean
+    **/
+    function is_cli() {
+        return (!isset($_SERVER['SERVER_SOFTWARE']) && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
+    }
 
 ?>

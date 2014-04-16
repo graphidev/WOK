@@ -1,13 +1,17 @@
 <?php
 
     /**
-     * This file contains all the compatiblities functions for PHP
+     * UTF 8 compatible functions
+     * Please check PHP documentation for usage
     **/
     
-    namespace Compatibility;
+    namespace UTF8;
 
     /**
-     * The unicode compatible function of str_split
+     * str_split 
+     * @param string    $string
+     * @param integer   $split_length
+     * @return array
     **/
     function str_split($string, $split_length = 0) {
         if ($split_length > 0) {
@@ -22,7 +26,9 @@
     }
 
     /**
-     * The unicode compatible function of strrev
+     * strrev
+     * @param string    $string
+     * @return string
     **/
     function strrev($string) {
         $characters = str_split($string);
@@ -30,7 +36,9 @@
     }
 
     /**
-     * The unicode comptabile function of ucfirst
+     * ucfirst
+     * @param string
+     * @return string
     **/
     function ucfirst($string) {
         $letter = mb_strtoupper(mb_substr($string, 0, 1));

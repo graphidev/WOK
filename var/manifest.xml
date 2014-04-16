@@ -19,27 +19,4 @@
     
     -->
     
-    <request uri="test/:var/:id/:another" action="Test:page">
-        <param name="var" regexp="string" />
-        <param name="id" regexp="integer" />
-        <param name="another" regexp="any" />
-        
-        <!-- non URI parameters -->
-        <param name="try" type="get" regexp="any" />
-        <!--
-        <param name="test" type="post" regexp="string" />
-        <param name="file" type="file" />
-        -->
-    </request>
-    
-    <request uri="test-controller" action="test:form">
-        <param name="data" type="post" regexp="array" />
-    </request>
-    
-    <request uri="test-controller" action="test:action"></request>
-    
-    <request uri="static-page" action="static"></request>
-    
-    <request uri="all-options" action="static" domain="~" languages="any" methods="get"></request>
-    
 </manifest>

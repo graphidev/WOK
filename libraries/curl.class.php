@@ -1,27 +1,23 @@
 <?php
     
     /**
-     * cURL class
-     * The class contains :
-     * - Predefined parameters
-     * - Exception errors
-     * - Easier cURL integration
+     * cURL (class)
+     *
+     * @version 2.1
+     * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
     **/
 
     class cURL {
         
-        protected $interface;
-        private $URI;
-        private $response;
-        private $infos;
+        private $curl       = false;
+        private $output     = false;
         
-        /**
-         * Predefined options
-        **/
+        // Predefined request options
         private $options = array(
             CURLINFO_HEADER_OUT         => true,
             CURLOPT_RETURNTRANSFER      => true,
-            CURLOPT_HEADER              => false,
+            CURLOPT_HEADER              => true,
             CURLOPT_FOLLOWLOCATION      => true,
             CURLOPT_ENCODING            => '', 
             CURLOPT_USERAGENT           => '', 
@@ -29,103 +25,158 @@
             CURLOPT_CONNECTTIMEOUT      => 120,
             CURLOPT_TIMEOUT             => 120, 
             CURLOPT_MAXREDIRS           => 10,
-            CURLOPT_SSL_VERIFYHOST      => true,
+            CURLOPT_SSL_VERIFYHOST      => 2,
             CURLOPT_SSL_VERIFYPEER      => true,
-            CURLOPT_VERBOSE             => false,
+            CURLOPT_VERBOSE             => true,
             CURLOPT_COOKIESESSION       => true,
-            
+            CURLOPT_HTTPHEADER          => array(),
+            CURLOPT_HTTPGET             => true,
+            CURLOPT_POST                => false,
+            CURLOPT_COOKIEFILE          => ''
         );
         
-        /**
-         * cURL methods 
-        **/
+        
+        // cURL request methods 
         const METHOD_GET        = 'GET';
         const METHOD_POST       = 'POST';
         
+        
         /**
          * Init the cURL request
+         *
+         * @param array     $options
         **/
-        public function __construct($url, $headers = array()) {
-            $this->interface = curl_init($url);
-            $this->URI = $url;
+        public function __construct($options = array()) {
+            $this->curl = curl_init();
             
-            if(!empty($headers))
-                $this->options[CURLOPT_HTTPHEADER] = $headers;
+            // Define default cURL agent
+            $curl = curl_version();
+            $this->setopt(CURLOPT_USERAGENT, 'cURL/'.$curl['version'] . ' ('.php_uname('s').' '.php_uname('r').' '.php_uname('m').')' . ' PHP/'.PHP_VERSION);
+            
+            // Redefine options
+            foreach($options as $key => $value)
+                $this->setopt($key, $value);
         }
+        
+        
+        /**
+         * Define custom options or overload some predefined options
+         *
+         * @param array     $options
+        **/
+        public function setopt($key, $value) {
+            $this->options[$key] = $value;
+        }
+        
+        
+        /**
+         * Define custom request headers
+         *
+         * @param array     $headers
+        **/
+        public function headers($headers) {
+            $this->options[CURLOPT_HTTPHEADER] = array_merge($this->options[CURLOPT_HTTPHEADER], $headers);   
+        }
+        
+        
+        /**
+         * Run a GET request
+         *
+         * @param string    $url
+         * @param array     $data
+         * @return mixed
+        **/
+        public function get($url, $data = array()) {
+            $this->options[CURLOPT_HTTPGET] = true;
+            $this->options[CURLOPT_URL] = $url . http_build_query($data);
+            
+            $this->exec($url);
+        }
+        
+        
+        /**
+         * Run a POST request
+         *
+         * @param string    $url
+         * @param array     $data
+         * @return mixed
+        **/
+        public function post($url, $data = array()) {
+            $this->options[CURLOPT_POST] = true;
+            $this->options[CURLOPT_HTTPGET] = false;
+            $this->options[CURLOPT_POSTFIELDS] = $data;
+            
+            $this->exec($url);
+        }
+        
+        
+        /**
+         * Run request (GET by default)
+         *
+         * @param string    $url
+         * @param array     $headers
+         * @return mixed
+        **/
+        public function exec($url, $headers = array()) {  
+            // Define request URL
+            $this->options[CURLOPT_URL] = $url;
+            $this->headers($headers);
+            
+            // Run request
+            curl_setopt_array($this->curl, $this->options);
+            $this->output = curl_exec($this->curl);
+            
+            if(curl_errno($this->curl)) // Error while requesting
+                throw new Exception(curl_error($this->curl), curl_errno($this->curl));
+                        
+            return $this->output;
+        }
+        
         
         /**
          * Define the cookies file
+         *
+         * @param string    $path
         **/
-        public function cookies($path) {
+        public function cookiesFile($path) {
             $this->options[CURLOPT_COOKIEFILE] = $path;
             $this->options[CURLOPT_COOKIEJAR] = $path;
         }
         
-        /**
-         * Add data to the request
-         * To send file use '@/path/to/file'
-        **/
-        public function send($data, $method = cURL::METHOD_GET) {
-            if($method == self::METHOD_POST):
-                $this->options[CURLOPT_POST] = true;
-                $this->options[CURLOPT_POSTFIELDS] = $data;
-            
-            elseif($method == self::METHOD_GET):
-                $this->options[CURLOPT_URL] = $this->URI . http_build_query($data);
-            
-            endif;
-        }
         
         /**
-         * Define custom options or overload some predefined options
+         * Return request response content
+         *
+         * @return mixed
         **/
-        public function options($options) {
-            foreach($options as $key => $value) {
-                $this->options[$key] = $value;
-            }
+        public function content() {
+            if(!$this->output)
+                throw new Exception('cUrl : Request must be executed before getting response');
+            
+            return $this->output;    
         }
         
-        /**
-         * Send the cURL request
-        **/
-        public function exec() {
-            if(empty($this->response)):
-                if(empty($this->options[CURLOPT_USERAGENT])):
-                    $curl = curl_version();
-                    $this->options[CURLOPT_USERAGENT] = 'cURL/'.$curl['version'] . ' ('.php_uname('s').' '.php_uname('r').' '.php_uname('m').')' . ' PHP/'.PHP_VERSION;
-                endif;
-            
-                curl_setopt_array($this->interface, $this->options);
-                if(!curl_errno($this->interface)):
-                    $this->response = curl_exec($this->interface);
-                     $this->infos = curl_getinfo($this->interface);
-                    
-                else:
-                    throw new Exception(curl_error($this->interface), curl_errno($this->interface));
-                    
-                endif;
-                curl_close($this->interface);
-            endif;
-        }
         
         /**
-         * Get cURL request infos
+         * Get a cURL request information
+         *
+         * @param string    $constant
+         * @return mixed
         **/
-        public function info($name = 0) {
-            $this->exec();
+        public function getinfo($constant = 0) {
+            if(!empty($constant))
+                return curl_getinfo($this->curl, $constant);
             
-            if(!empty($name))
-                return $this->infos[$name];
             else
-                return $this->infos;
+                return curl_getinfo($this->curl);
         }
         
+        
         /**
-         * Get cURL request body response
+         * Close cURL session
         **/
-        public function response() {
-            $this->exec();
-            return $this->response;
+        public function close() {
+            curl_close($this->curl); 
         }
         
     }

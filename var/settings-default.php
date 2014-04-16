@@ -16,12 +16,13 @@
     **/
     const SYSTEM_PROTOCOL               = 'http'; // System default protocol
     const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address
-    const SYSTEM_DOMAIN_ALIAS           = ''; // Server alias domains (separate with spaces)
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
 
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
     const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
-    const SYSTEM_DEFAULT_LANGUAGE       = 'en_EN'; // System default language
+    
+    // System default language
+    define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ',') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ',', true)));
     
     /**
      * Project environnement state

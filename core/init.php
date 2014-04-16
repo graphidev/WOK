@@ -9,9 +9,9 @@
     **/
     
 	const WOK_MAJOR_VERSION        = 1; // Major version
-	const WOK_MINOR_VERSION        = 0; // Minor version
-	const WOK_RELEASE_VERSION      = 6; // Release version
-	const WOK_EXTRA_RELEASE        = 'RC'; // Extra version
+	const WOK_MINOR_VERSION        = 1; // Minor version
+	const WOK_RELEASE_VERSION      = 0; // Release version
+	const WOK_EXTRA_RELEASE        = 'beta'; // Extra version
     
     // Define full WOK version (without extra release)
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);
@@ -51,21 +51,8 @@
          * We can load settings and required libraries
         **/
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
-        require_once SYSTEM_ROOT.PATH_CORE . '/compatibility.php'; // PHP compatibility functions
-        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers
-        require_once SYSTEM_ROOT.PATH_CORE . '/utilities.php'; // Framework functions
-        
-        /**
-         * Set default locale
-         * This information may be updated by using Locales
-        **/
-        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF8');
-
-        /**
-         * Start and send every required headers.
-        **/
-        if(!headers_sent())
-            @date_default_timezone_set(SYSTEM_TIMEZONE); // Define date timezone        
+        require_once SYSTEM_ROOT.PATH_CORE . '/utf8.php'; // UTF-8 compatible functions
+        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers     
 
         /**
          * Autoload libraries
@@ -74,6 +61,12 @@
         spl_autoload_register(function($name) {
             
             $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
+            
+            /**
+             * Exceptions
+            **/
+            if(substr($name, -9) == 'Exception')
+                require_once SYSTEM_ROOT.PATH_CORE . '/exceptions.php';
             
             /**
              * Core libraries
@@ -104,25 +97,19 @@
         });
 
         /**
-         * Particular cases which require some adjustements or conditions
-        **/
-        if(!function_exists('json_decode') && !function_exists('json_encode'))
-			require_once SYSTEM_ROOT.PATH_CORE . "/json.php"; // JSON functions
-        
-        
-        /**
-         * Start handling errors
-        **/
-        Console::handle();
-        
-
-        /**
          * Once everything is fine loaded, we call the options file.
          * This one will be used to add your own stuffs.
         **/
         if(file_exists(SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once(SYSTEM_ROOT.PATH_VAR.'/options.php');
         
+        /**
+         * Initialized required tools
+        **/
+        Console::handle(); // Listen to errors
+        new Session; // Start session
+        
+
     endif;
 
     /**

@@ -68,7 +68,7 @@
                 $language = self::$language;
             endif;
                         
-            setLocale(LC_ALL, $language);
+            setLocale(LC_ALL, $language.'.UTF-8');
             $locale = strstr($path, ':', true);
             
             if(empty($locale)): // locale by default

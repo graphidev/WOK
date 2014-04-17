@@ -1,4 +1,5 @@
 .DS_Store
+.htaccess
 var/settings.php
 files/tmp/*
 var/tmp/*

@@ -87,7 +87,7 @@
         if(file_exists(root(PATH_CONTROLLERS."/$controller.ctrl.php"))):
             Controller::call($controller, $action);
         else:
-            trigger_error("Controller '$name' not found", E_USER_ERROR);
+            trigger_error("Controller '$controller' not found", E_USER_ERROR);
         endif;
     }, true);
 

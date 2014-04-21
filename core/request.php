@@ -23,9 +23,9 @@
         **/
         public function __construct() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
-            $static         = preg_replace('#/([a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
+            $static         = preg_replace('#/([a-z0-9\.-/]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
-                
+            
             /**
              * Define global request informations
             **/
@@ -62,7 +62,7 @@
                    && in_array(self::$method, $request['methods'])
                    && $request['domain'] == self::domain()
                   && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))):
-                    
+
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
                         
@@ -71,7 +71,7 @@
                         // URI parameters
                         if($param['type'] == 'URI'):
                         
-                            $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('URI'));
+                            $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('uri'));
                             if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                 self::$parameters['URI'][$param['name']] = $value;
                                 $break = true;
@@ -114,7 +114,7 @@
                     
                 endif;
             }
-                        
+                                    
         }     
         
         

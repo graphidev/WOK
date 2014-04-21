@@ -94,7 +94,7 @@
         **/
         public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED, $file = false) {
             // Private cache : do not cache
-            if(!$time || $status == self::CACHE_PRIVATE):
+            if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
                 $headers = array(
                     'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
                     'Pragma'         => 'no-cache'

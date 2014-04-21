@@ -157,16 +157,14 @@
                     
                     // Execute data's requests
                     if(is_function(self::$data)): 
-                        $execute = self::$data;
-                        self::$data = $execute();
+                        self::$data = call_user_func(self::$data);
                     endif;
 
                     // Generate cache view
                     ob_start(function($buffer, $phase) {
                         
                         if(!is_null(self::$handler)):
-                            $execute = self::$handler;
-                            $buffer = $execute($buffer, self::$data, self::$code);
+                            $buffer = call_user_func(self::$handler, $buffer, self::$data, self::$code);
                         endif;
                         
                         if(!empty(self::$cachetime))
@@ -282,19 +280,14 @@
             
             // Output content
             if(is_function(self::$content)):
-                $execute = self::$content;
-                $execute();
+                call_user_func(self::$content);
             
             else:
-                if(is_function(self::$data)): 
-                    $execute = self::$data;
-                    self::$data = $execute();
-                endif;
+                if(is_function(self::$data))
+                    self::$data = call_user_func(self::$data);
             
-                if(is_function(self::$handler)):
-                   $execute = self::$handler;
-                   self::$content = $execute(self::$content, self::$data, self::$code);
-                endif;
+                if(is_function(self::$handler))
+                   self::$content = call_user_func(self::$handler, self::$content, self::$data, self::$code);
 
                 echo self::$content;
             

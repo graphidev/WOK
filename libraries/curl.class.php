@@ -3,7 +3,7 @@
     /**
      * cURL (class)
      *
-     * @version 2.1
+     * @version 2.1.1
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
     **/
@@ -177,6 +177,10 @@
         **/
         public function close() {
             curl_close($this->curl); 
+        }
+        
+        public function __destroy() {
+            $this->close();   
         }
         
     }

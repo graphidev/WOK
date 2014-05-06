@@ -89,7 +89,6 @@
                         $uri_regexp = str_replace(":$name", "(".$value['regexp'].")", $uri_regexp);
                    
                     $parameters[] = $value;
-
                 }
                 
                 // Define request settings

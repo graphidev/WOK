@@ -90,7 +90,7 @@
      * Set default homepage controller
     **/
     Controller::route(Request::uri() == '' ? true : false, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'homepage');
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, 'homepage');
         Response::view('homepage', 200);
     }, true);
 

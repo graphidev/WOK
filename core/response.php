@@ -126,8 +126,13 @@
             self::headers($headers); 
             
             if($file && !SYSTEM_DEBUG): // Cache file
-                self::$cachetime = $time;            
-                self::$cachefile = root(PATH_CACHE."/$file-".Session::get('language').".html");
+                self::$cachetime = $time;
+            
+                $suffix = Session::get('language');
+                if($status == self::CACHE_PROTECTED)
+                    $suffix = Session::get('uniqid')."-$suffix";
+            
+                self::$cachefile = root(PATH_CACHE."/$file-$suffix.html");
             endif;
             
         }        

@@ -35,6 +35,26 @@
 
     
     /**
+     * Get accepted languages
+     *
+     * @param array     $reference
+     * @return array
+    **/
+    function get_accepted_languages(array $reference = array()) {
+        $accepted  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
+                
+        if(!empty($reference))
+            $languages = array_intersect($accepted, $reference);
+        
+        else
+            $languages = $accepted;
+                
+        return $languages;        
+    }
+
+
+    
+    /**
      * Shortcut to Locales::_e() method
      *
      * @param string    $path
@@ -383,7 +403,7 @@
     function is_function(&$variable) {
         return (is_object($variable) && ($variable instanceof Closure));
     }
-    
+
     /**
      * Determine if PHP is running via CLI
      * @return boolean

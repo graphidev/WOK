@@ -12,30 +12,22 @@
      * changed by custom developments.
     **/
     if(!Session::has('language') && Cookie::exists('language', true)):
-
         Session::set('language', Cookie::get('language'));
 
     else:
         
-        $languages  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
-        $accepted   = explode(' ', SYSTEM_LANGUAGES);
+        $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
         
-        foreach($languages as $i => $code) {
+        if(!empty($languages))
+            $language = array_shift($languages);
             
-            if(in_array($code, $accepted)):
-                $language = $code;
-                break;
-            else:
-                $language = null;
-            endif;
-            
-        }
-    
-        if(empty($language))
+        else
             $language = SYSTEM_DEFAULT_LANGUAGE;
         
         Session::set('language', $language);
-        Cookie::set('language', $language, 15811200);        
+
+        if(!Cookie::exists('language'))
+            Cookie::set('language', $language, 15811200);        
 
     endif;
 
@@ -74,7 +66,7 @@
      * Set static pages controller (special)
     **/
     Controller::route(Request::get('action') == 'static', function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, str_replace('/', '-', Request::uri()));
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, str_replace('/', '-', Request::uri()));
         Response::view(Request::uri(), 200);
     }, true);
 

@@ -121,12 +121,6 @@
         }
         
         
-        public static function inc($library) {
-            if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES."/$library.php"))
-                require_once(SYSTEM_ROOT.PATH_LIBRARIES."/$library.php");
-        }
-        
-        
     }
 
 ?>

@@ -33,6 +33,20 @@
 		return SYSTEM_ROOT.$path;
 	}
 
+
+    /**
+     * Load library if available
+    **/
+    function load_library($name) {
+        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php")):        
+            $e = new ExtendedInvalidArgumentException("Library $name not found");
+            $e->setCallFromTrace();
+            throw $e;
+        endif;
+            
+        include $library;
+    }
+
     
     /**
      * Get accepted languages

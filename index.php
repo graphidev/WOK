@@ -9,7 +9,7 @@
     /**
      * Generate session and cookies requirements such as language
      * We supposed that these session and cookies values are not 
-     * changed by custom developments.
+     * changed by custom developments (reserved keys)
     **/
     if(!Session::has('language') && Cookie::exists('language', true)):
         Session::set('language', Cookie::get('language'));
@@ -38,20 +38,22 @@
 
     
     /**
-     * Inititialize Required classes
+     * Load XML manifest and initialize
+     * Request class according to manifest
     **/
-    new App; // Initialize the app
-    new Request; // Initialize request informations
+    Manifest::load();
+    Request::init();
 
 
     /**
-     * Set Custom things
+     * Set Custom things routes
      * This should be use for development. Prefere using 
      * XML manifest in order to keep framework structure
     **/
     if(file_exists(root(PATH_VAR.'/manifest.php')))
         require_once(root(PATH_VAR.'/manifest.php'));
-
+    
+    
     
     /**
      * Ongoing maintenance 

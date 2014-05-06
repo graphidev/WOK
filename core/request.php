@@ -5,7 +5,7 @@
      * Contains the entry point and requests informations
     **/
     
-    class Request extends App {
+    class Request extends Manifest {
         
         protected static $uri       = '';
         protected static $method    = '';
@@ -21,7 +21,7 @@
         /**
          * Build request
         **/
-        public function __construct() {
+        public static function init() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
             $static         = preg_replace('#/([a-z0-9\.-/]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
@@ -89,8 +89,10 @@
                         elseif(isset(self::$parameters[$param['type']][$param['name']])):
                         
                             $value = &self::$parameters[$param['type']][$param['name']];
-        
-                            if($param['regexp'] == 'any' 
+                                                    
+                            if((!empty($param['value']) && $param['value'] == $value) 
+                               || empty($param['regexp']) 
+                               || $param['regexp'] == 'any' 
                                || $param['type'] == 'FILE' 
                                || ($param['regexp'] == 'array' && is_array($value))
                                || ($param['regexp'] == 'string' && is_string($value)) 

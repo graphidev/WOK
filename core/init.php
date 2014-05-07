@@ -72,42 +72,42 @@
              * Core libraries
             **/
             $name = strtolower($name);
-            if(file_exists(SYSTEM_ROOT.PATH_CORE . "/$name.php"))
-                require_once SYSTEM_ROOT.PATH_CORE . "/$name.php";
+            if(file_exists($class = SYSTEM_ROOT.PATH_CORE . "/$name.php"))
+                require_once $class;
             
             /**
              * Controllers
             **/
             $controller = str_replace('controllers/', '', $path);
-            if(file_exists(SYSTEM_ROOT.PATH_CONTROLLERS . "/$controller.ctrl.php"))
-                require_once SYSTEM_ROOT.PATH_CONTROLLERS . "/$controller.ctrl.php";
+            if(file_exists($controller = SYSTEM_ROOT.PATH_CONTROLLERS . "/$controller.ctrl.php"))
+                require_once $controller;
             
             /**
              * Models
             **/
             $model = str_replace('models/', '', $path);
-            if(file_exists(SYSTEM_ROOT.PATH_MODELS . "/$model.mdl.php"))
-                require_once SYSTEM_ROOT.PATH_MODELS . "/$model.mdl.php";
+            if(file_exists($model = SYSTEM_ROOT.PATH_MODELS . "/$model.mdl.php"))
+                require_once $model;
             
             /**
              * External libraries
             **/            
-            if(file_exists(SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php"))
-                require_once SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php";
+            if(file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php"))
+                require_once $library;
         });
 
         /**
          * Once everything is fine loaded, we call the options file.
          * This one will be used to add your own stuffs.
         **/
-        if(file_exists(SYSTEM_ROOT.PATH_VAR.'/options.php'))
-			require_once(SYSTEM_ROOT.PATH_VAR.'/options.php');
+        if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
+			require_once $options;
         
         /**
          * Initialized required tools
         **/
-        Console::handle(); // Listen to errors
-        new Session; // Start session
+        //Console::handle(); // Listen to errors
+        //new Session; // Start session
         
 
     endif;

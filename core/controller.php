@@ -1,15 +1,20 @@
 <?php
 
     /**
-     * This is the controller class
+     * Manage routes' actions queue and execute the best one of them
+     *
+     * @package Core
     **/
-
     class Controller {
         private static $queue;
         private static $state = true;        
         
+        
         /**
          * Call a controller action
+         * @param string    $controller
+         * @param string    $action
+         * @return mixed    controller's returned value
         **/
         public static function call($controller, $action = null) {
             $controller = "\\Controllers\\$controller";
@@ -19,15 +24,21 @@
                 return $controller->$action();
         }
         
+        
         /**
-         * Assign a controller (function)
+         * Assign a controller to a route. Conditions can be either a 
+         * boolean, string, or a function (closure) and action can either
+         * be a controller:action names or a closure function.
+         * @param mixed     $conditions
+         * @param mixed     $action
+         * @param boolean   $strict
         **/
         public static function route($conditions, $action, $strict = false) {
             self::$queue[] = array($conditions, $action, $strict);
         }
         
         /**
-         * Invoke the queue
+         * Invoke the controllers' queue
         **/
         public static function invoke() {
             foreach(self::$queue as $index => $value){
@@ -39,7 +50,11 @@
         }
         
         /** 
-         * Execute an assigned controller
+         * Execute an assigned controller if the conditions are satisfied.
+         * The queue will be stopped if the strict parameter's value is true
+         * @param mixed     $conditions
+         * @param mixed     $action
+         * @param boolean   $strict
         **/
         private static function execute($conditions, $action, $strict = false) {
              if(is_bool($conditions)):

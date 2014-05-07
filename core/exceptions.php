@@ -2,7 +2,9 @@
     
     /**
      * Extended Exceptions
-     * @extend Exception (and SPL Exceptions)
+     * @require Exception (and SPL Exceptions)
+     *
+     * @package Core
     **/
     
     /**

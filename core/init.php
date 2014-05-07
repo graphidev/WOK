@@ -45,6 +45,9 @@
      * Without it, some troubles may appear.
     **/
     if(file_exists(SYSTEM_ROOT.PATH_VAR.'/settings.php')):
+    
+        // Run session
+        session_start();
         
         /**
          * All right ! Settings file exists.
@@ -103,11 +106,8 @@
         if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once $options;
         
-        /**
-         * Initialized required tools
-        **/
-        //Console::handle(); // Listen to errors
-        //new Session; // Start session
+        Console::handle(); // Listen to and manage errors
+        
         
 
     endif;

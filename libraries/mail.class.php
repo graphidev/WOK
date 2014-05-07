@@ -10,6 +10,8 @@
      * @require native mail() function
      * @require get_mime_type() function
      * @require ExtendedExceptions
+     *
+     * @package Libraries
     **/
 
 	class Mail {

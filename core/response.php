@@ -1,5 +1,12 @@
 <?php
     
+    /**
+     * Define Response headers and body.
+     * It also manage view file caching and
+     * routers caching for every response type
+     *
+     * @package Core
+    **/
     class Response {
         
         private static $headers     = array();
@@ -29,7 +36,7 @@
         
         
         /**
-         * Send custom headers
+         * Define headers.
          * Custom headers must begin with X-
          * @param array     $headers
         **/
@@ -38,7 +45,7 @@
         }
                 
         /**
-         * Define response header status
+         * Define response header status (with HTTP code)
          * @param integer   $code
          * @param string    $type
         **/
@@ -50,7 +57,9 @@
         }
         
         /**
-         * Define data to use for response
+         * Define data to use for response. 
+         * A closure function as parameter will be executed 
+         * provided that cached file does not exists.
          * @param mixed   $data
         **/
         public static function assign($data) {
@@ -74,7 +83,7 @@
         
         
         /**
-         * Redirect permanently or not
+         * Redirect permanently or temporarily
          *
          * @param string    $target
          * @param boolean   $permanent
@@ -138,7 +147,7 @@
         }        
         
         /**
-         * Call a view file
+         * Define a view response
          * @param string    $template
          * @param integer   $status
         **/
@@ -192,7 +201,7 @@
         }
         
         /**
-         * Send JSON data
+         * Define JSON response
          * @param array     $data
          * @param integer   $status
         **/
@@ -203,7 +212,7 @@
         
         
         /**
-         * Send XML data
+         * Define XML response
          * @param array     $array
          * @param integer   $status
         **/
@@ -217,7 +226,7 @@
         
         
         /**
-         * Send text
+         * Define text response
          * @param string    $string
          * @param integer   $status
         **/
@@ -228,7 +237,7 @@
         
         
         /**
-         * Send a file (also can force download)
+         * Define file response (also can force download)
          * @param string    $path
          * @param boolean   $download
          * @param integer   $status
@@ -263,7 +272,7 @@
         
         
         /**
-         * Send binary datas
+         * Define binary data response
          * @param mixed     $data
          * @param integer   $status
         **/
@@ -274,6 +283,7 @@
         
         /**
          * Output response
+         * (execute last defined response)
         **/
         public static function output() {
             

@@ -3,8 +3,9 @@
     /**
      * UTF 8 compatible functions
      * Please check PHP documentation for usage
+     *
+     * @package Helpers
     **/
-    
     namespace UTF8;
 
     /**

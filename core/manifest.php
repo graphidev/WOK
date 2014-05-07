@@ -1,4 +1,14 @@
 <?php
+    
+    /**
+     * Generate and load the XML manifest. 
+     * It also can be used in order to get and URL from an action
+     *
+     * Please note that all the informations about Manifest 
+     * structure can be found in the manifest file itself.
+     *
+     * @package Core
+    **/    
 
     class Manifest {
         
@@ -7,6 +17,7 @@
         
         /**
          * Get URL from an action
+         * @exemple Manifest::url('controller:action', array('param_name'=>'value', ...));
         **/
         public static function url($action, $data = array()) {
             foreach(self::$manifest as $key => $request) {

@@ -1,5 +1,10 @@
 <?php
     
+    /**
+     * Manage tokens (definition, check, destroy)
+     * 
+     * @package Core
+    **/
     class Token {
         
         const LIFETIME = 300; // 5 minutes
@@ -7,6 +12,7 @@
         
         /**
          * Generate a token
+         * @param string    $name
         **/
         public static function generate($name) {
             $token = uniqid(sha1(time()));
@@ -20,6 +26,9 @@
         
         /**
          * Check token validity
+         * @param string    $name
+         * @param string    $key
+         * @param integer   $lifetime
         **/
         public static function authorized($name, $key, $lifetime = Token::LIFETIME) {
             $token = self::_get($name);
@@ -36,6 +45,7 @@
         
         /**
          * Destroy token
+         * @param string    $name
         **/
         public static function destroy($name) {
             unset($_SESSION['tokens'][$name]);
@@ -43,7 +53,8 @@
         
         
         /**
-         * Get token
+         * Get token's value
+         * @param string    $name
         **/
         private static function _get($name) {
             $tokens = Session::has('tokens') ? Session::get('tokens') : array();

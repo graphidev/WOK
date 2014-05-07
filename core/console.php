@@ -1,4 +1,11 @@
 <?php
+    
+    /** 
+     * Manage errors and not catched exceptions.
+     * It will register them as logs files (one per day)
+     *
+     * @package Core
+    **/
 
     class Console {
         /**

@@ -1,10 +1,12 @@
 <?php
 
     /**
-     * Request class
-     * Contains the entry point and requests informations
+     * Define Manifest action to use and 
+     * contains request informations 
+     * (parameters, headers, URI, domain, ...)
+     *
+     * @package Core
     **/
-    
     class Request extends Manifest {
         
         protected static $uri       = '';
@@ -19,7 +21,7 @@
         );
         
         /**
-         * Build request
+         * Build request and define current controller:action to use
         **/
         public static function init() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
@@ -226,14 +228,25 @@
             return self::$uri;     
         }
         
+        /**
+         * Get current domain
+         * @return string Access domain
+        **/
         public static function domain() {
             return $_SERVER['HTTP_HOST']; 
         }
         
+        /**
+         * Get current port
+         * @return integer
+        **/
         public static function port() {
             return $_SERVER['SERVER_PORT'];   
         }
         
+        /**
+         * Get request range
+        **/
         public static function range() {
             return (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);   
         }

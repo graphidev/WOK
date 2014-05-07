@@ -13,6 +13,8 @@
      * @require makedir() function
      * @require ExtendedExceptions
      * @require PHP 5.5+ for WEBP format support
+     *
+     * @package Libraries
     **/
     
     if(!extension_loaded('gd')) // Generate a fatal error on not loaded GD library
@@ -257,10 +259,6 @@
     }
 
     
-    /**
-     * Define PHP < 5.5 compatility imageflip() function and constants
-     * Warning : The native PHP 5.5 function should be used instead.
-    **/ 
     if(!function_exists('imageflip')):
 
         if(!defined('IMG_FLIP_HORIZONTAL'))
@@ -271,7 +269,11 @@
 
         if(!defined('IMG_FLIP_BOTH'))
             define('IMG_FLIP_BOTH', 'both'); 
-
+        /**
+         * Define PHP < 5.5 compatility imageflip() function and constants.
+         *
+         * Warning : The native PHP 5.5 function should be used instead.
+        **/ 
         function imageflip (&$image, $mode) {
             $width = imagesx ($image);
             $height = imagesy ($image);

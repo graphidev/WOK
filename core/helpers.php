@@ -1,4 +1,11 @@
 <?php
+    
+    /**
+     * This file contains all the helpers functions. 
+     * Beware, some of them use some configuration constants
+     *
+     * @package Helpers
+    **/
 
     
     /**
@@ -352,12 +359,12 @@
 		return $input;
 	}
 
-    /**
-     * Generate header status (PHP < 5.4)
-     * @param integer   $code
-     * @return integer
-    **/
     if(!function_exists('http_response_code')):
+        /**
+         * Generate header status (PHP < 5.4)
+         * @param integer   $code
+         * @return integer
+        **/
         function http_response_code($code) {
             switch($code) {
                 case 100: $message = 'Continue'; break;

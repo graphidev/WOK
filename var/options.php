@@ -7,6 +7,12 @@
     **/
 
     /**
+     * Composer libraries autoloader
+    **/
+    if(file_exists($autoloader = SYSTEM_ROOT.'/vendor/autoload.php'))
+        $loader = require_once $autoloader;
+
+    /**
       * Set default locale and time zone
       * Theses informations may be updated by using Locales
     **/

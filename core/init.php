@@ -74,8 +74,8 @@
             /**
              * Core libraries
             **/
-            $name = strtolower($name);
-            if(file_exists($class = SYSTEM_ROOT.PATH_CORE . "/$name.php"))
+            $class = strtolower($name);
+            if(file_exists($class = SYSTEM_ROOT.PATH_CORE . "/$class.php"))
                 require_once $class;
             
             /**
@@ -97,6 +97,7 @@
             **/            
             if(file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php"))
                 require_once $library;
+            
         });
 
         /**

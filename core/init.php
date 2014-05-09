@@ -45,9 +45,6 @@
      * Without it, some troubles may appear.
     **/
     if(file_exists(SYSTEM_ROOT.PATH_VAR.'/settings.php')):
-    
-        // Run session
-        session_start();
         
         /**
          * All right ! Settings file exists.
@@ -56,6 +53,13 @@
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
         require_once SYSTEM_ROOT.PATH_CORE . '/utf8.php'; // UTF-8 compatible functions
         require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers     
+
+        /**
+         * Initialize session
+         * Also define a custom session name for compatibility
+        **/
+        session_name(SESSION_NAME);
+        session_start();
 
         /**
          * Autoload libraries

@@ -85,7 +85,7 @@
     $settings = setSetting('SYSTEM_TIMEZONE', $timezone, $settings);
     $settings = setSetting('SYSTEM_LANGUAGES', implode(' ', $languages), $settings);
 
-    $settings = setSetting('SESSIONS_SALT', substr(sha1(uniqid('sess_')), -20), $settings);
+    $settings = setSetting('SESSIONS_NAME', substr(sha1($domain.$directory), -20), $settings);
     $settings = setSetting('TOKENS_SALT', substr(sha1(uniqid('tok_')), -20), $settings);
     $settings = setSetting('COOKIES_SALT', substr(sha1(uniqid('cook_')), -20), $settings);
     

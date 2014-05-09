@@ -14,7 +14,7 @@
      * Sytem informations
      * These informations are required in most of core classes
     **/
-    const SYSTEM_PROTOCOL               = 'http'; // System default protocol
+    const SYSTEM_PROTOCOL               = 'http://'; // System default protocol
     const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
 
@@ -35,7 +35,7 @@
      * Salts and keys
      * Generated randomly on setup for security reasons
     **/
-    const TOKENS_SALT                   = '069de552f000c9b477ad'; // Tokens salt
-    const COOKIES_SALT                  = '7b0dff4c1df29468f29c';  // Cookies Encryption key
-
+    const TOKENS_SALT                   = '5476bf8746bd0fe0322b'; // Tokens salt
+    const COOKIES_SALT                  = 'fefc6da65ece4bd8b472';  // Cookies Encryption key
+    const SESSION_NAME                  = '2a4e1b763944fcf79aaa';  // Session name
 ?>

@@ -13,6 +13,8 @@
      * @required ExtendedExceptions
      * @require UploadErrorException
      * @require ZipOpenException
+     *
+     * @package Libraries
     **/
 
     class File {

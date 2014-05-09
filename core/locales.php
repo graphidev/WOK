@@ -1,12 +1,19 @@
 <?php
-
+    
+    /**
+     * Manage and return locales
+     *
+     * @package Core
+    **/
     class Locales {
         
         private static $language = null;
         private static $locales = array();
         
+        
         /**
-         * Get a locale file
+         * Load a locale file
+         * @param string    $locale
         **/
         private static function _load($locale) {        
             $source = root(PATH_LOCALES.'/'.self::$language."/$locale.properties");
@@ -26,8 +33,10 @@
             endif;
         }
         
+        
         /**
          * Generate JSON locale
+         * @param string    $locale
         **/
         private static function _generate($locale) {
             $handle = fopen(root(PATH_LOCALES.'/'.self::$language."/$locale.properties"), 'r');
@@ -57,8 +66,14 @@
             fclose($json);
         }
         
+        
         /**
          * Get a locale translation
+         * @exemple Locales:_e('locale:path.to.the.translation', array('param'=>'value', ...))
+         *
+         * @param string    $path
+         * @param array     $data
+         * @param string    $language
         **/
         public static function _e($path, $data = array(), $language = null) {
             if(empty($language)):

@@ -9,33 +9,25 @@
     /**
      * Generate session and cookies requirements such as language
      * We supposed that these session and cookies values are not 
-     * changed by custom developments.
+     * changed by custom developments (reserved keys)
     **/
     if(!Session::has('language') && Cookie::exists('language', true)):
-
         Session::set('language', Cookie::get('language'));
 
     else:
         
-        $languages  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
-        $accepted   = explode(' ', SYSTEM_LANGUAGES);
+        $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
         
-        foreach($languages as $i => $code) {
+        if(!empty($languages))
+            $language = array_shift($languages);
             
-            if(in_array($code, $accepted)):
-                $language = $code;
-                break;
-            else:
-                $language = null;
-            endif;
-            
-        }
-    
-        if(empty($language))
+        else
             $language = SYSTEM_DEFAULT_LANGUAGE;
         
         Session::set('language', $language);
-        Cookie::set('language', $language, 15811200);        
+
+        if(!Cookie::exists('language'))
+            Cookie::set('language', $language, 15811200);        
 
     endif;
 
@@ -46,20 +38,22 @@
 
     
     /**
-     * Inititialize Required classes
+     * Load XML manifest and initialize
+     * Request class according to manifest
     **/
-    new App; // Initialize the app
-    new Request; // Initialize request informations
+    Manifest::load();
+    Request::init();
 
 
     /**
-     * Set Custom things
+     * Set Custom things routes
      * This should be use for development. Prefere using 
      * XML manifest in order to keep framework structure
     **/
     if(file_exists(root(PATH_VAR.'/manifest.php')))
         require_once(root(PATH_VAR.'/manifest.php'));
-
+    
+    
     
     /**
      * Ongoing maintenance 
@@ -74,7 +68,7 @@
      * Set static pages controller (special)
     **/
     Controller::route(Request::get('action') == 'static', function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, str_replace('/', '-', Request::uri()));
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, str_replace('/', '-', Request::uri()));
         Response::view(Request::uri(), 200);
     }, true);
 
@@ -87,7 +81,7 @@
         if(file_exists(root(PATH_CONTROLLERS."/$controller.ctrl.php"))):
             Controller::call($controller, $action);
         else:
-            trigger_error("Controller '$name' not found", E_USER_ERROR);
+            trigger_error("Controller '$controller' not found", E_USER_ERROR);
         endif;
     }, true);
 
@@ -96,7 +90,7 @@
      * Set default homepage controller
     **/
     Controller::route(Request::uri() == '' ? true : false, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'homepage');
+        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, 'homepage');
         Response::view('homepage', 200);
     }, true);
 

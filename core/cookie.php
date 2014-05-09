@@ -1,5 +1,13 @@
 <?php
 
+    /**
+     * Manage request cookies.
+     * Can also crypt and uncrypt them (security feature)
+     *
+     * Reserved cookies' names : language, uniqid
+     *
+     * @package Core
+    **/
     class Cookie {
         
         const CRYPT_MODE = MCRYPT_MODE_CBC;
@@ -62,7 +70,7 @@
         }
         
         /**
-         * Destroy all cookies
+         * Destroy all existing cookies
         **/
         public static function clean() {
             $cookies = array_keys(strip_magic_quotes($_COOKIE));

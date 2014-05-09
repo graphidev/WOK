@@ -1,5 +1,12 @@
 <?php
     
+    /**
+     * Define Response headers and body.
+     * It also manage view file caching and
+     * routers caching for every response type
+     *
+     * @package Core
+    **/
     class Response {
         
         private static $headers     = array();
@@ -29,7 +36,7 @@
         
         
         /**
-         * Send custom headers
+         * Define headers.
          * Custom headers must begin with X-
          * @param array     $headers
         **/
@@ -38,7 +45,7 @@
         }
                 
         /**
-         * Define response header status
+         * Define response header status (with HTTP code)
          * @param integer   $code
          * @param string    $type
         **/
@@ -50,7 +57,9 @@
         }
         
         /**
-         * Define data to use for response
+         * Define data to use for response. 
+         * A closure function as parameter will be executed 
+         * provided that cached file does not exists.
          * @param mixed   $data
         **/
         public static function assign($data) {
@@ -74,7 +83,7 @@
         
         
         /**
-         * Redirect permanently or not
+         * Redirect permanently or temporarily
          *
          * @param string    $target
          * @param boolean   $permanent
@@ -94,7 +103,7 @@
         **/
         public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED, $file = false) {
             // Private cache : do not cache
-            if(!$time || $status == self::CACHE_PRIVATE):
+            if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
                 $headers = array(
                     'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
                     'Pragma'         => 'no-cache'
@@ -126,14 +135,19 @@
             self::headers($headers); 
             
             if($file && !SYSTEM_DEBUG): // Cache file
-                self::$cachetime = $time;            
-                self::$cachefile = root(PATH_CACHE."/$file-".Session::get('language').".html");
+                self::$cachetime = $time;
+            
+                $suffix = Session::get('language');
+                if($status == self::CACHE_PROTECTED)
+                    $suffix = Session::get('uniqid')."-$suffix";
+            
+                self::$cachefile = root(PATH_CACHE."/$file-$suffix.html");
             endif;
             
         }        
         
         /**
-         * Call a view file
+         * Define a view response
          * @param string    $template
          * @param integer   $status
         **/
@@ -157,16 +171,14 @@
                     
                     // Execute data's requests
                     if(is_function(self::$data)): 
-                        $execute = self::$data;
-                        self::$data = $execute();
+                        self::$data = call_user_func(self::$data);
                     endif;
 
                     // Generate cache view
                     ob_start(function($buffer, $phase) {
                         
                         if(!is_null(self::$handler)):
-                            $execute = self::$handler;
-                            $buffer = $execute($buffer, self::$data, self::$code);
+                            $buffer = call_user_func(self::$handler, $buffer, self::$data, self::$code);
                         endif;
                         
                         if(!empty(self::$cachetime))
@@ -189,7 +201,7 @@
         }
         
         /**
-         * Send JSON data
+         * Define JSON response
          * @param array     $data
          * @param integer   $status
         **/
@@ -200,7 +212,7 @@
         
         
         /**
-         * Send XML data
+         * Define XML response
          * @param array     $array
          * @param integer   $status
         **/
@@ -214,7 +226,7 @@
         
         
         /**
-         * Send text
+         * Define text response
          * @param string    $string
          * @param integer   $status
         **/
@@ -225,7 +237,7 @@
         
         
         /**
-         * Send a file (also can force download)
+         * Define file response (also can force download)
          * @param string    $path
          * @param boolean   $download
          * @param integer   $status
@@ -260,7 +272,7 @@
         
         
         /**
-         * Send binary datas
+         * Define binary data response
          * @param mixed     $data
          * @param integer   $status
         **/
@@ -271,6 +283,7 @@
         
         /**
          * Output response
+         * (execute last defined response)
         **/
         public static function output() {
             
@@ -282,19 +295,14 @@
             
             // Output content
             if(is_function(self::$content)):
-                $execute = self::$content;
-                $execute();
+                call_user_func(self::$content);
             
             else:
-                if(is_function(self::$data)): 
-                    $execute = self::$data;
-                    self::$data = $execute();
-                endif;
+                if(is_function(self::$data))
+                    self::$data = call_user_func(self::$data);
             
-                if(is_function(self::$handler)):
-                   $execute = self::$handler;
-                   self::$content = $execute(self::$content, self::$data, self::$code);
-                endif;
+                if(is_function(self::$handler))
+                   self::$content = call_user_func(self::$handler, self::$content, self::$data, self::$code);
 
                 echo self::$content;
             

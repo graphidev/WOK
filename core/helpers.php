@@ -1,4 +1,11 @@
 <?php
+    
+    /**
+     * This file contains all the helpers functions. 
+     * Beware, some of them use some configuration constants
+     *
+     * @package Helpers
+    **/
 
     
     /**
@@ -32,6 +39,40 @@
         
 		return SYSTEM_ROOT.$path;
 	}
+
+
+    /**
+     * Load library if available
+    **/
+    function load_library($name) {
+        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php")):        
+            $e = new ExtendedInvalidArgumentException("Library $name not found");
+            $e->setCallFromTrace();
+            throw $e;
+        endif;
+            
+        include $library;
+    }
+
+    
+    /**
+     * Get accepted languages
+     *
+     * @param array     $reference
+     * @return array
+    **/
+    function get_accepted_languages(array $reference = array()) {
+        $accepted  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
+                
+        if(!empty($reference))
+            $languages = array_intersect($accepted, $reference);
+        
+        else
+            $languages = $accepted;
+                
+        return $languages;        
+    }
+
 
     
     /**
@@ -318,12 +359,12 @@
 		return $input;
 	}
 
-    /**
-     * Generate header status (PHP < 5.4)
-     * @param integer   $code
-     * @return integer
-    **/
     if(!function_exists('http_response_code')):
+        /**
+         * Generate header status (PHP < 5.4)
+         * @param integer   $code
+         * @return integer
+        **/
         function http_response_code($code) {
             switch($code) {
                 case 100: $message = 'Continue'; break;
@@ -383,7 +424,7 @@
     function is_function(&$variable) {
         return (is_object($variable) && ($variable instanceof Closure));
     }
-    
+
     /**
      * Determine if PHP is running via CLI
      * @return boolean

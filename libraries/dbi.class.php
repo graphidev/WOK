@@ -1,5 +1,8 @@
 <?php
     
+    /**
+     * Package Libraries
+    **/
     class DBI {
         
         protected static $interface = null;

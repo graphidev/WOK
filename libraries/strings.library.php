@@ -2,6 +2,8 @@
 
     /**
      * This file contains all the treatments functions for PHP
+     *
+     * @package Libraries
     **/
 
 

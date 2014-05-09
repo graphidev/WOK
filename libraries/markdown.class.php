@@ -15,6 +15,10 @@
 # Markdown Parser Class
 #
 
+/**
+ * @package Libraries
+**/
+
 class Markdown {
 
 	### Version ###

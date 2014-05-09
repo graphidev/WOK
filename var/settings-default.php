@@ -20,7 +20,7 @@
 
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
     const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
-    
+
     // System default language
     define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ',') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ',', true)));
     
@@ -37,5 +37,5 @@
     **/
     const TOKENS_SALT                   = '069de552f000c9b477ad'; // Tokens salt
     const COOKIES_SALT                  = '7b0dff4c1df29468f29c';  // Cookies Encryption key
-
+    const SESSION_NAME                  = '2a4e1b763944fcf79aaa';  // Session name
 ?>

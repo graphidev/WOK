@@ -3,13 +3,15 @@
 	/**
      * Mail (class)
      *
-     * @version 2.5
+     * @version 2.6
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
      * @require native mail() function
      * @require get_mime_type() function
      * @require ExtendedExceptions
+     *
+     * @package Libraries
     **/
 
 	class Mail {
@@ -81,9 +83,22 @@
          * @param string    $mail
          * @parem string    $name
 	 	**/
-	 	public function to($email, $name = null) {
-            $this->_checkEmail($email, 'To');
-            $this->To[] = (!empty($name) ? "\"$name\" <$email>" : $email);
+	 	public function to($email, $name = null) {            
+            if(is_array($email)):
+                foreach($email as $key => $value) {
+                    if(is_string($key)):
+                        $this->_checkEmail($key, 'To');
+                        $this->To[] = "\"$value\" <$key>";
+                    else:
+                        $this->_checkEmail($value, 'To');
+                        $this->To[] = (!empty($name) ? "\"$name\" <$value>" : $value);
+                    endif;
+                }
+            else:
+                $this->_checkEmail($email, 'To');
+                $this->To[] = (!empty($name) ? "\"$name\" <$email>" : $email);
+            endif;
+            
 	 	}
 	 	
 

@@ -1,37 +1,15 @@
 <?php
     
-
-    class Session {         
-                
-        
-        /**
-         * Run a session
-        **/
-        public function __construct() {
-            session_start();   
-        }
-        
-        /**
-         * Log out user
-        **/ 
-        public static function clean($persistent = true) {                        
-            if(ini_get('session.use_cookies')):
-                $cookie = session_get_cookie_params();
-                setCookie(session_name(), '', 1, $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
-            endif;
-            
-            if($persistent): // Remove persistent session            
-                $cookies = Cookie::all();
-                foreach($cookies as $name) {
-                    if(substr($name, 8) == 'session_')
-                        Cookie::destroy($name);
-                }
-            endif;
-            
-            $_SESSION = array();
-            @session_destroy();
-        }
-        
+    /**
+     * Manage request cookies.
+     * Can also crypt and uncrypt them (security feature)
+     *
+     * Reserved sessions' names : language, uniqid
+     *
+     * @require Core/Cookie
+     * @package Core
+    **/
+    class Session {
         
         /**
          * Check if session has parameter
@@ -51,6 +29,7 @@
             return $strict ? !empty($path) : true;
         }
         
+        
         /**
          * Get session informations
          *
@@ -62,8 +41,10 @@
             return array_value($parameter, $_SESSION, $default);
         }
         
+        
         /**
-         * Set session information
+         * Set session information.
+         * Informations can be stored persistently thank's to cookies
          *
          * @param string    $parameter
          * @param mixed     $value
@@ -89,6 +70,30 @@
         **/
         public static function delete($parameter) {
             return array_unset($parameter, $_SESSION);
+        }
+        
+        
+        /**
+         * Destroy user session informations
+         * (equivalent to logout)
+         * @param boolean   $persistent
+        **/ 
+        public static function clean($persistent = true) {                        
+            if(ini_get('session.use_cookies')):
+                $cookie = session_get_cookie_params();
+                setCookie(session_name(), '', 1, $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
+            endif;
+            
+            if($persistent): // Remove persistent session            
+                $cookies = Cookie::all();
+                foreach($cookies as $name) {
+                    if(substr($name, 8) == 'session_')
+                        Cookie::destroy($name);
+                }
+            endif;
+            
+            $_SESSION = array();
+            @session_destroy();
         }
         
         

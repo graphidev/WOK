@@ -1,11 +1,13 @@
 <?php
 
     /**
-     * Request class
-     * Contains the entry point and requests informations
+     * Define Manifest action to use and 
+     * contains request informations 
+     * (parameters, headers, URI, domain, ...)
+     *
+     * @package Core
     **/
-    
-    class Request extends App {
+    class Request extends Manifest {
         
         protected static $uri       = '';
         protected static $method    = '';
@@ -19,13 +21,13 @@
         );
         
         /**
-         * Build request
+         * Build request and define current controller:action to use
         **/
-        public function __construct() {
+        public static function init() {
             $query          = str_replace(SYSTEM_DIRECTORY, '', $_SERVER['REQUEST_URI']);
-            $static         = preg_replace('#/([a-z0-9\.-]+)?(\?(.+))?$#iSU', "$1", $query);
+            $static         = preg_replace('#/([a-z0-9\.-/]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));	
-                
+            
             /**
              * Define global request informations
             **/
@@ -62,7 +64,7 @@
                    && in_array(self::$method, $request['methods'])
                    && $request['domain'] == self::domain()
                   && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))):
-                    
+
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
                         
@@ -71,7 +73,7 @@
                         // URI parameters
                         if($param['type'] == 'URI'):
                         
-                            $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('URI'));
+                            $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('uri'));
                             if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                 self::$parameters['URI'][$param['name']] = $value;
                                 $break = true;
@@ -89,8 +91,10 @@
                         elseif(isset(self::$parameters[$param['type']][$param['name']])):
                         
                             $value = &self::$parameters[$param['type']][$param['name']];
-        
-                            if($param['regexp'] == 'any' 
+                                                    
+                            if((!empty($param['value']) && $param['value'] == $value) 
+                               || empty($param['regexp']) 
+                               || $param['regexp'] == 'any' 
                                || $param['type'] == 'FILE' 
                                || ($param['regexp'] == 'array' && is_array($value))
                                || ($param['regexp'] == 'string' && is_string($value)) 
@@ -114,7 +118,7 @@
                     
                 endif;
             }
-                        
+                                    
         }     
         
         
@@ -224,14 +228,25 @@
             return self::$uri;     
         }
         
+        /**
+         * Get current domain
+         * @return string Access domain
+        **/
         public static function domain() {
             return $_SERVER['HTTP_HOST']; 
         }
         
+        /**
+         * Get current port
+         * @return integer
+        **/
         public static function port() {
             return $_SERVER['SERVER_PORT'];   
         }
         
+        /**
+         * Get request range
+        **/
         public static function range() {
             return (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);   
         }

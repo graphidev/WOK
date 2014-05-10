@@ -29,6 +29,14 @@ As I said, no extra-features would be present. But there is some of them that I 
 - External libraries which are not required for the framework operations
 
 
+## Versioning convention
+Because WOK is evolving according to requierements, there is no plan about versions (except for huge features i think about). However, versioning convention can be defined as following : MAJOR.MINOR:FIXES-EXTRA
+
+**MAJOR** : Main project changements (such as restructuration or rebuild) or LTS versions
+**MINOR** : New features that could change the usage of the framework
+**FIXES** : Security, bugs fixes, optimisation or light improvements (e.g: implementation of a new library)
+**EXTRA** : This is a note about the version such as "beta", either "RC", or "stable". It also can be redefined for specific versions of the framework.
+
 ## Requirements
 
 Here is the price to use an awesome tool. But don't worry, just some little things :

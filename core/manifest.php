@@ -97,7 +97,7 @@
                     );
 
                     if($value['type'] == 'URI') // Replace URI parameters by parameter REGEXP in $url
-                        $uri_regexp = str_replace(":$name", "(".$value['regexp'].")", $uri_regexp);
+                        $uri_regexp = str_replace(':'.$value['name'], "(".$value['regexp'].")", $uri_regexp);
                    
                     $parameters[] = $value;
                 }

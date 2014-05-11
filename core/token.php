@@ -15,11 +15,10 @@
          * @param string    $name
         **/
         public static function generate($name) {
-            $token = uniqid(sha1(time()));
-			$_SESSION['tokens'][$name] = array(
-                'key' => $token,
+			Session::set("tokens.$name", array(
+                'key' => $token = uniqid(sha1(time())),
                 'time' => time()
-            );
+            ));
 			return $token;
         }
         
@@ -48,7 +47,7 @@
          * @param string    $name
         **/
         public static function destroy($name) {
-            unset($_SESSION['tokens'][$name]);
+            Session::delete("tokens.$name");
         }
         
         

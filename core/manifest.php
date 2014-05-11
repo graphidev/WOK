@@ -66,14 +66,16 @@
             // Analyse request
             foreach($requests as $case) {
                 $parameters = array();
+                $tokens     = array();
 
                 // define request options
                 $uri = $case->getAttribute('uri');
                 $uri_regexp = $uri;
                 $action = $case->getAttribute('action');
                 $route = ($case->hasAttribute('name') ? $case->getAttribute('name') : $action);
+                
                 if($case->hasAttribute('domain'))
-                    $domain = str_replace('~', str_replace('www.', '', SYSTEM_DOMAIN), $case->getAttribute('domain'));
+                    $domain = str_replace('~', SYSTEM_DOMAIN, $case->getAttribute('domain'));
                 else
                     $domain = SYSTEM_DOMAIN;
 
@@ -86,6 +88,11 @@
                     $methods = explode(' ', strtoupper($case->getAttribute('methods')));
                 else
                     $methods = array('GET', 'POST', 'HEAD', 'PUT');
+                
+                if($case->hasAttribute('types')  && $case->getAttribute('types') != '' && strtoupper($case->getAttribute('types')) != 'ANY')
+                    $types = explode(' ', strtoupper($case->getAttribute('types')));
+                else
+                    $types = array('HTTP', 'XHR','CLI');
 
                 // Define request parameters (URI, GET, POST, ...)
                 foreach($case->getElementsByTagName('param') as $param) {
@@ -102,6 +109,16 @@
                     $parameters[] = $value;
                 }
                 
+                // Define request tokens parameters
+                foreach($case->getElementsByTagName('token') as $token) {
+                    $tokens[] = array(
+                        'name' => $token->getAttribute('name'),
+                        'mode' => strtoupper($token->getAttribute('mode')),
+                        'time' => intval($token->getAttribute('time'))
+                    );
+                }
+                
+                
                 // Define request settings
                 self::$manifest[] = array(
                     'uri' => $uri,
@@ -111,7 +128,9 @@
                     'languages' => $languages,
                     'action' => $action,
                     'domain' => $domain,
-                    'parameters' => (!empty($parameters) ? $parameters : array())
+                    'types' => $types,
+                    'parameters' => $parameters,
+                    'tokens' => $tokens
                 );
 
             }

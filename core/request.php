@@ -58,7 +58,7 @@
             /**
              * Add URI parameters and action
             **/
-            foreach(parent::$manifest as $i => $request) {
+            foreach(parent::$manifest as $request) {
                 
                 if(($request['regexp'] == self::$uri || preg_match('#^'.$request['regexp'].'$#isU', self::$uri))
                    && in_array(self::$method, $request['methods'])
@@ -68,7 +68,7 @@
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
                         
-                    foreach($request['parameters'] as $i => $param) {
+                    foreach($request['parameters'] as $param) {
                         
                         // URI parameters
                         if($param['type'] == 'URI'):
@@ -109,6 +109,14 @@
                         
                         endif;
                         
+                    }
+                    
+                    // Check tokens parameter
+                    foreach($request['tokens'] as $token) {
+                        if(!empty(self::$parameters[$token['mode']][$token['name']]))
+                            $break = Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time']);
+                        else
+                            $break = false;
                     }
                     
                     if($break):

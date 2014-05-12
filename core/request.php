@@ -67,7 +67,7 @@
 
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
-                        
+                    
                     foreach($request['parameters'] as $param) {
                         
                         // URI parameters
@@ -76,7 +76,7 @@
                             $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('uri'));
                             if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                 self::$parameters['URI'][$param['name']] = $value;
-                                $break = true;
+                                $break = !$break ? false : true;
                             else:
                                 $break = false;
                             endif;
@@ -85,7 +85,7 @@
                         
                         // FILES parameters
                         elseif($param['type'] == 'FILE' && isset(self::$parameters['FILES'][$param['name']])):
-                            $break = true;
+                            $break = !$break ? false : true;
                         
                         // Globals (GET, POST, ...) parameters
                         elseif(isset(self::$parameters[$param['type']][$param['name']])):
@@ -100,23 +100,43 @@
                                || ($param['regexp'] == 'string' && is_string($value)) 
                                || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)) 
                                || preg_match('#^'.$param['regexp'].'$#isU', $value)):
-                                $break = true; 
+                                $break = !$break ? false : true;
                                                         
                             else:
                                 $break = false;
                         
                             endif;
                         
+                        else:
+                            
+                            $break = false;
+                        
                         endif;
                         
                     }
                     
+                    
                     // Check tokens parameter
                     foreach($request['tokens'] as $token) {
                         if(!empty(self::$parameters[$token['mode']][$token['name']]))
-                            $break = Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time']);
+                            $break = (!$break) ? false : Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time']);
                         else
                             $break = false;
+                    }
+                    
+                
+                    // Check tokens parameter
+                    foreach($request['cookies'] as $cookie) {
+                        if(Cookie::exists($cookie['name']) && 
+                            (
+                                (!empty($cookie['value']) && Cookie::get($cookie['name'], $cookie['crypted']) == $cookie['value'])
+                                || (!empty($cookie['regexp']) && preg_match('#'.$cookie['regexp'].'#', Cookie::get($cookie['name'], $cookie['crypted'])))
+                                || (empty($cookie['value']) && empty($cookie['regexp'])))
+                            )
+                            $break = (!$break) ? false : true;
+                            
+                         else
+                             $break = false;
                     }
                     
                     if($break):

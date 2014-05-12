@@ -67,6 +67,7 @@
             foreach($requests as $case) {
                 $parameters = array();
                 $tokens     = array();
+                $cookies    = array();
 
                 // define request options
                 $uri = $case->getAttribute('uri');
@@ -118,6 +119,19 @@
                     );
                 }
                 
+                // Define request cookies parameters
+                foreach($case->getElementsByTagName('cookie') as $cookie) {
+                    if($crypted = $cookie->hasAttribute('crypted'))
+                        $crypted = filter_var($cookie->getAttribute('crypted'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+                    
+                    $cookies[] = array(
+                        'name' => $cookie->getAttribute('name'),
+                        'value' => $cookie->nodeValue,
+                        'regexp' => $cookie->hasAttribute('regexp') ? $cookie->getAttribute('regexp') : null,
+                        'crypted' =>  $crypted,
+                    );
+                }
+                
                 
                 // Define request settings
                 self::$manifest[] = array(
@@ -130,7 +144,8 @@
                     'domain' => $domain,
                     'types' => $types,
                     'parameters' => $parameters,
-                    'tokens' => $tokens
+                    'tokens' => $tokens,
+                    'cookies' => $cookies
                 );
 
             }

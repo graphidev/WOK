@@ -96,9 +96,8 @@
                                || empty($param['regexp']) 
                                || $param['regexp'] == 'any' 
                                || $param['type'] == 'FILE' 
-                               || ($param['regexp'] == 'array' && is_array($value))
-                               || ($param['regexp'] == 'string' && is_string($value)) 
-                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)) 
+                               || $param['regexp'] == gettype($value) 
+                               || ($param['regexp'] == 'numeric' && is_numeric($value)) 
                                || preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                 $break = !$break ? false : true;
                                                         
@@ -127,10 +126,15 @@
                 
                     // Check tokens parameter
                     foreach($request['cookies'] as $cookie) {
-                        if(Cookie::exists($cookie['name']) && 
+                        if($exists = Cookie::exists($cookie['name']))
+                            $value = Cookie::get($cookie['name'], $cookie['crypted']);
+                        
+                        if($exists && 
                             (
-                                (!empty($cookie['value']) && Cookie::get($cookie['name'], $cookie['crypted']) == $cookie['value'])
-                                || (!empty($cookie['regexp']) && preg_match('#'.$cookie['regexp'].'#', Cookie::get($cookie['name'], $cookie['crypted'])))
+                                (!empty($cookie['value']) && $cookie['value'] == $value) 
+                                || $cookie['regexp'] == gettype($value) 
+                                || ($cookie['regexp'] == 'numeric' && is_numeric($value))  
+                                || preg_match('#'.$cookie['regexp'].'#', $value)
                                 || (empty($cookie['value']) && empty($cookie['regexp'])))
                             )
                             $break = (!$break) ? false : true;

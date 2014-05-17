@@ -68,6 +68,7 @@
                 $parameters = array();
                 $tokens     = array();
                 $cookies    = array();
+                $sessions   = array();
 
                 // define request options
                 $uri = $case->getAttribute('uri');
@@ -133,6 +134,17 @@
                 }
                 
                 
+                // Define request sessions parameters
+                foreach($case->getElementsByTagName('session') as $session) {
+                    
+                    $sessions[] = array(
+                        'name' => $session->getAttribute('name'),
+                        'value' => $session->nodeValue,
+                        'regexp' => $session->hasAttribute('regexp') ? $session->getAttribute('regexp') : null
+                    );
+                }
+                
+                
                 // Define request settings
                 self::$manifest[] = array(
                     'uri' => $uri,
@@ -145,7 +157,8 @@
                     'types' => $types,
                     'parameters' => $parameters,
                     'tokens' => $tokens,
-                    'cookies' => $cookies
+                    'cookies' => $cookies,
+                    'sessions' => $sessions,
                 );
 
             }

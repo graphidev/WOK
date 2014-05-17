@@ -115,7 +115,7 @@
                     }
                     
                     
-                    // Check tokens parameter
+                    // Check tokens parameters
                     foreach($request['tokens'] as $token) {
                         if(!empty(self::$parameters[$token['mode']][$token['name']]))
                             $break = (!$break) ? false : Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time']);
@@ -124,7 +124,7 @@
                     }
                     
                 
-                    // Check tokens parameter
+                    // Check cookies parameters
                     foreach($request['cookies'] as $cookie) {
                         if($exists = Cookie::exists($cookie['name']))
                             $value = Cookie::get($cookie['name'], $cookie['crypted']);
@@ -136,6 +136,23 @@
                                 || ($cookie['regexp'] == 'numeric' && is_numeric($value))  
                                 || preg_match('#'.$cookie['regexp'].'#', $value)
                                 || (empty($cookie['value']) && empty($cookie['regexp'])))
+                            )
+                            $break = (!$break) ? false : true;
+                            
+                         else
+                             $break = false;
+                    }
+                    
+                    // Check session parameters
+                    foreach($request['sessions'] as $session) {                        
+                        if(Session::has($session['name']) && 
+                           
+                            (
+                                (!empty($session['value']) && $session['value'] == Session::get($session['name'])) 
+                                || $session['regexp'] == gettype($value) 
+                                || ($session['regexp'] == 'numeric' && is_numeric(Session::get($session['name'])))  
+                                || preg_match('#'.$session['regexp'].'#', Session::get($session['name'])))
+                                || (empty($session['value']) && empty($session['regexp']))
                             )
                             $break = (!$break) ? false : true;
                             

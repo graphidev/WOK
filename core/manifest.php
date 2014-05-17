@@ -116,7 +116,7 @@
                     $tokens[] = array(
                         'name' => $token->getAttribute('name'),
                         'mode' => strtoupper($token->getAttribute('mode')),
-                        'time' => intval($token->getAttribute('time'))
+                        'time' => $token->hasAttribute('time') ? intval($token->getAttribute('time')) : Token::LIFETIME
                     );
                 }
                 

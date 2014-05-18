@@ -58,7 +58,7 @@
             /**
              * Add URI parameters and action
             **/
-            foreach(parent::$manifest as $i => $request) {
+            foreach(parent::$manifest as $request) {
                 
                 if(($request['regexp'] == self::$uri || preg_match('#^'.$request['regexp'].'$#isU', self::$uri))
                    && in_array(self::$method, $request['methods'])
@@ -67,8 +67,8 @@
 
                     $break = (count($request['parameters']) ? false : true);
                     $index = 1; // URI parameter index
-                        
-                    foreach($request['parameters'] as $i => $param) {
+                    
+                    foreach($request['parameters'] as $param) {
                         
                         // URI parameters
                         if($param['type'] == 'URI'):
@@ -76,7 +76,7 @@
                             $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('uri'));
                             if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                 self::$parameters['URI'][$param['name']] = $value;
-                                $break = true;
+                                $break = !$break ? false : true;
                             else:
                                 $break = false;
                             endif;
@@ -85,7 +85,7 @@
                         
                         // FILES parameters
                         elseif($param['type'] == 'FILE' && isset(self::$parameters['FILES'][$param['name']])):
-                            $break = true;
+                            $break = !$break ? false : true;
                         
                         // Globals (GET, POST, ...) parameters
                         elseif(isset(self::$parameters[$param['type']][$param['name']])):
@@ -96,19 +96,68 @@
                                || empty($param['regexp']) 
                                || $param['regexp'] == 'any' 
                                || $param['type'] == 'FILE' 
-                               || ($param['regexp'] == 'array' && is_array($value))
-                               || ($param['regexp'] == 'string' && is_string($value)) 
-                               || ($param['regexp'] == ('integer'||'number'||'float') && is_numeric($value)) 
+                               || $param['regexp'] == gettype($value) 
+                               || ($param['regexp'] == 'numeric' && is_numeric($value)) 
                                || preg_match('#^'.$param['regexp'].'$#isU', $value)):
-                                $break = true; 
+                                $break = !$break ? false : true;
                                                         
                             else:
                                 $break = false;
                         
                             endif;
                         
+                        else:
+                            
+                            $break = false;
+                        
                         endif;
                         
+                    }
+                    
+                    
+                    // Check tokens parameters
+                    foreach($request['tokens'] as $token) {
+                        if(!empty(self::$parameters[$token['mode']][$token['name']]))
+                            $break = (!$break) ? false : Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time']);
+                        else
+                            $break = false;
+                    }
+                    
+                
+                    // Check cookies parameters
+                    foreach($request['cookies'] as $cookie) {
+                        if($exists = Cookie::exists($cookie['name']))
+                            $value = Cookie::get($cookie['name'], $cookie['crypted']);
+                        
+                        if($exists && 
+                            (
+                                (!empty($cookie['value']) && $cookie['value'] == $value) 
+                                || $cookie['regexp'] == gettype($value) 
+                                || ($cookie['regexp'] == 'numeric' && is_numeric($value))  
+                                || preg_match('#'.$cookie['regexp'].'#', $value)
+                                || (empty($cookie['value']) && empty($cookie['regexp'])))
+                            )
+                            $break = (!$break) ? false : true;
+                            
+                         else
+                             $break = false;
+                    }
+                    
+                    // Check session parameters
+                    foreach($request['sessions'] as $session) {                        
+                        if(Session::has($session['name']) && 
+                           
+                            (
+                                (!empty($session['value']) && $session['value'] == Session::get($session['name'])) 
+                                || $session['regexp'] == gettype($value) 
+                                || ($session['regexp'] == 'numeric' && is_numeric(Session::get($session['name'])))  
+                                || preg_match('#'.$session['regexp'].'#', Session::get($session['name'])))
+                                || (empty($session['value']) && empty($session['regexp']))
+                            )
+                            $break = (!$break) ? false : true;
+                            
+                         else
+                             $break = false;
                     }
                     
                     if($break):
@@ -191,6 +240,15 @@
         **/
         public static function ajax() {
             return (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest');     
+        }
+        
+        
+        /**
+         * Check CLI request life
+         * @return boolean
+        **/
+        function cli() {
+            return (!isset($_SERVER['SERVER_SOFTWARE']) && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
         }
         
         

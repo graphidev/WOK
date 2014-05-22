@@ -34,7 +34,7 @@ Because WOK is evolving according to requierements, there is no plan about versi
 
 **MAJOR** : Main project changements (restructuration, rebuild or LTS versions)
 **MINOR** : New features, backwards compatibility is not provided
-**PATCH** : Security, bugs fixes, optimisation or light improvements (e.g: implementation of a new library)
+**PATCH** : Security, bugs fixes, optimisation or light improvements (e.g: implementation/update of a library)
 **EXTRA** : This is a note about the version such as "beta", either "RC", or "stable" (or a specific version)
 
 ## Requirements

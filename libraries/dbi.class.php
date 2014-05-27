@@ -2,15 +2,42 @@
     
     /**
      * Allow to define, get and destroy globaly database instances.
-     * DBIStatement define some functions which simplify query outputs  
+     * It also contains some queries helpers functions.
      *
-     * @version 3.0
+     * @version 4.0
      * @package Libraries
     **/
     class DBI {
         
-        protected static $databases = array();
-        protected static $interfaces  = array();
+        private $instance;
+        
+        private static $interfaces  = array();
+        
+        
+        /**
+         * Get extedend or classic database interface.
+         * Define $statement as false to get the PDO interface
+         *
+         * @param string    $name
+         * @param boolean   $statement
+        **/
+        public function __construct($name = null) {
+            if(!empty(self::$interfaces)) {
+                if(empty($name)) {
+                    reset(self::$interfaces);
+                    $this->instance = current(self::$interfaces);
+                }
+                elseif(isset(self::$interfaces[$name])) {
+                      $this->instance = self::$interfaces[$name]; 
+                }
+                else {
+                    throw new ExtendedLogicException("Undefined database $name", array('database'=>$name));
+                }
+            }
+            else {
+                throw new ExtendedLogicException("At least one database interface must be instantiated"); 
+            }
+        }
         
         /**
          * Try to login and keep the interface. 
@@ -24,42 +51,18 @@
          * @param string    $username
          * @param string    $password
          * @param array     $options
-         * @param string    $database
+         * @param string    $name
         **/ 
-        public function __construct($dsn, $username = 'root', $password = '', $options = array(), $database = 'default') {
+        public static function open($dsn, $username = 'root', $password = '', $options = array(), $name = 'default') {
             try {
                 
-                self::$databases[$database] = new PDO($dsn, $username, $password, $options);
-                self::$databases[$database]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-                self::$interfaces[$database] = new DBIStatement($database);
-                self::$interfaces[$database]->exec('SET NAMES UTF8');
+                self::$interfaces[$name] = new PDO($dsn, $username, $password, $options);
+                self::$interfaces[$name]->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                self::$interfaces[$name]->exec('SET NAMES UTF8');
                 
             } catch(Exception $e) {
-                throw new Exception('[PDO:'.$query->errorCode().'] '.$query->errorInfo(), $query->errorCode(), $e); 
+                throw $e; 
             }
-            
-            if($database != 'default'):
-                try {
-                    self::$interfaces[$database]->exec("USE $database");
-                } catch(Exception $e) {
-                    throw $e;   
-                }
-            endif;
-        }
-        
-        
-        /**
-         * Get extedend or classic database interface.
-         * Define $statement as false to get the PDO interface
-         *
-         * @param string    $name
-         * @param boolean   $statement
-        **/
-        public static function database($name = 'default', $statement = true) {
-            if(!isset(self::$interfaces[$name]))
-                throw new ExtendedLogicException("Undefined database $name", array('database'=>$name));
-            
-            return ($statement ? self::$interfaces[$name] : self::$databases[$name] );
         }
         
         
@@ -75,29 +78,17 @@
            unset(self::$interfaces[$name]);
         }
         
-    }
-    
-    /**
-     * This class is a part of DBI class. 
-     * However, it also can be used as standalone.
-     *
-     * This class contains all query helper functions.
-     *
-     * @package Libraries
-    **/
-    class DBIStatement extends DBI {
-        
-        private $database;
         
         /**
-         * Define the interface to use
-         * @param mixed    $database
-        **/
-        public function __construct($database) {
-            if(is_object($database) && $database instanceof PDO)
-                $this->dabatase = $database;
-            else
-                $this->database = parent::$databases[$database];
+         * Define the dabatase to use for next requests
+         * @param string    $database
+        **/ 
+        public function using($database) {
+            try {
+                $this->exec("USE $database");
+            } catch(Exception $e) {
+                throw $e;   
+            }   
         }
         
         /**
@@ -108,7 +99,7 @@
          * @return boolean
         **/
         public function exec($sql, $data = array()) {
-            $query = $this->database->prepare($sql);
+            $query = $this->instance->prepare($sql);
             $output = $query->execute($data); 
             $query->closeCursor();
             return $output;
@@ -122,8 +113,8 @@
          * @param array     $data
          * @return array
         **/
-        public function query($sql, $data = array(), $mode = PDO::FETCH_ASSOC) {
-            $query = $this->database->prepare($sql);
+        public function query($sql, $data = array(), $mode = PDO::FETCH_ASSOC) {  
+            $query = $this->instance->prepare($sql);
             $query->execute($data);
             $output = $query->fetchAll($mode);
             $query->closeCursor();

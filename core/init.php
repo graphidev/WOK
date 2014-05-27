@@ -11,7 +11,7 @@
 	const WOK_MAJOR_VERSION        = 1; // Major version
 	const WOK_MINOR_VERSION        = 2; // Minor version
 	const WOK_RELEASE_VERSION      = 1; // Release version
-	const WOK_EXTRA_RELEASE        = 'stable'; // Extra version
+	const WOK_EXTRA_RELEASE        = 'RC'; // Extra version
     
     // Define full WOK version (without extra release)
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);

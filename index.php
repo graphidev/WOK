@@ -89,7 +89,7 @@
     /**
      * Set default homepage controller
     **/
-    Controller::route(Request::uri() == '' ? true : false, function() {
+    Controller::route(Request::uri() == '' || Request::uri() == '/' ? true : false, function() {
         Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, 'homepage');
         Response::view('homepage', 200);
     }, true);

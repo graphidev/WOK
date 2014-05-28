@@ -6,11 +6,15 @@
      * @package Libraries
     **/
 
-
     /**
-     * Return a cut string (a resume)
+     * Return a cut string after a number of words.
+     *
+     * @param string    $string     The string to cut
+     * @param integer   $max        The max output words
+     * @param string    $more       The after "more" characters 
+     * @return string       $string or cut string
     **/
-	function resume($string, $max = 50) { 
+	function resume($string, $max = 50, $more = ' ...') {
 		$string = strip_tags($string);
 		$array = explode(" ", $string);
 		if(count($array) < $max):
@@ -23,10 +27,26 @@
 		endif;
 	   
 		if(count($array) > $max):
-			$resume .= ' ...';
+			$resume .= $more;
 		endif;
-		return $resume; 
+		return $resume;
 	}
+
+    /**
+     * Return a cut string after a number or characters without breaking a word.
+     
+     * @inspiredby  http://www.creativejuiz.fr/blog/tutoriels/php-couper-une-phrase-sans-couper-un-mot
+     *
+     * @param string    $string     The string to cut
+     * @param integer   $max        The max output words
+     * @param string    $more       The after "more" characters 
+     * @return string       $string or cut string
+    **/
+    function maxlength($string, $max, $more = ' ...') {
+        if(strlen($string) <= $max) return $string;  
+        $resume = mb_substr($string, 0, $max - strlen($more) + 1, 'UTF-8');
+        return substr($resume, 0, strrpos($resume, ' ')) . $more;   
+    }
 
 
     /**

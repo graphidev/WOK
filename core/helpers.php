@@ -21,8 +21,10 @@
         
         $domain = str_replace('~', SYSTEM_DOMAIN, $domain); // Default domain usage
         if(!empty($port)) $port = ":$port"; // Adding port if defined
+                
+        if(substr($path, 0, $length = strlen(SYSTEM_DIRECTORY)) == SYSTEM_DIRECTORY)
+            $path = substr($path, $length);
         
-        $path = (substr($path, 0, 1) == '/' ? $path : "/$path");
         return "$protocol://$domain$port".SYSTEM_DIRECTORY."$path";
 	}
 	

@@ -154,9 +154,6 @@
         public static function view($template, $status = 200) {
             self::status($status, 'text/html; charset=utf-8');
             
-            if(!file_exists(root(PATH_TEMPLATES."/$template.php")))
-                trigger_error("Template $template not found", E_USER_ERROR);
-            
             self::$content = function() use($template, $status) {
                 
                 // Output cached view
@@ -187,10 +184,10 @@
                         self::$content = $buffer;                                      
                         return $buffer;
                     });
-
-                    extract(self::$data);
-                    include root(PATH_TEMPLATES."/$template.php");
-                
+                    
+                    // Parse template file
+                    View::parse($template, self::$data);
+                    
                     ob_end_flush();
 
 

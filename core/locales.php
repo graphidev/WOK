@@ -47,7 +47,7 @@
                     if($beginwith != '#' && $beginwith != '!'):
                         $path = trim(str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true))); // Property name
                         $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false)))); // Property value
-                        $value = str_replace(array('/r/n', '/r', '/n'), PHP_EOL, $value); // Allow breaklines in value                        
+                        $value = str_replace(array('\\\\r\\\\n', '\\\\r', '\\\\n'), PHP_EOL, $value); // Allow breaklines in value           
                         $value = htmlentities($value);
             
                         $data = array();
@@ -160,6 +160,8 @@
             $translation = preg_replace_callback("#&\[(.+)\]#isU", function($matches) use (&$locale){
                 return Locales::_e(str_replace('~', $locale, $matches[1]));
             }, $translation);
+            
+            
             
             return $translation;
                                 

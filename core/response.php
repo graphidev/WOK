@@ -257,7 +257,7 @@
                     header('Content-Disposition: inline; filename="'.basename($path).'"');
                 endif;
                 
-                self::$content = function() {            
+                self::$content = function() use ($path) {  
                     readfile(root("$path"));
                 };
             
@@ -284,11 +284,12 @@
         **/
         public static function output() {
             
+            
             // Send headers
             http_response_code(self::$code);
             foreach(self::$headers as $name => $value) {
                 @header("$name: $value", true);
-            }            
+            }    
             
             // Output content
             if(is_function(self::$content)):

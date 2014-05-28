@@ -1,0 +1,4 @@
+# This repository must not be accessible for anyone.
+# An access to logs, cache ar manifest files may
+# help hackers to find security breach.
+deny from all

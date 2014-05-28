@@ -51,7 +51,7 @@
             throw $e;
         endif;
             
-        include $library;
+        require_once $library;
     }
 
     

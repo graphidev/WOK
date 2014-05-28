@@ -257,6 +257,25 @@
 		endif;
 	}
 
+    /**
+     * Convert html characters to entities in either array or string data.
+     * This function is a security one against XSS breach.
+     *
+     * @param   string|array      $data       Data to convert
+     * @param   integer           $flags      Convertion flags. See native htmlentities function documentation
+     * @return  string|array        Converted data
+    **/
+    function entitieschars($data, $flags = ENT_COMPAT) {
+        if(!is_array($data))
+            return htmlentities($data, $flags, 'UTF-8', true);
+
+
+        foreach($data as $item => $value) {
+            $data[$item] =  entitieschars($value);  
+        }
+        return $data;
+    }
+
     
     /**
      * Check directory's path

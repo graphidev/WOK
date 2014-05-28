@@ -64,10 +64,10 @@
                    && in_array(self::$method, $request['methods'])
                    && $request['domain'] == self::domain()
                   && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))):
-
-                    $break = (count($request['parameters']) ? false : true);
-                    $index = 1; // URI parameter index
-                    
+                
+                    $break = (count($request['parameters']) ? null : true);
+                    $index = 1; // URI parameter index                   
+                                    
                     foreach($request['parameters'] as $param) {
                         
                         // URI parameters
@@ -76,7 +76,7 @@
                             $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('uri'));
                             if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
                                 self::$parameters['URI'][$param['name']] = $value;
-                                $break = !$break ? false : true;
+                                $break = (!empty($break) && !$break) ? false : true;
                             else:
                                 $break = false;
                             endif;
@@ -85,7 +85,7 @@
                         
                         // FILES parameters
                         elseif($param['type'] == 'FILE' && isset(self::$parameters['FILES'][$param['name']])):
-                            $break = !$break ? false : true;
+                            $break = (!empty($break) && !$break) ? false : true;
                         
                         // Globals (GET, POST, ...) parameters
                         elseif(isset(self::$parameters[$param['type']][$param['name']])):
@@ -99,7 +99,7 @@
                                || $param['regexp'] == gettype($value) 
                                || ($param['regexp'] == 'numeric' && is_numeric($value)) 
                                || preg_match('#^'.$param['regexp'].'$#isU', $value)):
-                                $break = !$break ? false : true;
+                                $break = (!empty($break) && !$break) ? false : true;
                                                         
                             else:
                                 $break = false;
@@ -113,12 +113,13 @@
                         endif;
                         
                     }
-                    
+                                    
                     
                     // Check tokens parameters
                     foreach($request['tokens'] as $token) {
-                        if(!empty(self::$parameters[$token['mode']][$token['name']]))
-                            $break = (!$break) ? false : Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time']);
+                        if(!empty(self::$parameters[$token['mode']][$token['name']]) 
+                           && ($authorized = Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time'])))
+                            $break = (!empty($break) && !$break) ? false : true;
                         else
                             $break = false;
                     }
@@ -137,7 +138,7 @@
                                 || preg_match('#'.$cookie['regexp'].'#', $value)
                                 || (empty($cookie['value']) && empty($cookie['regexp'])))
                             )
-                            $break = (!$break) ? false : true;
+                            $break = (!empty($break) && !$break) ? false : true;
                             
                          else
                              $break = false;
@@ -154,13 +155,13 @@
                                 || preg_match('#'.$session['regexp'].'#', Session::get($session['name'])))
                                 || (empty($session['value']) && empty($session['regexp']))
                             )
-                            $break = (!$break) ? false : true;
+                            $break = (!empty($break) && !$break) ? false : true;
                             
                          else
                              $break = false;
                     }
-                    
-                    if($break):
+                
+                    if(!empty($break)):
                         self::$action = $request['action'];
                         break;
                     endif;

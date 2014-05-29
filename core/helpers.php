@@ -22,9 +22,9 @@
         $domain = str_replace('~', SYSTEM_DOMAIN, $domain); // Default domain usage
         if(!empty($port)) $port = ":$port"; // Adding port if defined
                 
-        if(substr($path, 0, $length = strlen(SYSTEM_DIRECTORY)) == SYSTEM_DIRECTORY)
+        if(($length = strlen(SYSTEM_DIRECTORY)) != 0 && substr($path, 0, $length) == SYSTEM_DIRECTORY)
             $path = substr($path, $length);
-        
+               
         return "$protocol://$domain$port".SYSTEM_DIRECTORY."$path";
 	}
 	
@@ -263,15 +263,16 @@
      * Convert html characters to entities in either array or string data.
      * This function is a security one against XSS breach.
      *
-     * @param   string|array      $data       Data to convert
-     * @param   integer           $flags      Convertion flags. See native htmlentities function documentation
-     * @return  string|array        Converted data
+     * @param   string|array      $data         Data to convert
+     * @param   integer           $flags        Convertion flags. See native htmlentities function documentation
+     * @param   boolean           $substrings   Force convertion all characters (not only html ones)
+     * @param   boolean           $force        Force convertion of still converted entities
+     * @return  string|array                    Converted data
     **/
-    function entitieschars($data, $flags = ENT_COMPAT) {
+    function entitieschars($data, $flags = ENT_COMPAT, $substrings = false,  $force = true) {        
         if(!is_array($data))
-            return htmlentities($data, $flags, 'UTF-8', true);
-
-
+            return $substrings ? htmlentities($data, $flags, 'UTF-8', $force) : htmlspecialchars($data, $flags, 'UTF-8', $force);
+        
         foreach($data as $item => $value) {
             $data[$item] =  entitieschars($value);  
         }

@@ -36,9 +36,19 @@
         /**
          * This is the same as parse() method.
          * However it should be used instead of this previous one in template files : 
-         * it can be updated specifically for this usage.
+         * This method define a local path from where it is called 
+         * except if the root "/" is setted
         **/
         public static function zone($path, array $data = array()) {
+                        
+            if(substr($path, 0, 2) == './' || substr($path, 0, 1) != '/') {
+                $backtrace = debug_backtrace();
+                $root = root(PATH_TEMPLATES);
+                
+                if(substr($path, 0, 2) == './') $path = substr($path, 2);
+                $path = substr(dirname($backtrace[0]['file']), strlen($root)+1)."/$path";
+            }
+            
             return self::parse($path, $data);        
         }
  

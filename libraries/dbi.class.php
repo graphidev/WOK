@@ -4,7 +4,7 @@
      * Allow to define, get and destroy globaly database instances.
      * It also contains some queries helpers functions.
      *
-     * @version 4.0
+     * @version 4.1
      * @package Libraries
     **/
     class DBI {
@@ -39,6 +39,7 @@
             }
         }
         
+        
         /**
          * Try to login and keep the interface. 
          *
@@ -63,6 +64,10 @@
             } catch(Exception $e) {
                 throw $e; 
             }
+            
+            try {
+                self::$interfaces[$name]->exec("USE $name");  
+            } catch(Exception $e) {}
         }
         
         
@@ -70,7 +75,7 @@
         /**
          * Disable interface and database. 
          * For security reasons, it is advised to call 
-         * this method one every request is done.
+         * this method once all requests are done.
          *
          * @param string    $name
         **/
@@ -80,7 +85,7 @@
         
         
         /**
-         * Define the dabatase to use for next requests
+         * Define the dabatase to use for the next requests
          * @param string    $database
         **/ 
         public function using($database) {
@@ -154,6 +159,25 @@
             $total = array_shift($data);
             return intval($total);
         }
+        
+        /**
+         * Call a PDO method without getting the object
+         * @throws  ExtendedLogicException  If the PDO method is undefined
+         * @param   string  $method         The PDO method name
+         * @param   array   $arguments      The PDO method arguments
+         * @return  mixed   The PDO method returned value
+        **/
+        public function __call($method, $arguments) {
+            if(!method_exists($this->instance, $method))
+                 throw new ExtendedLogicException('PDO method does not exists', array('method'=>$method));
+            
+            try {
+                return call_user_func_array(array($this->instance, $method), $arguments);
+            } catch(Exception $e) {
+                throw $e;   
+            }
+        }
+            
         
     }
 

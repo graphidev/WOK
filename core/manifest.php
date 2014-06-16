@@ -79,7 +79,7 @@
                 if($case->hasAttribute('domain'))
                     $domain = str_replace('~', SYSTEM_DOMAIN, $case->getAttribute('domain'));
                 else
-                    $domain = SYSTEM_DOMAIN;
+                    $domain = null;
 
                 if($case->hasAttribute('languages') && $case->getAttribute('languages') != '' && strtoupper($case->getAttribute('languages')) != 'ANY')
                     $languages = explode(' ', $case->getAttribute('languages'));

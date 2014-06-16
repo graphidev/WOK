@@ -27,7 +27,7 @@
             $query          = substr($_SERVER['REQUEST_URI'], strlen(SYSTEM_DIRECTORY));
             $static         = preg_replace('#([a-z0-9\.-/]+)?(\?(.+))?$#iSU', "$1", $query);
             $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));
-
+                        
             /**
              * Define global request informations
             **/
@@ -58,13 +58,13 @@
             /**
              * Add URI parameters and action
             **/
-            foreach(parent::$manifest as $request) {
-
+            foreach(parent::$manifest as $request) {    
+                
                 if(($request['uri'] == self::$uri || preg_match('#^'.$request['regexp'].'$#isU', self::$uri))
                    && in_array(self::$method, $request['methods'])
-                   && $request['domain'] == self::domain()
+                   && (empty($request['domain']) || (!empty($request['domain']) && $request['domain'] == self::domain()))
                   && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))):
-                    
+                                    
                     $break = (count($request['parameters']) ? null : true);
                     $index = 1; // URI parameter index     
                                                     

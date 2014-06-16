@@ -24,7 +24,7 @@
                 
                 if($request['name'] == $action):
                     $uri = $request['uri'];
-                    $domain = $request['domain'];
+                    $domain = (!empty($request['domain']) ? $request['domain'] : SYSTEM_DOMAIN);
                     foreach($data as $index => $value) {
                         $uri = str_replace(":$index", $value, $uri);
                     }

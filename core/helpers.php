@@ -269,13 +269,17 @@
      * @param   boolean           $force        Force convertion of still converted entities
      * @return  string|array                    Converted data
     **/
-    function entitieschars($data, $flags = ENT_COMPAT, $substrings = false,  $force = true) {        
-        if(!is_array($data))
-            return $substrings ? htmlentities($data, $flags, 'UTF-8', $force) : htmlspecialchars($data, $flags, 'UTF-8', $force);
-        
-        foreach($data as $item => $value) {
-            $data[$item] =  entitieschars($value);  
+    function entitieschars($data, $flags = ENT_COMPAT, $substrings = false,  $force = true) {    
+        if(is_array($data) || $data instanceof Traversable) {
+            foreach($data as $item => $value) {
+                $data[$item] =  entitieschars($value);  
+            }   
         }
+        
+        elseif(is_string($data)) {
+            $data = $substrings ? htmlentities($data, $flags, 'UTF-8', $force) : htmlspecialchars($data, $flags, 'UTF-8', $force);
+        }
+       
         return $data;
     }
 

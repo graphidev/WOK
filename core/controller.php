@@ -19,9 +19,8 @@
         public static function call($controller, $action = null) {
             $controller = "\\Controllers\\$controller";
             $controller = new $controller;
-            
             if(!empty($action))
-                return $controller->$action();
+                return call_user_func(array($controller, $action));
         }
         
         

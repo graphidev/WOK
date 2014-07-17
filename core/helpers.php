@@ -451,12 +451,4 @@
         return (is_object($variable) && ($variable instanceof Closure));
     }
 
-    /**
-     * Determine if PHP is running via CLI
-     * @return boolean
-    **/
-    function is_cli() {
-        return (!isset($_SERVER['SERVER_SOFTWARE']) && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
-    }
-
 ?>

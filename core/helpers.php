@@ -447,8 +447,15 @@
      * @param mixed     $function
      * @return boolean
     **/
-    function is_function(&$variable) {
+    function is_closure(&$variable) {
         return (is_object($variable) && ($variable instanceof Closure));
+    }
+
+    /**
+     * Alias of is_closure helper
+    **/
+    function is_function(&$variable) {
+        return is_closure($variable);   
     }
 
 ?>

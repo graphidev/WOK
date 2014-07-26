@@ -75,7 +75,7 @@
          * @param closure   $function
         **/
         public static function handler($function) {
-            if(!is_function($function))
+            if(!is_closure($function))
                 trigger_error('Parameter in Response::handler must be a function', E_USER_ERROR);
             
             self::$handler = $function;
@@ -167,7 +167,7 @@
                 else: // Generate view
                     
                     // Execute data's requests
-                    if(is_function(self::$data)): 
+                    if(is_closure(self::$data)): 
                         self::$data = call_user_func(self::$data);
                     endif;
 
@@ -292,14 +292,14 @@
             }    
             
             // Output content
-            if(is_function(self::$content)):
+            if(is_closure(self::$content)):
                 call_user_func(self::$content);
             
             else:
-                if(is_function(self::$data))
+                if(is_closure(self::$data))
                     self::$data = call_user_func(self::$data);
             
-                if(is_function(self::$handler))
+                if(is_closure(self::$handler))
                    self::$content = call_user_func(self::$handler, self::$content, self::$data, self::$code);
 
                 echo self::$content;

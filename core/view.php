@@ -19,15 +19,16 @@
          *
          * @param   string      $template       Template file path
          * @param   array       $data           Data to parse in template (optional)
-         * @return  boolean         True if the template file have been called, false otherwise
+         * @param   boolean     $entities       Convert caracters to HTML entites
+         * @return  boolean     True if the template file have been called, false otherwise
         **/
-        public static function parse($template, array $data = array()) {
+        public static function parse($template, array $data = array(), $entities = true) {
             if(!file_exists($file = root(PATH_TEMPLATES."/$template.php"))) {
                 trigger_error("Template $template not found in ".PATH_TEMPLATES, E_USER_ERROR);
                 return false;
             }
             
-            extract(entitieschars($data));
+            extract($entities ? entitieschars($data) : $data);
             include $file;
             
             return true;

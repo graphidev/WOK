@@ -110,18 +110,6 @@
         if(@mkdir(ACCESS_PATH.PATH_LOCALES."/$language"))
             echo "  /locales/$language\n";
     }
-        
-    /**
-     * Generate .htaccess file
-    **/
-    $htaccess = file_get_contents(ACCESS_PATH.'/.htaccess.default');
-    $htaccess = str_replace('__WOK_DIR__', $directory, $htaccess);
-     if(!file_exists(ACCESS_PATH.'/.htaccess')):
-        $file = fopen(ACCESS_PATH.'/.htaccess', 'w+');
-        fclose($file);
-    endif;
-    file_put_contents(ACCESS_PATH.'/.htaccess', $htaccess);
-    echo "  /.htaccess\n";
     
     echo "\n";
 

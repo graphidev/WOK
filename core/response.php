@@ -137,11 +137,10 @@
             if($file && !SYSTEM_DEBUG): // Cache file
                 self::$cachetime = $time;
             
-                $suffix = Session::get('language');
                 if($status == self::CACHE_PROTECTED)
-                    $suffix = Session::get('uniqid')."-$suffix";
-            
-                self::$cachefile = root(PATH_CACHE."/$file-$suffix.html");
+                    self::$cachefile = "$file-$suffix";
+                else
+                    self::$cachefile = $file;
             endif;
             
         }        
@@ -152,17 +151,18 @@
          * @param integer   $status
         **/
         public static function view($template, $status = 200) {
-            self::status($status, 'text/html; charset=utf-8');
+            self::status($status, 'text/html; charset=utf8');
             
-            self::$content = function() use($template, $status) {
+            self::$content = function() use($template) {
                 
+                // Update cache file path
+                self::$cachefile .= '.html'; 
+                       
                 // Output cached view
-                if(!empty(self::$cachetime) && file_exists(self::$cachefile) 
-                   && filemtime(self::$cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))
-                   && filemtime(self::$cachefile) <= time() + self::$cachetime):
-                    
-                    self::status($status, 'text/html; charset=utf8');
-                    readfile(self::$cachefile);
+                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime) 
+                   && Cache::time(self::$cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))):
+                
+                    Cache::get(self::$cachefile);
 
                 else: // Generate view
                     
@@ -179,7 +179,7 @@
                         endif;
                         
                         if(!empty(self::$cachetime))
-                            file_put_contents(self::$cachefile, $buffer);
+                            Cache::register(self::$cachefile, $buffer);
                         
                         self::$content = $buffer;                                      
                         return $buffer;
@@ -204,7 +204,37 @@
         **/
         public static function json(array $data, $status = 200) {
             self::status($status, 'application/json; charset=utf-8');
-            self::$content = json_encode(!empty($data) ? $data : self::$data);
+            
+            self::$content = function() use($data) {
+                
+                // Update cache file path
+                self::$cachefile .= '.json';
+                
+                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime)) {
+                    
+                     Cache::get(self::$cachefile);
+                    
+                }
+                else {
+                
+                    // Execute data's requests
+                    if(is_closure(self::$data)): 
+                        self::$data = call_user_func(self::$data);
+                    endif;
+                    
+                    if(!empty($data))
+                        self::$data = array_merge(self::$data, $data);
+                    
+                    $json = json_encode(self::$data);
+                    
+                    if(!empty(self::$cachetime))
+                        Cache::register(self::$cachefile, $json);
+                    
+                    echo $json;
+                
+                }
+  
+            };
         }
         
         
@@ -213,12 +243,39 @@
          * @param array     $array
          * @param integer   $status
         **/
-        public static function xml(array $array = null, $status = 200) {
-            if(!empty($array))
-                self::$data = $array;
-            
+        public static function xml(array $data = null, $status = 200) {
             self::status($status, 'application/xml; charset=utf-8');
-            self::$content = xml_encode(self::$data, 'document');
+            
+            self::$content = function() use($data) {
+                
+                // Update cache file path
+                self::$cachefile .= '.xml';
+                
+                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime)) {
+                    
+                     Cache::get(self::$cachefile);
+                    
+                }
+                else {
+                
+                    // Execute data's requests
+                    if(is_closure(self::$data)): 
+                        self::$data = call_user_func(self::$data);
+                    endif;
+                    
+                    if(!empty($data))
+                        self::$data = array_merge(self::$data, $data);
+                    
+                    $xml = xml_encode(self::$data, 'document');
+                    
+                    if(!empty(self::$cachetime))
+                        Cache::register(self::$cachefile, $xml);
+                    
+                    echo $xml;
+                
+                }
+  
+            };
         }
         
         
@@ -229,7 +286,34 @@
         **/
         public static function text($string, $status = 200) {
             self::status($status, 'text/plain; charset=utf-8');
-            self::$content = $string;
+            self::$content = function() use($string) {
+                
+                // Update cache file path
+                self::$cachefile .= '.txt';
+                
+                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime)) {
+                    
+                     Cache::get(self::$cachefile);
+                    
+                }
+                else {
+                
+                    // Execute data's requests
+                    if(!empty($string)):
+                        self::$data = $string;
+                    
+                    elseif(is_closure(self::$data)): 
+                        self::$data = call_user_func(self::$data);
+                    endif;
+
+                    if(!empty(self::$cachetime))
+                        Cache::register(self::$cachefile, self::$data);
+                    
+                    echo self::$data;
+                
+                }
+  
+            };
         }
         
         

@@ -182,6 +182,8 @@
             if(empty($method))
                 $method = self::$method;
             
+            $method = strtoupper($method);
+            
             return (!empty(self::$parameters[$method][$name]) ? array_value($name, self::$parameters[$method]) : false);
         }
         

@@ -15,9 +15,9 @@
          * Load a locale file
          * @param string    $locale
         **/
-        private static function _load($locale) {        
+        private static function _load($locale) { 
             $source = root(PATH_LOCALES.'/'.self::$language."/$locale.properties");
-            $parsed = root(PATH_TMP.'/'.self::$language.".$locale.json");
+            $parsed = root(PATH_TMP.'/'.str_replace('/', '.', self::$language.".$locale.json"));
             if(file_exists($parsed)):
                 if(file_exists($source) && filemtime($source) > filemtime($parsed)):
                     self::_generate($locale);
@@ -61,7 +61,8 @@
                 fclose($handle);
             endif;
             
-            $json = fopen(root(PATH_TMP.'/'.self::$language.".$locale.json"), 'w+');
+            $tmp = str_replace('/', '.', $locale);
+            $json = fopen(root(PATH_TMP.'/'.self::$language.".$tmp.json"), 'w+');
             fwrite($json, json_encode(self::$locales[self::$language][$locale]));
             fclose($json);
         }

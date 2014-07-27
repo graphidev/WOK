@@ -447,16 +447,15 @@
      * @param mixed     $function
      * @return boolean
     **/
-    function is_function(&$variable) {
+    function is_closure(&$variable) {
         return (is_object($variable) && ($variable instanceof Closure));
     }
 
     /**
-     * Determine if PHP is running via CLI
-     * @return boolean
+     * Alias of is_closure helper
     **/
-    function is_cli() {
-        return (!isset($_SERVER['SERVER_SOFTWARE']) && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
+    function is_function(&$variable) {
+        return is_closure($variable);   
     }
 
 ?>

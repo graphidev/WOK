@@ -17,7 +17,7 @@
          * @param string    $parameter
          * @param boolean   $strict
         **/
-        public static function has($parameter, $strict = false) {
+        public static function exists($parameter, $strict = false) {
             $path = &$_SESSION;
             $nodes = explode('.', $parameter);
             foreach($nodes as $i => $node) {
@@ -27,6 +27,14 @@
                     return false;
             }
             return $strict ? !empty($path) : true;
+        }
+        
+        /**
+         * Alias of Session::exists()
+         * Session::has deprecated as of v1.2.7
+        **/
+        public static function has($parameter, $strict = false) {
+            return self::exists($parameter, $strict);            
         }
         
         

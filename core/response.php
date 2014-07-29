@@ -138,7 +138,7 @@
                 self::$cachetime = $time;
             
                 if($status == self::CACHE_PROTECTED)
-                    self::$cachefile = "$file-$suffix";
+                    self::$cachefile = $file.'-'.Session::get('uniqid');
                 else
                     self::$cachefile = $file;
             endif;
@@ -167,29 +167,18 @@
                 else: // Generate view
                     
                     // Execute data's requests
-                    if(is_closure(self::$data)): 
+                    if(is_closure(self::$data))
                         self::$data = call_user_func(self::$data);
-                    endif;
 
-                    // Generate cache view
-                    ob_start(function($buffer, $phase) {
-                        
-                        if(!is_null(self::$handler)):
-                            $buffer = call_user_func(self::$handler, $buffer, self::$data, self::$code);
-                        endif;
-                        
-                        if(!empty(self::$cachetime))
-                            Cache::register(self::$cachefile, $buffer);
-                        
-                        self::$content = $buffer;                                      
-                        return $buffer;
-                    });
-                    
-                    // Parse template file
-                    View::parse($template, self::$data);
-                    
-                    ob_end_flush();
+                    $buffer = View::parse($template, self::$data);       
+                
+                    if(!is_null(self::$handler))
+                        $buffer = call_user_func(self::$handler, $buffer, self::$data, self::$code);
 
+                    if(!empty(self::$cachetime))
+                        Cache::register(self::$cachefile, $buffer);
+
+                    echo $buffer;
 
                 endif; 
             
@@ -218,9 +207,8 @@
                 else {
                 
                     // Execute data's requests
-                    if(is_closure(self::$data)): 
+                    if(is_closure(self::$data))
                         self::$data = call_user_func(self::$data);
-                    endif;
                     
                     if(!empty($data))
                         self::$data = array_merge(self::$data, $data);
@@ -259,9 +247,8 @@
                 else {
                 
                     // Execute data's requests
-                    if(is_closure(self::$data)): 
+                    if(is_closure(self::$data))
                         self::$data = call_user_func(self::$data);
-                    endif;
                     
                     if(!empty($data))
                         self::$data = array_merge(self::$data, $data);
@@ -298,13 +285,11 @@
                 }
                 else {
                 
-                    // Execute data's requests
-                    if(!empty($string)):
+                    if(!empty($string))
                         self::$data = $string;
                     
-                    elseif(is_closure(self::$data)): 
+                    elseif(is_closure(self::$data))
                         self::$data = call_user_func(self::$data);
-                    endif;
 
                     if(!empty(self::$cachetime))
                         Cache::register(self::$cachefile, self::$data);

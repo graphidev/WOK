@@ -23,15 +23,18 @@
          * @return  boolean     True if the template file have been called, false otherwise
         **/
         public static function parse($template, array $data = array(), $entities = true) {
-            if(!file_exists($file = root(PATH_TEMPLATES."/$template.php"))) {
+            if(!file_exists($file = root(PATH_TEMPLATES."/$template.php")))
                 trigger_error("Template $template not found in ".PATH_TEMPLATES, E_USER_ERROR);
-                return false;
-            }
+            
+            ob_start();
             
             extract($entities ? entitieschars($data) : $data);
             include $file;
             
-            return true;
+            $buffer = ob_get_contents();
+            ob_end_clean();
+            
+            return $buffer;
         }
         
         /**
@@ -50,7 +53,7 @@
                 $path = substr(dirname($backtrace[0]['file']), strlen($root)+1)."/$path";
             }
             
-            return self::parse($path, $data);        
+            echo self::parse($path, $data);        
         }
  
     }

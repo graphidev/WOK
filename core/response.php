@@ -138,7 +138,7 @@
                 self::$cachetime = $time;
             
                 if($status == self::CACHE_PROTECTED)
-                    self::$cachefile = "$file-$suffix";
+                    self::$cachefile = $file.'-'.Session::get('uniqid');
                 else
                     self::$cachefile = $file;
             endif;

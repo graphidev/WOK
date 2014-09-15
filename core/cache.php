@@ -36,7 +36,7 @@
          * @param integer   $time     Cache file living time
         **/
         public static function exists($file, $time = 0) {
-            return (file_exists($path = self::path($file)) && (empty($time) || (!empty($time) && filemtime($path) < time()+$time)));
+            return (file_exists($path = self::path($file)) && (empty($time) || (!empty($time) && (time() < filemtime($path)+$time) > 0)));
         }
         
         /**
@@ -62,8 +62,14 @@
             readfile(self::path($file));
         }
         
-        
-        public static function destroy($file) {}
+        /**
+         * Remove a cached file
+         * @param   string  $file   The cached file path
+        **/
+        public static function destroy($file) {
+            if(self::exists($file))
+                unlink(self::path($file))
+        }
         public static function clean($file) {}
         
         

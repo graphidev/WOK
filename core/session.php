@@ -30,15 +30,6 @@
         }
         
         /**
-         * Alias of Session::exists()
-         * Session::has deprecated as of v1.2.7
-        **/
-        public static function has($parameter, $strict = false) {
-            return self::exists($parameter, $strict);            
-        }
-        
-        
-        /**
          * Get session informations
          *
          * @param string    $parameter

@@ -12,23 +12,34 @@
 
     class Manifest {
         
-        protected static $manifest = array();
-        
+        protected static $routes    = array();
+        protected static $patterns  = array();
+        protected static $filters   = array();
         
         /**
-         * Get URL from an action
+         * Prevent the usage of the __construct() method
+        **/
+        private function __construct() {}
+                                   
+        
+        /**
+         * Get an URL from a route
+         * URI data can be specified with the second parameter
+         * @param   string      $route      The route name (this usualy is the action name (with the controller))
+         * @param   array       $data       The required data to complete the route URI
          * @exemple Manifest::url('controller:action', array('param_name'=>'value', ...));
         **/
-        public static function url($action, $data = array()) {
-            foreach(self::$manifest as $key => $request) {
+        public static function url($action, $parameters = array()) {
+            foreach(self::$routes as $key => $route) {
                 
-                if($request['name'] == $action):
-                    $uri = $request['uri'];
-                    $domain = (!empty($request['domain']) ? $request['domain'] : SYSTEM_DOMAIN);
-                    foreach($data as $index => $value) {
-                        $uri = str_replace(":$index", $value, $uri);
+                if($route['action'] == $action):
+                    $domain = (!empty($route['domain']) ? $route['domain'] : SYSTEM_DOMAIN);
+                    
+                    foreach($parameters as $index => $value) {
+                        $route['uri'] = str_replace(":$index", $value, $route['uri']);
                     }
-                    return path($uri, $domain);
+                
+                    return path($route['uri'], $domain);
                     break;
                 endif;
             }
@@ -36,136 +47,102 @@
             return false;
         }
         
+        /**
+         * Define a route
+         * @param   string|array        $method         The request method
+         * @param   string              $domain         The request domain
+         * @param   string              $uri            The request URI
+         * @param   array               $parameters     The request URI parameters
+         * @param   string|Closure      $action         The route action (can be a controller method or a callback)
+         * @param   string|Closure      $filter         The route filter's name or callback
+        **/
+        public static function register($method = array(), $domain='~', $uri ='/', $parameters = array(), $action = 'Root:index', $filter = null) {
+            
+            self::$routes[] = array(
+                'uri' => $uri,
+                'method' => (is_string($method) ? explode('|', $method) : $method),
+                'action' => $action,
+                'parameters' => $parameters,
+                'domain' => $domain,
+                'filter' => $filter,
+            );
+            
+        }
         
         /**
-         * Load tmp manifest file
+         * Define a pattern regexp
+         * @param   string      $name       Pattern's name
+         * @param   Closure     $regexp     Pattern's regexp
         **/
-        public static function load() {
-            if(!file_exists($source = root(PATH_VAR.'/manifest.xml')))
-                return false;
-            
-            $tmp = root(PATH_TMP . '/manifest.json');
-
-            if(SYSTEM_DEBUG || !file_exists($tmp) || filemtime($source) > filemtime($tmp))
-                self::build();
-            else
-                self::$manifest = json_decode(file_get_contents($tmp), true);
+        public static function pattern($name, $regexp) {
+            self::$patterns[$name] = $regexp;   
+        }
+        
+        /**
+         * Define routes filter
+         * @param   string      $name       Filter's name
+         * @param   Closure     $callback   Filter's callback
+        **/
+        public static function filter($name, Closure $callback) {
+            self::$filters[$name] = $callback;   
         }
         
         
         /**
-         * Build tmp manifest file
+         * Define routes with the XML manifest
         **/
-        private static function build() { 
+        public static function load() { 
             
-            $dom = new DOMDocument();
-            $dom->load(root(PATH_VAR.'/manifest.xml'));
-            $manifest = $dom->getElementsByTagName('manifest')->item(0);
-            $requests = $manifest->getElementsByTagName('request');
-
-            // Analyse request
-            foreach($requests as $case) {
-                $parameters = array();
-                $tokens     = array();
-                $cookies    = array();
-                $sessions   = array();
-
-                // define request options
-                $uri = $case->getAttribute('uri');
-                $uri_regexp = $uri;
-                $action = $case->getAttribute('action');
-                $route = ($case->hasAttribute('name') ? $case->getAttribute('name') : $action);
+            $manifest = SYSTEM_ROOT.PATH_VAR.'/manifest.xml';
+            $tmp = SYSTEM_ROOT.PATH_TMP.'/manifest.json';
+            
+            if(!SYSTEM_DEBUG && file_exists($tmp) 
+               && filemtime($manifest) < filemtime($tmp)) {
                 
-                if($case->hasAttribute('domain'))
-                    $domain = str_replace('~', SYSTEM_DOMAIN, $case->getAttribute('domain'));
-                else
-                    $domain = null;
-
-                if($case->hasAttribute('languages') && $case->getAttribute('languages') != '' && strtoupper($case->getAttribute('languages')) != 'ANY')
-                    $languages = explode(' ', $case->getAttribute('languages'));
-                else
-                    $languages = explode(' ', SYSTEM_LANGUAGES);
-
-                if($case->hasAttribute('methods') && $case->getAttribute('methods') != '' && strtoupper($case->getAttribute('methods')) != 'ANY')
-                    $methods = explode(' ', strtoupper($case->getAttribute('methods')));
-                else
-                    $methods = array('GET', 'POST', 'HEAD', 'PUT');
+                $manifest = json_decode(file_get_contents($tmp), true);
+                self::$routes = isset($manifest['routes']) ? $manifest['routes'] : array();
+                self::$patterns = isset($manifest['patterns']) ? $manifest['patterns'] : array();
                 
-                if($case->hasAttribute('types')  && $case->getAttribute('types') != '' && strtoupper($case->getAttribute('types')) != 'ANY')
-                    $types = explode(' ', strtoupper($case->getAttribute('types')));
-                else
-                    $types = array('HTTP', 'XHR','CLI');
-
-                // Define request parameters (URI, GET, POST, ...)
-                foreach($case->getElementsByTagName('param') as $param) {
-                    $value = array(
-                        'name' => $param->getAttribute('name'),
-                        'type' => $param->hasAttribute('type') ? strtoupper($param->getAttribute('type')) : 'URI',
-                        'regexp' => $param->hasAttribute('regexp') && $param->getAttribute('regexp') != '' ? $param->getAttribute('regexp') : '.+',
-                        'value' => $param->nodeValue
-                    );
-
-                    if($value['type'] == 'URI') // Replace URI parameters by parameter REGEXP in $url
-                        $uri_regexp = str_replace(':'.$value['name'], "(".$value['regexp'].")", $uri_regexp);
-                   
-                    $parameters[] = $value;
-                }
-                
-                // Define request tokens parameters
-                foreach($case->getElementsByTagName('token') as $token) {
-                    $tokens[] = array(
-                        'name' => $token->getAttribute('name'),
-                        'mode' => strtoupper($token->getAttribute('mode')),
-                        'time' => $token->hasAttribute('time') ? intval($token->getAttribute('time')) : Token::LIFETIME
-                    );
-                }
-                
-                // Define request cookies parameters
-                foreach($case->getElementsByTagName('cookie') as $cookie) {
-                    if($crypted = $cookie->hasAttribute('crypted'))
-                        $crypted = filter_var($cookie->getAttribute('crypted'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-                    
-                    $cookies[] = array(
-                        'name' => $cookie->getAttribute('name'),
-                        'value' => $cookie->nodeValue,
-                        'regexp' => $cookie->hasAttribute('regexp') ? $cookie->getAttribute('regexp') : null,
-                        'crypted' =>  $crypted,
-                    );
-                }
-                
-                
-                // Define request sessions parameters
-                foreach($case->getElementsByTagName('session') as $session) {
-                    
-                    $sessions[] = array(
-                        'name' => $session->getAttribute('name'),
-                        'value' => $session->nodeValue,
-                        'regexp' => $session->hasAttribute('regexp') ? $session->getAttribute('regexp') : null
-                    );
-                }
-                
-                
-                // Define request settings
-                self::$manifest[] = array(
-                    'uri' => $uri,
-                    'regexp' => $uri_regexp,
-                    'name' => $route,
-                    'methods' => $methods,
-                    'languages' => $languages,
-                    'action' => $action,
-                    'domain' => $domain,
-                    'types' => $types,
-                    'parameters' => $parameters,
-                    'tokens' => $tokens,
-                    'cookies' => $cookies,
-                    'sessions' => $sessions,
-                );
-
             }
+            else {
+                
+                $dom = new DOMDocument();
+                $dom->load($manifest);
+                $manifest = $dom->getElementsByTagName('manifest')->item(0);
+                // Parse global patterns
+                foreach($manifest->getElementsByTagName('pattern') as $pattern) {
+                    self::$patterns[$pattern->getAttribute('name')] = $pattern->getattribute('regexp');   
+                }    
+                
+                // Parse standalone requests
+                foreach($manifest->getElementsByTagName('route') as $route) {
+                    
+                    $parameters = array();
+                    foreach($route->getElementsByTagName('param') as $param) {
+                        $parameters[$param->getAttribute('name')] = $param->getAttribute('regexp');    
+                    }
+                    
+                    self::$routes[] = array(
+                        'uri' => ($route->hasAttribute('uri') ? $route->getAttribute('uri') : ''),
+                        'method' => ($route->hasAttribute('method') ? explode('|', $route->getAttribute('method')) : array()),
+                        'languages' => ($route->hasAttribute('languages') ? explode('|', $route->getAttribute('languages')) : array()),
+                        'action' => $route->getAttribute('action'),
+                        'parameters' => $parameters,
+                        'domain' => ($route->hasAttribute('domain') ? str_replace('~', SYSTEM_DOMAIN, $route->getAttribute('domain')) : null),
+                        'filter' => ($route->hasAttribute('filter') ? $route->getAttribute('filter') : null),
+                    );
+                
+                }
 
-            $json = fopen(root(PATH_TMP . '/manifest.json'), 'w+');
-            fwrite($json, json_encode(self::$manifest));
-            fclose($json);
+                if(!SYSTEM_DEBUG) { // Register cached manifest
+                    $json = fopen($tmp, 'w+');
+                    fwrite($json, json_encode(array(
+                        'routes' => self::$routes,
+                        'patterns' => self::$patterns
+                    )));
+                    fclose($json);
+                }
+            }
             
         }
         

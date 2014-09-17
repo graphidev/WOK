@@ -1,119 +1,71 @@
 <?php
-
 	/**
      * Initialize WOK
     **/
 	require_once 'core/init.php';
 
-
     /**
-     * Generate session and cookies requirements such as language
-     * We supposed that these session and cookies values are not 
-     * changed by custom developments (reserved keys)
+     * Initialement request environment
     **/
-    if(!Session::has('language') && Cookie::exists('language', true)):
-        Session::set('language', Cookie::get('language'));
-
-    else:
-        
-        $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
-        
-        if(!empty($languages))
-            $language = array_shift($languages);
-            
-        else
-            $language = SYSTEM_DEFAULT_LANGUAGE;
-        
-        Session::set('language', $language);
-
-        if(!Cookie::exists('language'))
-            Cookie::set('language', $language, 15811200);        
-
-    endif;
-
-    if(!Session::has('uniqid')):
-        Session::set('uniqid', Cookie::exists('uniqid') ? Cookie::get('uniqid') : uniqid(sha1(time())));
-        Cookie::set('uniqid', Session::get('uniqid'));
-    endif;
-
-    
-    /**
-     * Load XML manifest and initialize
-     * Request class according to manifest
-    **/
-    Manifest::load();
     Request::init();
 
-
-    /**
-     * Set Custom things routes
-     * This should be use for development. Prefere using 
-     * XML manifest in order to keep framework structure
-    **/
-    if(file_exists(root(PATH_VAR.'/manifest.php')))
-        require_once(root(PATH_VAR.'/manifest.php'));
-    
-    
     
     /**
      * Ongoing maintenance 
+     * Output a 503 response
     **/
-    Controller::route(SYSTEM_MAINTENANCE, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance');
-        Response::view('maintenance', 503);
-    }, true);
-
-
-    /**
-     * Set static pages controller (special)
-    **/
-    Controller::route(Request::get('action') == 'static', function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, str_replace('/', '-', Request::uri()));
-        Response::view(Request::uri(), 200);
-    }, true);
-
-
-    /**
-     * Set manifest controllers
-    **/
-    Controller::route(Request::get('action') ? true : false, function() {
-        list($controller, $action) = explode(':', strtolower(Request::get('action')));
-        if(file_exists(root(PATH_CONTROLLERS."/$controller.ctrl.php"))):
-            Controller::call($controller, $action);
-        else:
-            trigger_error("Controller '$controller' not found", E_USER_ERROR);
-        endif;
-    }, true);
-
-
-    /**
-     * Set default homepage controller
-    **/
-    Controller::route(Request::uri() == '' || Request::uri() == '/' ? true : false, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, 'homepage');
-        Response::view('homepage', 200);
-    }, true);
-
-
-    /**
-     * If there is no response for any controller
-     * Just send a 404 response
-    **/
-    Controller::route(true, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');
-        Response::view('404', 404);
-    }, true);
-
-
-    /**
-     * Invoke the controller queue
-    **/
-    Controller::invoke();
-
+    if(SYSTEM_MAINTENANCE) {
+        $response = Response::view('maintenance', 503)
+            ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance')
+            ->render();
+    }
     
     /**
-     * Output response
+     * Route to a controller
     **/
-    Response::output();
+    else {
+        
+        /**
+         * Set Custom routes and filters
+         * This should be use for development routes. Prefere using 
+         * XML manifest in order to keep the framework structure
+        **/
+        if(file_exists(root(PATH_VAR.'/manifest.php')))
+            require_once(root(PATH_VAR.'/manifest.php'));
+        
+        try {
+            
+            /**
+             * Output response according to controller's return
+             * This may be a null value (not recommended), 
+             * or a custom response (HTML, JSON, XML, ...).
+             * Please check Response class documentation.
+            **/
+            Router::match(function($controller, $parameters) {
+                
+                if($controller instanceof Response)
+                    $controller->render();
+                
+                elseif(is_null($response = call_user_func_array($controller, $parameters)))
+                    Response::null(200)->render();
+                
+                elseif($response instanceof Response)
+                    $response->render();   
 
+                else trigger_error('Controller returned value must be a Response object', E_USER_ERROR);
+                                
+            });    
+
+            
+        } catch(Exception $e) {
+            
+            Response::view($e->getCode(), $e->getCode())->assign(array(
+                'message' => $e->getMessage(),
+                'code' => $e->getCode()
+            ))->render();
+            
+        }
+        
+    }
+    
 ?>

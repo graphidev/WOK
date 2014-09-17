@@ -9,19 +9,13 @@
     **/
     class Response {
         
-        private static $headers     = array();
-        private static $content     = null;
-        private static $code        = 200;
-        private static $data        = array();
-        private static $handler     = null;
-        private static $cachetime   = null;
-        private static $cachefile   = null;
-        
-        
-        private static $mimes = array(
-            'css' => 'text/css', 
-            'js' => 'application/javascript'
-        );
+        private $headers     = array();
+        private $content     = null;
+        private $code        = 200;
+        private $data        = array();
+        private $handler     = null;
+        private $cachetime   = null;
+        private $cachefile   = null;
         
         /**
          * Cache constants
@@ -34,14 +28,21 @@
         const CACHETIME_MEDIUM      = 216000; // 1 hour
         const CACHETIME_LONG        = 5184000; // 24 hours
         
+        /**
+         * Generate a new response object
+         * This constructor function must not 
+         * be overloaded and stay private
+        **/
+        private function __construct(){}
         
         /**
          * Define headers.
          * Custom headers must begin with X-
          * @param array     $headers
         **/
-        public static function headers($headers) {
-            self::$headers = array_merge($headers, self::$headers);
+        public function headers($headers) {
+            $this->headers = array_merge($this->headers, $headers);
+            return $this;
         }
                 
         /**
@@ -49,11 +50,11 @@
          * @param integer   $code
          * @param string    $type
         **/
-        public static function status($code, $type = null) {
-            self::$code = $code;
+        public function status($code, $type = null) {
+            $this->code = $code;
                 
             if(!empty($type))  
-                self::headers(array('Content-type' => $type));
+                $this->headers(array('Content-Type' => $type));
         }
         
         /**
@@ -62,11 +63,9 @@
          * provided that cached file does not exists.
          * @param mixed   $data
         **/
-        public static function assign($data) {
-            if(is_array($data))
-                self::$data = array_merge(self::$data, $data);
-            else
-                self::$data = $data;
+        public function assign($data) {
+            $this->data = $data;
+            return $this;
         }
         
         
@@ -74,11 +73,9 @@
          * Define response content handler
          * @param closure   $function
         **/
-        public static function handler($function) {
-            if(!is_closure($function))
-                trigger_error('Parameter in Response::handler must be a function', E_USER_ERROR);
-            
-            self::$handler = $function;
+        public function handler(Closure $function) {        
+            $this->handler = $function;
+            return $this;
         }        
         
         
@@ -88,9 +85,11 @@
          * @param string    $target
          * @param boolean   $permanent
         **/
-        public static function redirect($target, $permanent = false) {       
-            self::$code = ($permanent ? 301 : 302);
-            self::headers(array('Location'=> $target));
+        public static function redirect($target, $permanent = false) {   
+            $response = new Response;
+            $response->code = ($permanent ? 301 : 302);
+            $response->headers(array('Location'=> $target));
+            return $response;
         }
         
         
@@ -101,7 +100,7 @@
          * @param string    $status
          * @param mixed     $file
         **/
-        public static function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED, $file = false) {
+        public function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED, $file = false) {
             // Private cache : do not cache
             if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
                 $headers = array(
@@ -132,17 +131,18 @@
             $headers['Cache-Control'] .= ', no-transform'; // Never transform outputed data
             $headers['Vary'] = 'Accept-Encoding';
             
-            self::headers($headers); 
+            $this->headers($headers); 
             
             if($file && !SYSTEM_DEBUG): // Cache file
-                self::$cachetime = $time;
-            
+                $this->cachetime = $time;
+                        
                 if($status == self::CACHE_PROTECTED)
-                    self::$cachefile = $file.'-'.Session::get('uniqid');
+                    $this->cachefile = $file.'-'.session_id();
                 else
-                    self::$cachefile = $file;
+                    $this->cachefile = $file;
             endif;
-            
+                                    
+            return $this;
         }        
         
         /**
@@ -151,39 +151,79 @@
          * @param integer   $status
         **/
         public static function view($template, $status = 200) {
-            self::status($status, 'text/html; charset=utf8');
-            
-            self::$content = function() use($template) {
+            $response = new Response;
+            $response->status($status, 'text/html; charset=utf8');
+            $response->content = function() use($response, $template) {
                 
                 // Update cache file path
-                self::$cachefile .= '.html'; 
+                $response->cachefile .= '.html'; 
                        
                 // Output cached view
-                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime) 
-                   && Cache::time(self::$cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))):
+                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime) 
+                   && Cache::time($response->cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))):
                 
-                    Cache::get(self::$cachefile);
+                    Cache::get($response->cachefile);
 
                 else: // Generate view
                     
                     // Execute data's requests
-                    if(is_closure(self::$data))
-                        self::$data = call_user_func(self::$data);
+                    if(is_closure($response->data))
+                        $response->data = call_user_func($response->data);
 
-                    $buffer = View::parse($template, self::$data);       
+                    $buffer = View::parse($template, $response->data);       
                 
-                    if(!is_null(self::$handler))
-                        $buffer = call_user_func(self::$handler, $buffer, self::$data, self::$code);
+                    if(!is_null($response->handler))
+                        $buffer = call_user_func($response->handler, $buffer, $response->data, $response->code);
 
-                    if(!empty(self::$cachetime))
-                        Cache::register(self::$cachefile, $buffer);
+                    if(!empty($response->cachetime))
+                        Cache::register($response->cachefile, $buffer);
 
                     echo $buffer;
 
                 endif; 
             
-            };  
+            };
+            
+            return $response;
+        }
         
+        /**
+         * Define an HMTL response
+         * @param array     $content    The HTML content
+         * @param integer   $status     The response code
+        **/
+        public static function html($content = null, $status = 200) {
+            $response = new Response;
+            $response->status($status, 'text/html; charset=utf8');
+            $response->content = function() use($response, $content) {
+                
+                // Update cache file path
+                $response->cachefile .= '.html';
+                
+                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
+                    
+                     Cache::get($response->cachefile);
+                    
+                }
+                else {
+                
+                    // Execute data's requests
+                    if(is_closure($content))
+                        $content = call_user_func($content);
+                    
+                    if(!empty($content))
+                        $response->data = $content;
+                                            
+                    if(!empty($response->cachetime))
+                        Cache::register($response->cachefile, $response->data);
+                    
+                    echo $response->data;
+                
+                }
+            
+            };
+            
+            return $response;
         }
         
         /**
@@ -192,37 +232,36 @@
          * @param integer   $status
         **/
         public static function json(array $data, $status = 200) {
-            self::status($status, 'application/json; charset=utf-8');
-            
-            self::$content = function() use($data) {
+            $response = new Response;
+            $response->status($status, 'application/json; charset=utf-8');
+            $response->content = function() use($response, $data) {
                 
-                // Update cache file path
-                self::$cachefile .= '.json';
                 
-                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime)) {
+                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                     Cache::get(self::$cachefile);
+                     Cache::get($response->cachefile);
                     
                 }
                 else {
                 
                     // Execute data's requests
-                    if(is_closure(self::$data))
-                        self::$data = call_user_func(self::$data);
+                    if(is_closure($response->data))
+                        $this->data = call_user_func($response->data);
                     
                     if(!empty($data))
-                        self::$data = array_merge(self::$data, $data);
+                        $response->data = array_merge($response->data, $data);
                     
-                    $json = json_encode(self::$data);
+                    $json = json_encode($response->data);
                     
-                    if(!empty(self::$cachetime))
-                        Cache::register(self::$cachefile, $json);
+                    if(!empty($response->cachetime))
+                        Cache::register($response->cachefile, $json);
                     
                     echo $json;
                 
                 }
   
             };
+            return $response;
         }
         
         
@@ -232,37 +271,38 @@
          * @param integer   $status
         **/
         public static function xml(array $data = null, $status = 200) {
-            self::status($status, 'application/xml; charset=utf-8');
-            
-            self::$content = function() use($data) {
+            $response = new Response;
+            $response->status($status, 'application/xml; charset=utf-8');
+            $response->content = function() use($response, $data) {
                 
                 // Update cache file path
-                self::$cachefile .= '.xml';
+                $response->cachefile .= '.xml';
                 
-                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime)) {
+                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                     Cache::get(self::$cachefile);
+                     Cache::get($response->cachefile);
                     
                 }
                 else {
                 
                     // Execute data's requests
-                    if(is_closure(self::$data))
-                        self::$data = call_user_func(self::$data);
+                    if(is_closure($response->data))
+                        $response->data = call_user_func($response->data);
                     
                     if(!empty($data))
-                        self::$data = array_merge(self::$data, $data);
+                        $response->data = array_merge($response->data, $data);
                     
-                    $xml = xml_encode(self::$data, 'document');
+                    $xml = xml_encode($response->data, 'document');
                     
-                    if(!empty(self::$cachetime))
-                        Cache::register(self::$cachefile, $xml);
+                    if(!empty($response->cachetime))
+                        Cache::register($response->cachefile, $xml);
                     
                     echo $xml;
                 
                 }
   
             };
+            return $response;
         }
         
         
@@ -272,33 +312,38 @@
          * @param integer   $status
         **/
         public static function text($string, $status = 200) {
-            self::status($status, 'text/plain; charset=utf-8');
-            self::$content = function() use($string) {
+            $response = new Response;
+            $response->status($status, 'text/plain; charset=utf-8');
+            $response->content = function() use($response, $string) {
                 
                 // Update cache file path
-                self::$cachefile .= '.txt';
-                
-                if(!empty(self::$cachetime) && Cache::exists(self::$cachefile, self::$cachetime)) {
+                $response->cachefile .= '.txt';
+                                
+                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                     Cache::get(self::$cachefile);
+                    Cache::get($response->cachefile);
                     
                 }
                 else {
                 
                     if(!empty($string))
-                        self::$data = $string;
+                        $response->data = $string;
                     
-                    elseif(is_closure(self::$data))
-                        self::$data = call_user_func(self::$data);
+                    if(is_closure($response->data))
+                        $response->data = call_user_func($response->data);
 
-                    if(!empty(self::$cachetime))
-                        Cache::register(self::$cachefile, self::$data);
+                    if(!empty($response->cachetime))
+                        Cache::register($response->cachefile, $response->data);
                     
-                    echo self::$data;
+                    echo $response->data;
                 
                 }
-  
+                 
             };
+            
+           
+            
+            return $response;
         }
         
         
@@ -307,33 +352,38 @@
          * @param string    $path
          * @param boolean   $download
          * @param integer   $status
+         *
+         * @note Force Content-Type header with headers() method for files such as CSS and JS
         **/
         public static function file($path, $download = false, $status = 200) {
+            $response = new Response;
             
-            if(file_exists(root("$path"))):
-                $extension = pathinfo($path, PATHINFO_EXTENSION);
-                $mime = !empty(self::$mimes[$extension]) ? self::$mimes[$extension] : get_mime_type(root("$path"));
-            
-                self::status($status, $mime);
+            if(file_exists(root("$path"))) {
+                
+                $response->status($status, get_mime_type(root($path)));
             
                 if($download):
-                    header('Content-Disposition: attachment; filename="'.basename($path).'"');
-                    self::headers(array(
+                    $response->headers(array(
+                        'Content-Disposition' => 'attachment; filename="'.basename($path).'"',
                         'Pragma' => 'public',
                         'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0'
                     ));
                 else:
-                    header('Content-Disposition: inline; filename="'.basename($path).'"');
+                    $response->headers(array(
+                        'Content-Disposition' => 'inline; filename="'.basename($path).'"'
+                    ));
                 endif;
                 
-                self::$content = function() use ($path) {  
-                    readfile(root("$path"));
+                $response->content = function() use ($path) {  
+                    readfile(root($path));
                 };
-            
+                
+                return $response;
                     
-            else:
-                self::view('404', 404, true);
-            endif;            
+            }
+            else {
+                return self::view('404', 404);
+            }            
         }
         
         
@@ -343,35 +393,47 @@
          * @param integer   $status
         **/
         public static function binary($data, $status = 200) {
-            self::status($status, 'application/octet-stream');
-            self::$content = $data;
+            $response = new Response;
+            $response->status($status, 'application/octet-stream');
+            $response->content = $data;
+            return $response;
+        }
+        
+        /**
+         * Define an empty response
+         * @param integer   $status
+        **/
+        public static function null($status = 200) {
+            $response = new Response;
+            $response->status($status, 'text/plain');
+            $response->content = null;
+            return $response;
         }
         
         /**
          * Output response
          * (execute last defined response)
         **/
-        public static function output() {
-            
-            
+        public function render() {
             // Send headers
-            http_response_code(self::$code);
-            foreach(self::$headers as $name => $value) {
+            http_response_code($this->code);
+            foreach($this->headers as $name => $value) {
                 @header("$name: $value", true);
-            }    
+            }
+            
             
             // Output content
-            if(is_closure(self::$content)):
-                call_user_func(self::$content);
-            
-            else:
-                if(is_closure(self::$data))
-                    self::$data = call_user_func(self::$data);
-            
-                if(is_closure(self::$handler))
-                   self::$content = call_user_func(self::$handler, self::$content, self::$data, self::$code);
+            if(is_closure($this->content)):
+                call_user_func($this->content, array($this));
 
-                echo self::$content;
+            else:
+                if(is_closure($this->data)) // Generate data value
+                    $this->data = call_user_func($this->data);
+            
+                if(is_closure($this->handler)) // Apply a callback
+                   $this->content = call_user_func($this->handler, $this->content, $this->data, $this->code);
+                            
+                echo $this->content;
             
             endif;
                         

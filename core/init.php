@@ -9,9 +9,9 @@
     **/
     
 	const WOK_MAJOR_VERSION        = 1; // Major version
-	const WOK_MINOR_VERSION        = 2; // Minor version
-	const WOK_RELEASE_VERSION      = 9; // Release version
-	const WOK_EXTRA_RELEASE        = 'stable'; // Extra version
+	const WOK_MINOR_VERSION        = 3; // Minor version
+	const WOK_RELEASE_VERSION      = 0; // Release version
+	const WOK_EXTRA_RELEASE        = 'prototype'; // Extra version
     
     // Define full WOK version (without extra release)
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);
@@ -111,10 +111,6 @@
         if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once $options;
         
-        Console::handle(); // Listen to and manage errors
-        
-        
-
     endif;
 
     /**

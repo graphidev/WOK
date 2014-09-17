@@ -8,88 +8,92 @@
     **/
 
     class Console {
+        
         /**
-         * Logs array (saved on register)
+         * Logs as array (saved on register)
+         * and custome error handlers
         **/
         private static $logs        = array();
+        private static $handlers    = array();
+        private static $format      = '[:time] [:type] :message in :file on line :line';
         
         /**
-         * Console configuration
+         * Reporting level
         **/
-        const ERRORS_REPORTING      = E_ALL;
-        const LOGS_FORMAT           = '[:time] [:type] :message in :file on line :line';
-        
+        const REPORTING_LEVEL       = E_ALL;
         
         /**
          * Logs types
         **/
-        const LOG_DEFAULT       = 'DEFAULT';        // Default log (unknow type)
+        const LOG_DEFAULT       = 'DEFAULT';        // Default log (undefined type)
         const LOG_ERROR         = 'ERROR';          // Something have to be revised : 503 response
         const LOG_WARNING       = 'WARNING';        // Something should be revised
         const LOG_NOTICE        = 'NOTICE';         // See WARNING
         const LOG_DEPRECATED    = 'DEPRECATED';     // Something should not be used anymore
+        const LOG_EXCEPTION     = 'EXCEPTION';      // Exception that have not been catched
         
         
         /**
          * Redefine logs format
+         * @param   integer     $level      The errors level reporting
         **/
-        public static function handle() {
-            error_reporting(Console::ERRORS_REPORTING);
-            
-            set_error_handler('Console::handler');   
-            set_exception_handler('Console::exception');
-        }
-        
-        /**
-         * Handle errors
-         * @param integer   $type
-         * @param string    $message
-         * @param string    $file
-         * @param integer   $line
-         * @return boolean
-        **/
-        public static function handler($type, $message, $file, $line){
-            if(!(error_reporting() & $type)) return;
-            
-            switch ($type) {
-                case E_USER_ERROR:
-                    $type = self::LOG_ERROR;
-                    break;
-                            
-                case E_USER_WARNING:
-                    $type = self::LOG_WARNING;
-                    break;
-                    
-                case E_USER_NOTICE:
-                    $type = self::LOG_NOTICE;
-                    break;
+        public static function init($level = Console::REPORTING_LEVEL) {
+            // Define error reporting level
+            error_reporting($level);
+
+            // Handle errors
+            set_error_handler(function($type, $message, $file, $line) {
+                if(!(error_reporting() & $type)) return;
+
+                switch ($type) {
+                    case E_USER_ERROR:
+                        $type = self::LOG_ERROR;
+                        break;
+
+                    case E_USER_WARNING:
+                        $type = self::LOG_WARNING;
+                        break;
+
+                    case E_USER_NOTICE:
+                        $type = self::LOG_NOTICE;
+                        break;
+
+                    case E_USER_DEPRECATED:
+                        $type = self::LOG_DEPRECATED;
+                        break;
+
+                    default:
+                       $type = self::LOG_ERROR;
+                }
+                /*
+                if(isset(self::$handlers[$type])) 
+                    call_user_func(self::$handlers[$type], array($type, $message, $file, $line));
                 
-                case E_USER_DEPRECATED:
-                    $type = self::LOG_DEPRECATED;
-                    break;
-                    
-                default:
-                   $type = self::LOG_ERROR;
-            }
+                elseif(isset(self::$handlers['error']))
+                    call_user_func(self::$handlers['error'], array($type, $message, $file, $line));
+                */
+                
+                self::log($message, $type, $file, $line);
+
+                return !SYSTEM_DEBUG; // Show/hide error message
+            });
             
-            Console::log($message, $type, $file, $line);
-            
-            return !SYSTEM_DEBUG; // Show/hide error message
+            // Handle not catched exceptions
+            set_exception_handler(function($e) {  
+                if(SYSTEM_DEBUG)
+                    echo $e->getMessage().' (Exception not catched) in '.$e->getFile().' on line '.$e->getLine();
+
+                self::log($e->getMessage().' (Exception not catched)', self::LOG_ERROR, $e->getFile(), $e->getLine());
+                /*
+                if(isset(self::$handlers['exception'])) //  is_a ( object $object , string $class_name [, bool $allow_string = FALSE ] )
+                    call_user_func(self::$handlers['exception'], array($e));
+                */
+            });
         }
         
-        
-        /**
-         * Register non catched exceptions errors
-         * @param Exception $e
-        **/
-        public static function exception($e) {  
-            if(SYSTEM_DEBUG)
-                echo $e->getMessage().' (Exception not catched) in '.$e->getFile().' on line '.$e->getLine();
-            
-            self::log($e->getMessage().' (Exception not catched)', self::LOG_ERROR, $e->getFile(), $e->getLine());
-            
+        public static function handler($level, Closure $callback) {
+            self::$handler['level'] = $callback;   
         }
-        
         
         /**
          * Add a log
@@ -114,7 +118,7 @@
             
             
             if($type == self::LOG_ERROR && !SYSTEM_DEBUG):
-                Response::view('503', 503);
+                Response::view('503', 503)->render();
                 exit;
             endif;
         }
@@ -130,7 +134,7 @@
             $errors = array(); 
             foreach(self::$logs as $i => $log) {
                                 
-                $row = Console::LOGS_FORMAT . PHP_EOL;
+                $row = self::$format . PHP_EOL;
                 foreach($log as $param => $value) {                            
                     $row = str_replace(":$param", $value, $row);
                 }

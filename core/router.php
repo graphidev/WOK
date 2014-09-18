@@ -15,8 +15,8 @@
         /**
          * Browse routes until it find a matching one. 
          * Return false for not found route
-        **/
-        public static function match(Closure $dispatcher) {
+        **/        
+        public static function dispatch() {
             foreach(parent::$routes as $route) {
                 
                 // Prepare route regexp of the URI
@@ -32,7 +32,6 @@
                 if((empty($request['domain']) || (!empty($request['domain']) && $request['domain'] == Request::domain()))       // Check domain
                    && (empty($route['method']) || in_array(Request::method(), $route['method']))                                // Check method
                    && ($route['uri'] == Request::uri() || preg_match('#^'.$regexp.'$#isU', Request::uri(), $parameters))        // Check URI
-                 // && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))                 // Check language
                   ) {                
                     
                     // Current parameters
@@ -45,9 +44,7 @@
                         
                         if(!isset(parent::$filters[$route['filter']]))
                                 trigger_error("Undefined filter {$route['filter']} for this route : $class:$action", E_USER_ERROR);
-                        
-                        //print_r(array_merge(array($route), array($parameters))); exit;
-                        
+                                                
                         $filtering = call_user_func_array(parent::$filters[$route['filter']], array($route, $parameters));
                                                 
                     }
@@ -71,9 +68,20 @@
                             
                             $controller = array(new $module, $action);
                         }
-                                                
-                        // Execute dispatcher
-                        return call_user_func_array($dispatcher, array($controller, $parameters));
+                        
+                        /* Dispatch response */
+                        if($controller instanceof Response)
+                            $controller->render();
+
+                        elseif(is_null($response = call_user_func_array($controller, $parameters)))
+                            Response::null(-200)->render();
+
+                        elseif($response instanceof Response)
+                            $response->render();
+
+                        else trigger_error('Controller returned value must be a Response object', E_USER_ERROR);
+                        
+                        return true; // Shutdown loop and function
                     }
                     
                 }
@@ -81,7 +89,7 @@
             }
             
             // Bad request, no route : send a 404 response
-            throw new Exception('Route not found', 404);
+            return false;
             
         }
 

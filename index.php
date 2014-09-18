@@ -1,4 +1,5 @@
 <?php
+
 	/**
      * Initialize WOK
     **/
@@ -15,7 +16,7 @@
      * Output a 503 response
     **/
     if(SYSTEM_MAINTENANCE) {
-        $response = Response::view('maintenance', 503)
+        Response::view('maintenance', 503)
             ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance')
             ->render();
     }
@@ -37,24 +38,13 @@
             
             /**
              * Output response according to controller's return
-             * This may be a null value (not recommended), 
-             * or a custom response (HTML, JSON, XML, ...).
-             * Please check Response class documentation.
+             * Return false if no route have been find
             **/
-            Router::match(function($controller, $parameters) {
-                
-                if($controller instanceof Response)
-                    $controller->render();
-                
-                elseif(is_null($response = call_user_func_array($controller, $parameters)))
-                    Response::null(200)->render();
-                
-                elseif($response instanceof Response)
-                    $response->render();   
-
-                else trigger_error('Controller returned value must be a Response object', E_USER_ERROR);
-                                
-            });    
+            if(!Router::dispatch()) {
+                Response::view('404', 404)
+                    ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404')
+                    ->render();   
+            }
 
             
         } catch(Exception $e) {

@@ -29,7 +29,7 @@
                     ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, $path);
             }
             else {
-                return Response::view('404', 404);   
+                return Response::view('404', 404)->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');   
             }
         }
         

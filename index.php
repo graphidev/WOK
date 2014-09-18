@@ -49,7 +49,7 @@
             
         } catch(Exception $e) {
             
-            Response::view($e->getCode(), $e->getCode())->assign(array(
+            Response::view('error', $e->getCode())->assign(array(
                 'message' => $e->getMessage(),
                 'code' => $e->getCode()
             ))->render();

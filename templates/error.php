@@ -12,8 +12,8 @@
 	<body>
         
         <div id="main">
-            <h1 id="js">418</h1>
-            <p><?php echo _e('statics:teapot.legend');?></p>
+            <h1 id="js"><?php echo $code; ?></h1>
+            <p><?php echo $message;?></p>
         </div>
         
 	</body>

@@ -6,3 +6,4 @@ var/logs/*
 var/cache/*
 var/manifest.xml
 vendor/*
+composer.lock

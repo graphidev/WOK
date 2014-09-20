@@ -84,8 +84,8 @@
      * @param array     $data
      * @return string
     **/
-    function _e($path, $data = array()) {
-        return Locales::_e($path, $data);
+    function _e($path, $data = array(), $language = null) {
+        return Locales::_e($path, $data, (!empty($language) ? $language : Request::language()));
     }
 
 

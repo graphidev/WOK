@@ -11,15 +11,12 @@
      * in order to keep a one place routes définition.
     **/ 
     
-    // Load the XML manifest file
-    Manifest::load();
-
     /**
      * Definition of the locale filter
      * This filter check the availability of a locale
      * It also redirect to the write URL from the user language
     **/
-    Manifest::filter('locale', function($route, $parameters) {
+    Router::filter('locale', function($route, $parameters) {
         if(!in_array($parameters['locale'], explode(',', SYSTEM_LANGUAGES)) 
            || $parameters['locale'] != Session::get('language')) {
             
@@ -30,6 +27,6 @@
     });
 
     /* Example of patterns
-        Manifest::pattern('id', '[\d]+');
-        Manifest::pattern('locale', '[a-z]{2,3}_[A-Z]{2,3}');
+        Router::pattern('id', '[\d]+');
+        Router::pattern('locale', '[a-z]{2,3}_[A-Z]{2,3}');
     */

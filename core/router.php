@@ -12,6 +12,14 @@
 
     class Router extends Manifest {
         
+        protected function __construct() {
+            parent::__construct();   
+        }
+        
+        public static function instantiate() {
+            new self;  
+        }
+        
         /**
          * Browse routes until it find a matching one. 
          * Return false for not found route

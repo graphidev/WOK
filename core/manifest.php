@@ -19,7 +19,60 @@
         /**
          * Prevent the usage of the __construct() method
         **/
-        private function __construct() {}
+        protected function __construct() {
+        
+            $manifest = SYSTEM_ROOT.PATH_VAR.'/manifest.xml';
+            $tmp = SYSTEM_ROOT.PATH_TMP.'/manifest.json';
+            
+            if(!SYSTEM_DEBUG && file_exists($tmp) 
+               && filemtime($manifest) < filemtime($tmp)) {
+                
+                $manifest = json_decode(file_get_contents($tmp), true);
+                self::$routes = isset($manifest['routes']) ? $manifest['routes'] : array();
+                self::$patterns = isset($manifest['patterns']) ? $manifest['patterns'] : array();
+                
+            }
+            else {
+                
+                $dom = new DOMDocument();
+                $dom->load($manifest);
+                $manifest = $dom->getElementsByTagName('manifest')->item(0);
+                // Parse global patterns
+                foreach($manifest->getElementsByTagName('pattern') as $pattern) {
+                    self::$patterns[$pattern->getAttribute('name')] = $pattern->getattribute('regexp');   
+                }    
+                
+                // Parse standalone requests
+                foreach($manifest->getElementsByTagName('route') as $route) {
+                    
+                    $parameters = array();
+                    foreach($route->getElementsByTagName('param') as $param) {
+                        $parameters[$param->getAttribute('name')] = $param->getAttribute('regexp');    
+                    }
+                    
+                    self::$routes[] = array(
+                        'uri' => ($route->hasAttribute('uri') ? $route->getAttribute('uri') : ''),
+                        'method' => ($route->hasAttribute('method') ? explode('|', $route->getAttribute('method')) : array()),
+                        'languages' => ($route->hasAttribute('languages') ? explode('|', $route->getAttribute('languages')) : array()),
+                        'action' => $route->getAttribute('action'),
+                        'parameters' => $parameters,
+                        'domain' => ($route->hasAttribute('domain') ? str_replace('~', SYSTEM_DOMAIN, $route->getAttribute('domain')) : null),
+                        'filter' => ($route->hasAttribute('filter') ? $route->getAttribute('filter') : null),
+                    );
+                
+                }
+
+                if(!SYSTEM_DEBUG) { // Register cached manifest
+                    $json = fopen($tmp, 'w+');
+                    fwrite($json, json_encode(array(
+                        'routes' => self::$routes,
+                        'patterns' => self::$patterns
+                    )));
+                    fclose($json);
+                }
+            }
+            
+        }
                                    
         
         /**
@@ -85,65 +138,6 @@
         **/
         public static function filter($name, Closure $callback) {
             self::$filters[$name] = $callback;   
-        }
-        
-        
-        /**
-         * Define routes with the XML manifest
-        **/
-        public static function load() { 
-            
-            $manifest = SYSTEM_ROOT.PATH_VAR.'/manifest.xml';
-            $tmp = SYSTEM_ROOT.PATH_TMP.'/manifest.json';
-            
-            if(!SYSTEM_DEBUG && file_exists($tmp) 
-               && filemtime($manifest) < filemtime($tmp)) {
-                
-                $manifest = json_decode(file_get_contents($tmp), true);
-                self::$routes = isset($manifest['routes']) ? $manifest['routes'] : array();
-                self::$patterns = isset($manifest['patterns']) ? $manifest['patterns'] : array();
-                
-            }
-            else {
-                
-                $dom = new DOMDocument();
-                $dom->load($manifest);
-                $manifest = $dom->getElementsByTagName('manifest')->item(0);
-                // Parse global patterns
-                foreach($manifest->getElementsByTagName('pattern') as $pattern) {
-                    self::$patterns[$pattern->getAttribute('name')] = $pattern->getattribute('regexp');   
-                }    
-                
-                // Parse standalone requests
-                foreach($manifest->getElementsByTagName('route') as $route) {
-                    
-                    $parameters = array();
-                    foreach($route->getElementsByTagName('param') as $param) {
-                        $parameters[$param->getAttribute('name')] = $param->getAttribute('regexp');    
-                    }
-                    
-                    self::$routes[] = array(
-                        'uri' => ($route->hasAttribute('uri') ? $route->getAttribute('uri') : ''),
-                        'method' => ($route->hasAttribute('method') ? explode('|', $route->getAttribute('method')) : array()),
-                        'languages' => ($route->hasAttribute('languages') ? explode('|', $route->getAttribute('languages')) : array()),
-                        'action' => $route->getAttribute('action'),
-                        'parameters' => $parameters,
-                        'domain' => ($route->hasAttribute('domain') ? str_replace('~', SYSTEM_DOMAIN, $route->getAttribute('domain')) : null),
-                        'filter' => ($route->hasAttribute('filter') ? $route->getAttribute('filter') : null),
-                    );
-                
-                }
-
-                if(!SYSTEM_DEBUG) { // Register cached manifest
-                    $json = fopen($tmp, 'w+');
-                    fwrite($json, json_encode(array(
-                        'routes' => self::$routes,
-                        'patterns' => self::$patterns
-                    )));
-                    fclose($json);
-                }
-            }
-            
         }
         
     }

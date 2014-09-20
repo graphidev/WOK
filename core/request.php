@@ -1,49 +1,66 @@
 <?php
 
     /**
-     * Define Manifest action to use and 
-     * contains request informations 
-     * (parameters, headers, URI, domain, ...)
+     * Parse request and define informations about it.
+     * Allows to get request informations anywhere.
      *
      * @package Core
     **/
     class Request {
         
-        protected static $uri       = '';
-        protected static $method    = '';
-        protected static $format    = '';
-        protected static $action    = '';
+        protected static $query     = '/';
+        protected static $uri       = '/';
+        protected static $method    = 'GET';
+        protected static $format    = null;
+        protected static $language  = SYSTEM_DEFAULT_LANGUAGE;
+        protected static $inputs    = array();
+        
+        /**
+         * Prevent the usage of the __construct() method
+        **/
+        private function __construct(){}
         
         /**
          * Build request and define current controller:action to use
         **/
-        public static function init() {
-            $query          = substr($_SERVER['REQUEST_URI'], strlen(SYSTEM_DIRECTORY));
-            $static         = preg_replace('#([a-z0-9\.-/]+)?(\?(.+))?$#iSU', "$1", $query);
-            $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));
-                        
-            /**
-             * Define global request informations
-            **/
-            self::$uri           = $static;
-            self::$format        = pathinfo($static, PATHINFO_EXTENSION);
-            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
-                    
-            /**
-             * Define request parameters
-            **/
-            if(!empty($_GET)): // GET parameters
-                self::$parameters['GET'] = strip_magic_quotes($_GET);
+        public static function parse() {
             
-            elseif(!empty($additional)):
-                foreach(explode('&', $additional) as $i => $parameter) {
+            /** Request parameters définition **/
+            self::$query        = substr($_SERVER['REQUEST_URI'], strlen(SYSTEM_DIRECTORY));
+            self::$uri          = (strpos(self::$query, '?') ? strstr(self::$query, '?', true) : self::$query);
+            self::$format        = pathinfo(self::$uri, PATHINFO_EXTENSION);
+            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
+            
+            
+            /** Language definition **/
+            $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
+            if(Cookie::exists('language', true) && in_array($language = Cookie::get('language'), $languages)) {
+                self::$language = $language;
+            }
+            elseif(Session::exists('language', true) && in_array($language = Session::get('language'), $languages)) {
+                self::$language = Session::get('language');   
+            }
+            elseif(!empty($languages)) {
+                self::$language = array_shift($languages);
+            }
+            else {
+                self::$language = SYSTEM_DEFAULT_LANGUAGE;   
+            }
+
+            Session::set('language', self::$language);
+            Cookie::set('language', self::$language, 15811200);
+            
+            
+            /** Force $_GET parameters definition **/
+            if(empty($_GET) && ($parameters = substr(self::$query, strlen(self::$uri)+1))):
+                foreach(explode('&', $parameters) as $i => $parameter) {
                     @list($name, $value) = explode('=', $parameter);
-                    self::$parameters['GET'][$name] = urldecode($value);
+                    $_GET[$name] = (isset($value) ? $value : true);
                 }
             
             endif;
                                     
-        }     
+        }
         
         
         /**
@@ -55,7 +72,7 @@
             if(!isset($_GET[$name]))
                 return null;
             
-            return $_GET[$name];
+            return urldecode($_GET[$name]);
         }
         
         /**
@@ -83,18 +100,6 @@
                 return null;
             
             return $_FILES[$name]; 
-        }
-        
-        /**
-         * Get GET parameter
-         * @param string    $name
-         * @return string
-        **/
-        public static function get($information) {
-            if(!isset(self::$$information))
-                trigger_error("Undefined parameter Request::\$$information", E_USER_ERROR);
-            
-            return self::$$information;
         }
         
         /**
@@ -140,12 +145,8 @@
          * @param string $verify
          * @return mixed (boolean, string)
         **/
-        public static function method($verify = null) {
-            if(!empty($verify)):
-                return (self::$method == mb_strtoupper($verify));
-            else:
-                return self::$method;
-            endif;
+        public static function method() {
+            return self::$method;
         }
         
         /**
@@ -153,12 +154,8 @@
          * @param string $verify
          * @return mixed
         **/
-        public static function format($verify = null) {
-            if(!empty($verify)):
-                return (self::$format == $verify);
-            else:
-                return self::$format;
-            endif;
+        public static function format() {
+            return self::$format;
         }
         
         /**
@@ -167,6 +164,22 @@
         **/
         public static function uri() {
             return self::$uri;     
+        }
+        
+        /**
+         * Get request query (with GET parameters)
+         * @return string
+        **/
+        public static function query() {
+            return self::$query;     
+        }
+        
+        /**
+         * Get request language 
+         * @return string
+        **/
+        public static function language() {
+            return self::$language;     
         }
         
         /**

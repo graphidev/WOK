@@ -70,7 +70,7 @@
          * Define default system language
          * Also initialize default locale
         */
-        define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ',') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ',', true)));
+        define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ' ') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ' ', true)));
         setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF-8');
     
         /**

@@ -64,8 +64,11 @@
      * @return array
     **/
     function get_accepted_languages(array $reference = array()) {
-        $accepted  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
-                
+        if(!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))         
+            $accepted = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
+        else
+            $accepted = explode(' ', SYSTEM_LANGUAGES);
+        
         if(!empty($reference))
             $languages = array_intersect($accepted, $reference);
         

@@ -4,12 +4,14 @@
      * Initialize WOK
     **/
 	require_once 'core/init.php';
-
+    
     /**
-     * Initialement request environment
+     * Initialise the framework environment
+     * This is required in order to process
+     * routing and dispatching request
     **/
-    Request::init();
-
+    Request::parse();
+    Router::instantiate();
     
     /**
      * Ongoing maintenance 

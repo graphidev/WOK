@@ -68,10 +68,9 @@
         **/
         public static function destroy($file) {
             if(self::exists($file))
-                unlink(self::path($file))
+                unlink(self::path($file));
         }
-        public static function clean($file) {}
-        
+                
         
     }
 

@@ -62,6 +62,18 @@
         session_start();
 
         /**
+         * Define system timezone
+        **/
+        @date_default_timezone_set(SYSTEM_TIMEZONE);
+
+        /*
+         * Define default system language
+         * Also initialize default locale
+        */
+        define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ',') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ',', true)));
+        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF-8');
+    
+        /**
          * Autoload libraries
          * Core, Controllers, Models and external libraries
         **/

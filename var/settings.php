@@ -21,8 +21,6 @@
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
     const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
 
-    // System default language
-    define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ',') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ',', true)));
     
     /**
      * Project environnement state

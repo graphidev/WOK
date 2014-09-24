@@ -297,6 +297,36 @@
         return is_dir($path) || @mkdir($path, $mode, true); 
     }
 
+
+    /**
+     * Remove all directory's content and itself.
+     * The process is stopped at the first error.
+     *
+     * param    string      $path       The directory's path
+    **/
+    function removedir($dir) {
+        
+        $data = scandir($path = root($dir)); //root('/var/tmp/test')
+        
+        foreach($data as $file) {
+            if(!in_array($file, array('.', '..'))) {
+                
+                if(is_file($path.'/'.$file) || is_link($path.'/'.$file)) {
+                    if(!@unlink($path.'/'.$file)) return false;
+                }
+
+                elseif(is_dir($path.'/'.$file)) {
+                    if(!removedir($dir.'/'.$file)) return false;
+                    
+                }
+                
+            }   
+        }
+        
+        return @rmdir($path);
+        
+    }
+
     
     /**
      * Analyse a folder and return files and subfolders names

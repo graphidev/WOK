@@ -70,7 +70,7 @@
         
         
         /**
-         * Define response content handler
+         * Apply a treatment on the response data
          * @param closure   $function
         **/
         public function handler(Closure $function) {        
@@ -407,6 +407,18 @@
             $response = new Response;
             $response->status($status, 'text/plain');
             $response->content = null;
+            return $response;
+        }
+        
+        /**
+         * Define a custom response treatment
+         * @param integer   $status
+        **/
+        public static function content(Closure $content, $status = 200) {
+            $response = new Response;
+            $response->content = function() use($content, $response) { 
+                call_user_func($content, $response); 
+            };
             return $response;
         }
         

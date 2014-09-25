@@ -37,7 +37,7 @@
                 
                                                 
                 // Check the route
-                if((empty($request['domain']) || (!empty($request['domain']) && $request['domain'] == Request::domain()))       // Check domain
+                if((empty($route['domain']) || (!empty($route['domain']) && $route['domain'] == Request::domain()))       // Check domain
                    && (empty($route['method']) || in_array(Request::method(), $route['method']))                                // Check method
                    && ($route['uri'] == Request::uri() || preg_match('#^'.$regexp.'$#isU', Request::uri(), $parameters))        // Check URI
                   ) {                

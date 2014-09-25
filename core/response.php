@@ -162,7 +162,7 @@
                 if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime) 
                    && Cache::time($response->cachefile) > filemtime(root(PATH_TEMPLATES."/$template.php"))):
                 
-                    Cache::get($response->cachefile);
+                    echo Cache::get($response->cachefile);
 
                 else: // Generate view
                     
@@ -202,7 +202,7 @@
                 
                 if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                     Cache::get($response->cachefile);
+                    echo Cache::get($response->cachefile);
                     
                 }
                 else {
@@ -239,7 +239,7 @@
                 
                 if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                     Cache::get($response->cachefile);
+                    echo Cache::get($response->cachefile);
                     
                 }
                 else {
@@ -280,7 +280,7 @@
                 
                 if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                     Cache::get($response->cachefile);
+                     echo Cache::get($response->cachefile);
                     
                 }
                 else {
@@ -321,7 +321,7 @@
                                 
                 if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
                     
-                    Cache::get($response->cachefile);
+                    echo Cache::get($response->cachefile);
                     
                 }
                 else {

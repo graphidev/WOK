@@ -59,7 +59,15 @@
             if(!self::exists($file))
                 trigger_error("Cache file $file doesn't exists", E_USER_ERROR);
             
+            ob_start();
+            
             readfile(self::path($file));
+            
+            $buffer = ob_get_contents();
+            ob_end_clean();
+            
+            return $buffer;
+            
         }
         
         /**

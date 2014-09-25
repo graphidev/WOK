@@ -1,16 +1,11 @@
 <?php
     
     /**
-     * This is the file to define routes, filters an patterns.
-     * You can choose one of the two methods for routes définition :
-     * with the XML manifest file thanks to Manifest::load() method
-     * or with custom routes définition (Manifest::register(...)).
-     *
-     * Note : 
-     * You can also use these both methods but this is not adviced
-     * in order to keep a one place routes définition.
+     * This file should be the only one where 
+     * filters could be defined. However, the filters 
+     * can be defined in the manifest file too (not the XML one)
     **/ 
-    
+
     /**
      * Definition of the locale filter
      * This filter check the availability of a locale
@@ -42,7 +37,4 @@
         if(!Request::ajax()) return false;
     });
 
-    /* Example of patterns
-        Router::pattern('id', '[\d]+');
-        Router::pattern('locale', '[a-z]{2,3}_[A-Z]{2,3}');
-    */
+?>

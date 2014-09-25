@@ -30,11 +30,15 @@
         
         /**
          * Set Custom routes and filters
-         * This should be use for development routes. Prefere using 
-         * XML manifest in order to keep the framework structure
+         * Note that XML manifest and in-app PHP manifest
+         * can both be used on the same instance.
+         * However the XML one will be parsed first
         **/
         if(file_exists(root(PATH_VAR.'/manifest.php')))
             require_once(root(PATH_VAR.'/manifest.php'));
+        
+        if(file_exists(root(PATH_VAR.'/filters.php')))
+            require_once(root(PATH_VAR.'/filters.php'));
         
         try {
             

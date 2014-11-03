@@ -152,7 +152,7 @@
         **/
         public static function view($template, $status = 200) {
             $response = new Response;
-            $response->status($status, 'text/html; charset=utf8');
+            $response->status($status, 'text/html; charset=utf-8');
             $response->content = function() use($response, $template) {
                 
                 // Update cache file path
@@ -194,7 +194,7 @@
         **/
         public static function html($content = null, $status = 200) {
             $response = new Response;
-            $response->status($status, 'text/html; charset=utf8');
+            $response->status($status, 'text/html; charset=utf-8');
             $response->content = function() use($response, $content) {
                 
                 // Update cache file path

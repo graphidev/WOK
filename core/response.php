@@ -151,8 +151,7 @@
          * @param integer   $status
         **/
         public static function view($template, $status = 200) {
-            self::status($status, 'text/html; charset=utf8');
-            
+            self::status($status, 'text/html; charset=utf-8');            
             self::$content = function() use($template) {
                 
                 // Update cache file path
@@ -183,7 +182,7 @@
                 endif; 
             
             };  
-        
+
         }
         
         /**

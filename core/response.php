@@ -176,7 +176,7 @@
                         $buffer = call_user_func($response->handler, $buffer, $response->data, $response->code);
 
                     if(!empty($response->cachetime))
-                        Cache::register($response->cachefile, $buffer);
+                        Cache::put($response->cachefile, $buffer);
 
                     echo $buffer;
 
@@ -215,7 +215,7 @@
                         $response->data = $content;
                                             
                     if(!empty($response->cachetime))
-                        Cache::register($response->cachefile, $response->data);
+                        Cache::put($response->cachefile, $response->data);
                     
                     echo $response->data;
                 
@@ -254,7 +254,7 @@
                     $json = json_encode($response->data);
                     
                     if(!empty($response->cachetime))
-                        Cache::register($response->cachefile, $json);
+                        Cache::put($response->cachefile, $json);
                     
                     echo $json;
                 
@@ -295,7 +295,7 @@
                     $xml = xml_encode($response->data, 'document');
                     
                     if(!empty($response->cachetime))
-                        Cache::register($response->cachefile, $xml);
+                        Cache::put($response->cachefile, $xml);
                     
                     echo $xml;
                 
@@ -333,7 +333,7 @@
                         $response->data = call_user_func($response->data);
 
                     if(!empty($response->cachetime))
-                        Cache::register($response->cachefile, $response->data);
+                        Cache::put($response->cachefile, $response->data);
                     
                     echo $response->data;
                 
@@ -448,7 +448,6 @@
                 echo $this->content;
             
             endif;
-                        
         }
         
     }

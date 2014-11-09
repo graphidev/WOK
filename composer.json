@@ -1,4 +1,7 @@
 {
+	"config": {
+        "vendor-dir": "libraries"
+    },
     "require": {
         "erusev/parsedown": "dev-master"
     }

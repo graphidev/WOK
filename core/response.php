@@ -14,6 +14,7 @@
         private $code        = 200;
         private $data        = array();
         private $handler     = null;
+		private	$fallback 	 = null;
         private $cachetime   = null;
         private $cachefile   = null;
         
@@ -421,6 +422,15 @@
             };
             return $response;
         }
+		
+		/**
+		 * Define an error callback for the current response rendering
+		 * @param Closure	$callback 	The function that will be executed on error
+		**/ 
+		public function exception(Closure $callback) {
+			$this->fallback = $callback;
+			return $this;
+		}
         
         /**
          * Output response
@@ -433,21 +443,34 @@
                 @header("$name: $value", true);
             }
             
-            
-            // Output content
-            if(is_closure($this->content)):
-                call_user_func($this->content, array($this));
+            try {
+				
+				// Output content
+				if(is_closure($this->content)):
+					call_user_func($this->content, array($this));
 
-            else:
-                if(is_closure($this->data)) // Generate data value
-                    $this->data = call_user_func($this->data);
-            
-                if(is_closure($this->handler)) // Apply a callback
-                   $this->content = call_user_func($this->handler, $this->content, $this->data, $this->code);
-                            
-                echo $this->content;
-            
-            endif;
+				else:
+					if(is_closure($this->data)) // Generate data value
+						$this->data = call_user_func($this->data);
+
+					if(is_closure($this->handler)) // Apply a callback
+					   $this->content = call_user_func($this->handler, $this->content, $this->data, $this->code);
+
+					echo $this->content;
+
+				endif;
+				
+			}
+			
+			catch(Exception $e) { // Generate custom error response
+				
+				if(is_closure($this->fallback))
+					call_user_func($this->fallback, $e)->render();
+				
+				else
+					throw $e;
+				
+			}
         }
         
     }

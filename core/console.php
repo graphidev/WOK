@@ -92,7 +92,7 @@
         }
         
         public static function handler($level, Closure $callback) {
-            self::$handler['level'] = $callback;   
+            self::$handler[$level] = $callback;   
         }
         
         /**

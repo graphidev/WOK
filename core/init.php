@@ -10,7 +10,7 @@
     
 	const WOK_MAJOR_VERSION        = 1; // Major version
 	const WOK_MINOR_VERSION        = 3; // Minor version
-	const WOK_RELEASE_VERSION      = 1; // Release version
+	const WOK_RELEASE_VERSION      = 2; // Release version
 	const WOK_EXTRA_RELEASE        = 'beta'; // Extra version
     
     // Define full WOK version (without extra release)

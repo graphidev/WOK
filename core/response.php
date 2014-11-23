@@ -443,8 +443,8 @@
                 @header("$name: $value", true);
             }
             
-            try {
-				
+			try {
+
 				// Output content
 				if(is_closure($this->content)):
 					call_user_func($this->content, array($this));
@@ -459,18 +459,22 @@
 					echo $this->content;
 
 				endif;
-				
+
 			}
-			
+
 			catch(Exception $e) { // Generate custom error response
-				
+
+				ob_clean();
+
 				if(is_closure($this->fallback))
 					call_user_func($this->fallback, $e)->render();
-				
+
 				else
 					throw $e;
-				
+
 			}
+			
+			
         }
         
     }

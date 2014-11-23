@@ -7,6 +7,8 @@
      * @package Core
     **/
 
+	class ConsoleException extends Exception {}
+
     class Console {
         
         /**
@@ -118,8 +120,7 @@
             
             
             if($type == self::LOG_ERROR && !SYSTEM_DEBUG):
-                Response::view('503', 503)->render();
-                exit;
+				throw new ConsoleException('');
             endif;
         }
         
@@ -167,8 +168,7 @@
                 }
             
             endif;
-        }
-        
+        }        
         
     }
     

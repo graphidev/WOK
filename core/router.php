@@ -76,21 +76,21 @@
                             
                             $controller = array(new $module, $action);
                         }
-                        
-                        /* Dispatch response */
-                        if($controller instanceof Response)
-                            $controller->render();
+						
+						/* Render response */
+						if($controller instanceof Response)
+							$controller->render();
 
-                        elseif(is_null($response = call_user_func_array($controller, $parameters)))
-                            Response::null(-200)->render();
+						elseif(is_null($response = call_user_func_array($controller, $parameters)))
+							Response::null(-200)->render();
 
-                        elseif($response instanceof Response)
-                            $response->render();
+						elseif($response instanceof Response)
+							$response->render();
 
-                        else trigger_error('Controller returned value must be a Response object', E_USER_ERROR);
-                        
-                        return true; // Shutdown loop and function
-                    }
+						else trigger_error('Controller returned value must be a Response object', E_USER_ERROR);
+
+						return true; // Shutdown loop and function
+					}
                     
                 }
                 

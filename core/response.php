@@ -450,6 +450,7 @@
 					call_user_func($this->content, array($this));
 
 				else:
+				
 					if(is_closure($this->data)) // Generate data value
 						$this->data = call_user_func($this->data);
 
@@ -463,8 +464,6 @@
 			}
 
 			catch(Exception $e) { // Generate custom error response
-
-				ob_clean();
 
 				if(is_closure($this->fallback))
 					call_user_func($this->fallback, $e)->render();

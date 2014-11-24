@@ -66,7 +66,7 @@
 
 		ob_clean();
 
-		if(get_class($e) == 'ConsoleException') {
+		if(get_class($e) == 'LogicException') {
 			Response::view('503', 503)->render();
 		}
 		else {

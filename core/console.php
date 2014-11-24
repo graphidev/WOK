@@ -7,8 +7,6 @@
      * @package Core
     **/
 
-	class ConsoleException extends Exception {}
-
     class Console {
         
         /**
@@ -67,13 +65,6 @@
                     default:
                        $type = self::LOG_ERROR;
                 }
-                /*
-                if(isset(self::$handlers[$type])) 
-                    call_user_func(self::$handlers[$type], array($type, $message, $file, $line));
-                
-                elseif(isset(self::$handlers['error']))
-                    call_user_func(self::$handlers['error'], array($type, $message, $file, $line));
-                */
                 
                 self::log($message, $type, $file, $line);
 
@@ -86,10 +77,6 @@
                     echo $e->getMessage().' (Exception not catched) in '.$e->getFile().' on line '.$e->getLine();
 
                 self::log($e->getMessage().' (Exception not catched)', self::LOG_ERROR, $e->getFile(), $e->getLine());
-                /*
-                if(isset(self::$handlers['exception'])) //  is_a ( object $object , string $class_name [, bool $allow_string = FALSE ] )
-                    call_user_func(self::$handlers['exception'], array($e));
-                */
             });
         }
         
@@ -120,7 +107,7 @@
             
             
             if($type == self::LOG_ERROR && !SYSTEM_DEBUG):
-				throw new ConsoleException('');
+				throw new LogicException($message);
             endif;
         }
         

@@ -82,7 +82,7 @@
 							$controller->render();
 
 						elseif(is_null($response = call_user_func_array($controller, $parameters)))
-							Response::null(-200)->render();
+							Response::null(200)->render();
 
 						elseif($response instanceof Response)
 							$response->render();

@@ -47,12 +47,9 @@
      * Load library if available
     **/
     function load_library($name) {
-        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php")):        
-            $e = new ExtendedInvalidArgumentException("Library $name not found");
-            $e->setCallFromTrace();
-            throw $e;
-        endif;
-            
+        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php"))
+			trigger_error('Library '.$name.' can\'t be loaded with load_library($name). File '.$name.'.library.php not found.', E_USER_ERROR);
+                    
         require_once $library;
     }
 

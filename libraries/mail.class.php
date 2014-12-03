@@ -3,7 +3,7 @@
 	/**
      * Mail (class)
      *
-     * @version 2.6
+     * @version 2.7
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
@@ -38,14 +38,8 @@
          * @param string    $email
         **/
         private function _checkEmail($email, $field) {
-            if(!filter_var($email, FILTER_VALIDATE_EMAIL)):            
-                $e = new ExtendedInvalidArgumentException("Invalid e-mail", array(
-                    'argument'  => $field,
-                    'value'     => $email
-                ));
-                $e->setCallFromTrace(2);
-                throw $e;
-            endif;
+            if(!filter_var($email, FILTER_VALIDATE_EMAIL))            
+                throw new InvalidArgumentException("user:define.mail[$email]", 311);
         }
         
         
@@ -159,14 +153,8 @@
 	 	 * @param string     $name
 	 	**/	 	
 	 	public function attachment($name, $file) {
-            if(!is_readable($file)):
-                $e = new ExtendedInvalidArgumentException('Unreadable file', array(
-                    'argument'  => 'file', 
-                    'value'     => $file
-                ));
-                $e->setCallFromTrace();
-                throw $e;
-            endif;
+            if(!is_readable($file))
+				throw new InvalidArgumentException("system:read.file[$file]", 122);
             
 	 		$this->attachments[] = array(
 	 			'name' => $name,
@@ -182,12 +170,9 @@
 	 	 * @require  $To, $From, $reply
 	 	**/
 	 	public function send() {            
-            if(empty($this->To)):
-                $e = new ExtendedLogicException("Addressee undefined : define it before sending message");
-                $e->setCallFromTrace();
-                throw $e;
-            endif;
-            
+            if(empty($this->To))
+                throw new LogicException("developer:define.addressee", 210);
+
             if(empty($this->From))
                 $this->from($_SERVER['SERVER_ADMIN']);
                         	 	 	 		
@@ -238,11 +223,9 @@
 	 		$message .= "--$boundary" . self::BREAKLINE; // End message
 	 		
 	  		// Try to send mail and return result
-	 		if(!@mail(implode(', ', $this->To), $this->object, $message, $headers)):
-                $e = new ExtendedException('Unable to send e-mail');
-                $e->setCallFromTrace();
-                throw $e;
-            endif;
+	 		if(!@mail(implode(', ', $this->To), $this->object, $message, $headers))
+                throw new RuntimeException('system:send.mail', 133);
+			
 	 	}
 
 	 			

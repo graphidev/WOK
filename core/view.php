@@ -7,7 +7,7 @@
      * 
      * This class may also contains some shortcuts such as "zone"
      *
-     * @package Templates
+     * @package Core
     **/
     
     class View {

@@ -41,7 +41,7 @@
          * Custom headers must begin with X-
          * @param array     $headers
         **/
-        public function headers($headers) {
+        public function headers(array $headers) {
             $this->headers = array_merge($this->headers, $headers);
             return $this;
         }

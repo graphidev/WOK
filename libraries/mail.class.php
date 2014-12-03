@@ -3,94 +3,86 @@
 	/**
      * Mail (class)
      *
-     * @version 2.7
+     * @version 3.0.0
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
-     * @require native mail() function
+     * @require mail() function using POSTFIX
      * @require get_mime_type() function
-     * @require ExtendedExceptions
      *
      * @package Libraries
     **/
 
 	class Mail {
         
+		const VERSION			 = '3.0.0';
+		
         const BREAKLINE          = "\n"; // New line break
         const MAX_LINES_LENGTH   = 76; // Max content lines length
         const FORMAT_TEXT        = 'text/plain';
         const FORMAT_HTML        = 'text/html';
         
-        private $format          = 'text/plain'; // Default format
+        private $format          = null; // Default format
 	 	private $To              = array(); // Send to
 	 	private $Cc              = array(); // Carbon copy
 	 	private $Bcc             = array(); // Blind carbon copy
 	 	private $From            = null; // Sender informations
+	 	private $FromMail        = null; // Sender informations
         private $reply           = null; // Reply address
-	 	private $object          = null; // Message object
+        private $replyMail       = null; // Reply address
+	 	private $subject         = null; // Message object
 	 	private $content         = null; // Message content
 	 	private $attachments     = null; // Attachments
         private $headers         = array();
-        
-        
-        /**
-         * Check email
-         * @param string    $email
-        **/
-        private function _checkEmail($email, $field) {
-            if(!filter_var($email, FILTER_VALIDATE_EMAIL))            
-                throw new InvalidArgumentException("user:define.mail[$email]", 311);
-        }
-        
+		
         
 	 	/**
          * Generate a new mail
-         * @param string   $object
+         * @param array   $headers		See Mail::addHeaders()
 	 	**/
-	 	public function __construct($headers = array()) {
-            $this->headers(array_merge(array(
-                'X-Mailer' =>  'PHP/'.PHP_VERSION
-            ), $headers));
+	 	public function __construct(array $headers = array()) {
+            $this->addHeaders(array_merge(array(
+				'X-Mailer' => 'PHP/'.PHP_VERSION
+			), $headers));
+			
+			// Set default format
+			$this->format = self::FORMAT_TEXT;
 	 	}
         
         
         /**
          * (Re)Define custom email headers
-         * @param array $headers
+         * @param array $headers 		Custom email headers
         **/
-        public function headers($headers) {
+        public function addHeaders(array $headers) {
             $this->headers = array_merge($this->headers, $headers);
-        }
-        
-	 	
-	 	/**
-	 	 * Define email object
-         * @param string   $value
-	 	**/	 	
-	 	public function object($value) {
-	 		$this->object =  $value;
-	 	}
-	 	
+        } 	
+		
 	 	
 	 	/**
          * Define addressee's informations
-         * @param string    $mail
-         * @parem string    $name
+         * @param string    $email		Contact email addresse
+         * @parem string    $name		Contact name
 	 	**/
-	 	public function to($email, $name = null) {            
+	 	public function addTo($email, $name = null) {         
             if(is_array($email)):
                 foreach($email as $key => $value) {
+					
                     if(is_string($key)):
-                        $this->_checkEmail($key, 'To');
-                        $this->To[] = "\"$value\" <$key>";
+						
+						$this->_checkEmail($key);					
+                        $this->To[] = '"=?UTF-8?B?'.base64_encode($value).'?=" <'.$key.'>';
+					
                     else:
-                        $this->_checkEmail($value, 'To');
-                        $this->To[] = (!empty($name) ? "\"$name\" <$value>" : $value);
+					
+                        $this->_checkEmail($value);					
+                        $this->To[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
+					
                     endif;
                 }
             else:
-                $this->_checkEmail($email, 'To');
-                $this->To[] = (!empty($name) ? "\"$name\" <$email>" : $email);
+			 	$this->_checkEmail($email);
+                $this->To[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);;
             endif;
             
 	 	}
@@ -98,67 +90,97 @@
 
 	 	/**
          * Define carbon copies contacts
-         * @param string    $mail
-         * @param string    $name
-         * @param bool      $bind
+         * @param string    $email		Contact email address
+         * @param string    $name		Contact name
+         * @param bool      $bind		Set contact as bind carbon copy
 	 	**/
-	 	public function Cc($email, $name = null, $bind = false) {
-            $this->_checkEmail($email, 'Cc');
+	 	public function addCc($email, $name = null, $bind = false) {
+           	$this->_checkEmail($email);
 
             if($bind)
-                $this->Bcc[] = (!empty($name) ? "\"$name\" <$email>" : $email);
+                $this->Bcc[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
             else
-                $this->Cc[] = (!empty($name) ? "\"$name\" <$email>" : $email);
+                $this->Cc[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 	 	}
 	 	
 	 	
 	 	/**
 	 	 * Define sender informations
-	 	 *	@param string     $email
-	 	 *	@param string     $name
+	 	 * @param string     $email		From email address
+	 	 * @param string     $name		From name
 	 	**/
-	 	public function from($email, $name = null) {
-            $this->_checkEmail($email, 'From');
-            $this->From = (!empty($name) ? "\"$name\" <$email>" : $email);
-            $this->reply = $email;
+	 	public function setFrom($email, $name = null) {
+            $this->_checkEmail($email);
+            $this->From = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
+			$this->FromMail = $email;
+			
+			if(empty($this->reply))
+				$this->setReplyTo($email, $name);
 	 	}
 	 	
-        
-        /**
-         * Define message
-         * @param string $object
-         * @param string $content
-         * @param string $format
-        **/
-	 	public function message($object = null, $content = null, $format = self::FORMAT_TEXT) {
-            $this->object = $object;
-            $this->content($content, $format);
-        }
-        
+		
+		/**
+	 	 * Define Reply-To/Return-Path information
+	 	 * @param string     $email		Reply-To/Return-Path email address
+	 	 * @param string     $name		Reply-To/Return-Path name
+	 	**/
+	 	public function setReplyTo($email, $name = null) {
+            $this->_checkEmail($email);
+            $this->reply = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
+			$this->replyMail = $email;
+	 	}
+	 	
+		
+		/**
+         * Define email subject
+         * @param string    $subject		Email subject
+	 	**/
+	 	public function setSubject($subject) {
+		 	$this->subject = '=?UTF-8?B?'.base64_encode($subject).'?=';
+	 	}
+		
+		
+		/**
+         * Alias of setSubject
+         * @see Mail::setSubject
+	 	**/
+	 	public function setObject($subject) {
+		 	$this->setSubject($subjet);
+	 	}
+		
         
 	 	/**
          * Define message content
-         * @param string    $message
-         * @param string    $format
+         * @param string    $message	Email content
+         * @param string    $format		Content format
 	 	**/
-	 	public function content($message, $format = self::FORMAT_TEXT) {
+	 	public function setBody($message, $format = self::FORMAT_TEXT) {
 		 	$this->content = $message;
             $this->format = $format;
+	 	}
+		
+		
+		/**
+         * Alias of setBody
+         * @see Mail::setBody
+	 	**/
+	 	public function setContent($message, $format = self::FORMAT_TEXT) {
+		 	$this->setBody($message, $format);
 	 	}
         
 	 		 	
 	 	/**
 	 	 * Define attachement file
-	 	 * @param string     $path
-	 	 * @param string     $name
+	 	 * @param string     $file		File's path to add
+	 	 * @param string     $name		Redefine file name
 	 	**/	 	
-	 	public function attachment($name, $file) {
+	 	public function addAttachment($file, $name = null) {
             if(!is_readable($file))
-				throw new InvalidArgumentException("system:read.file[$file]", 122);
+				throw new InvalidArgumentException($file, 122);
             
 	 		$this->attachments[] = array(
-	 			'name' => $name,
 	 			'type' => get_mime_type($file),
+				'name' => (!empty($name) ? $name : basename($file)),
 	 			'content' => base64_encode(file_get_contents($file))
 	 		);
 	 	}
@@ -166,7 +188,6 @@
 	 		 	
 	 	/**
 	 	 * Try to send mail
-	 	 * @require function construct() / object()
 	 	 * @require  $To, $From, $reply
 	 	**/
 	 	public function send() {            
@@ -174,15 +195,15 @@
                 throw new LogicException("developer:define.addressee", 210);
 
             if(empty($this->From))
-                $this->from($_SERVER['SERVER_ADMIN']);
+                $this->setFrom($_SERVER['SERVER_ADMIN']);
                         	 	 	 		
 	 		// Required informations	
 	 		$boundary = sha1(uniqid(microtime(), true)) . self::BREAKLINE; // Boundary
 	 		
 	 		// Mail headers
 	 		$headers = 'From: '.$this->From . self::BREAKLINE; // sender
-	 		$headers .= 'Reply-To: '.$this->reply . self::BREAKLINE; // Reply address
-            $headers .= 'Return-Path: '.$this->reply . self::BREAKLINE;
+	 		$headers .= 'Reply-To: ' . $this->reply . self::BREAKLINE; // Reply address
+            $headers .= 'Return-Path: ' . $this->reply . self::BREAKLINE;
 	 		if(!empty($this->Cc)): $headers .= 'Cc: '.implode(', ', $this->Cc) . self::BREAKLINE; endif; // Carbon copies
 	 		if(!empty($this->Bcc)): $headers .= 'Bcc: '.implode(', ', $this->Bcc) . self::BREAKLINE; endif; // Blind carbon copies
             
@@ -191,7 +212,7 @@
             
             // Custom headers
             foreach($this->headers as $name => $value)
-	 		    $headers .= "$name: $value" . self::BREAKLINE; // Sending software (not adviced: consired as SPAM)
+	 		    $headers .= "$name: $value" . self::BREAKLINE;
             
             
 	 		$headers .= "Content-Type: multipart/mixed; boundary=$boundary"; // Content-Type
@@ -222,11 +243,23 @@
 	 		
 	 		$message .= "--$boundary" . self::BREAKLINE; // End message
 	 		
+			
 	  		// Try to send mail and return result
-	 		if(!@mail(implode(', ', $this->To), $this->object, $message, $headers))
+	 		if(!@mail(implode(', ', $this->To), $this->subject, $message, $headers, '-f '.$this->FromMail.' -r '.$this->replyMail))
                 throw new RuntimeException('system:send.mail', 133);
 			
 	 	}
+		
+        
+		/**
+		 * Validate email
+		 * @throws InvalideArgumentException
+		 * @param string $email		Email address to validate
+		**/
+		private function _checkEmail($email) {
+			if(!filter_var($email, FILTER_VALIDATE_EMAIL))            
+                throw new InvalidArgumentException($email, 311);
+		}
 
 	 			
 	 }

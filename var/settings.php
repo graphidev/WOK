@@ -7,12 +7,15 @@
  *		/!\ Changing these parameters may cause permanent damages and malfunctions /!\
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
  *
+ * 
 **/
 
 
     /**
      * Sytem informations
      * These informations are required in most of core classes
+	 *
+	 * @package System
     **/
     const SYSTEM_PROTOCOL               = 'http'; // System default protocol
     const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address

@@ -1,10 +1,13 @@
 <?php 
+
     /**
      *    Welcome in WOK initialize file
      *
      * You don't have to edit any line of this file.
      * To define some settings, please have a look to settings.php
      * To add / call some options, please use options.php
+	 *
+	 * @package System
      *
     **/
     

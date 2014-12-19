@@ -22,6 +22,10 @@
          * Call of a function : try to load function with a defined file name
          * Please note that `load` function name is reserved by the class for libraries loading
          * Furthermore, this could be used exceptionaly in order to keep system performance
+         * Use as following :
+         * Fn::$function([$arguments, ...])
+         * @param string $function The function that is called
+         * @param array  $arguments The arguments passed to the function
         **/
         public static function __callStatic($function, $arguments) {
             

@@ -12,7 +12,7 @@
         **/
         public static function load($library) {
             
-            if(!file_exists($path = PATH_LIBRARIES .'/'. $library . '.library.php'))
+            if(!file_exists($path = root(PATH_LIBRARIES .'/'. $library . '.library.php')))
                 trigger_error('Call to undefined library '. $library .' within '. PATH_LIBRARIES, E_USER_ERROR);
             
             require_once $path;
@@ -25,7 +25,7 @@
         **/
         public static function __callStatic($function, $arguments) {
             
-            if(!function_exists($function) && file_exists($path = PATH_LIBRARIES .'/'. $function . '.function.php')) {
+            if(!function_exists($function) && file_exists($path = root(PATH_LIBRARIES .'/'. $function . '.function.php'))) {
                 require_once $path;
             }
             

@@ -6,22 +6,6 @@
      * You also can define some constants here
     **/
     
-
-    /**
-     * Manage error reports
-     * This can be extended with custom callback :
-     * use Console::handler($level, $callback)
-    **/
-    Console::init();
-
-    /**
-     * End callback
-     * this function will be called at the end of PHP execution
-    **/
-    register_shutdown_function(function() {
-        Console::register(); // Register errors logs
-    });
-    
     /**
      * Composer libraries autoloader
     **/
@@ -39,6 +23,5 @@
      * This should be made in php.ini !
     **/
     ini_set("zlib.output_compression", "On");
-
-
+    
 ?>

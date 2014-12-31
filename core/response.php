@@ -14,9 +14,9 @@
         private $code        = 200;
         private $data        = array();
         private $handler     = null;
-		private	$fallback 	 = null;
         private $cachetime   = null;
         private $cachefile   = null;
+        private $fallback    = null;
         
         /**
          * Cache constants
@@ -136,7 +136,7 @@
             
             if($file && !SYSTEM_DEBUG): // Cache file
                 $this->cachetime = $time;
-                        
+                
                 if($status == self::CACHE_PROTECTED)
                     $this->cachefile = $file.'-'.session_id();
                 else
@@ -171,7 +171,7 @@
                     if(is_closure($response->data))
                         $response->data = call_user_func($response->data);
 
-                    $buffer = View::parse($template, $response->data);       
+                    $buffer = View::parse($template, $response->data, true);       
                 
                     if(!is_null($response->handler))
                         $buffer = call_user_func($response->handler, $buffer, $response->data, $response->code);
@@ -422,58 +422,65 @@
             };
             return $response;
         }
-		
-		/**
-		 * Define an error callback for the current response rendering
-		 * @param Closure	$callback 	The function that will be executed on error
-		**/ 
-		public function exception(Closure $callback) {
+        
+        /**
+         * Set an exception fallback
+         * This callback will be called if something 
+         * get wrong will within content generation
+         * @param   Closure     $callback       Anonymous function that will be colled
+        **/
+        public function fallback(Closure $callback) {
 			$this->fallback = $callback;
 			return $this;
-		}
+        }
         
         /**
          * Output response
          * (execute last defined response)
         **/
-        public function render() {
-            // Send headers
-            http_response_code($this->code);
-            foreach($this->headers as $name => $value) {
-                @header("$name: $value", true);
-            }
+        public function render($reset = false) {
             
-			try {
+            try { 
+                
+                if($reset) // Reset headers
+                    $this->cache(self::DISABLE_CACHE, self::CACHE_PRIVATE);
+                
+                // Send headers
+                http_response_code($this->code);
+                foreach($this->headers as $name => $value) {
+                    @header("$name: $value", true);
+                }
 
-				// Output content
-				if(is_closure($this->content)):
-					call_user_func($this->content, array($this));
+                // Output content
+                if(is_closure($this->content)):
+                    call_user_func($this->content, array($this));
 
-				else:
-				
-					if(is_closure($this->data)) // Generate data value
-						$this->data = call_user_func($this->data);
+                else:
 
-					if(is_closure($this->handler)) // Apply a callback
-					   $this->content = call_user_func($this->handler, $this->content, $this->data, $this->code);
+                    if(is_closure($this->data)) // Generate data value
+                        $this->data = call_user_func($this->data);
 
-					echo $this->content;
+                    if(is_closure($this->handler)) // Apply a callback
+                       $this->content = call_user_func($this->handler, $this->content, $this->data, $this->code);
 
-				endif;
+                    echo $this->content;
 
-			}
+                endif;
+                              
+            }
+            catch(Exception $e) {
+                
+                if(is_closure($this->fallback))
+                    $output = call_user_func($this->fallback, $e);
+                
+                if(!empty($output) && $output instanceof Response)
+                    $output->render();
+                
+                else
+                    throw $e;
+                
+            }
 
-			catch(Exception $e) { // Generate custom error response
-
-				if(is_closure($this->fallback))
-					call_user_func($this->fallback, $e)->render();
-
-				else
-					throw $e;
-
-			}
-			
-			
         }
         
     }

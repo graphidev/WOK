@@ -15,6 +15,7 @@
         **/
         private static $logs        = array();
         private static $handlers    = array();
+        private static $exceptions  = array();
         private static $format      = '[:time] [:type] :message in :file on line :line';
         
         /**
@@ -38,50 +39,90 @@
          * @param   integer     $level      The errors level reporting
         **/
         public static function init($level = Console::REPORTING_LEVEL) {
+            
             // Define error reporting level
             error_reporting($level);
 
             // Handle errors
-            set_error_handler(function($type, $message, $file, $line) {
+            set_error_handler(function($type, $message, $file, $line) {                 
                 if(!(error_reporting() & $type)) return;
 
-                switch ($type) {
-                    case E_USER_ERROR:
-                        $type = self::LOG_ERROR;
-                        break;
-
-                    case E_USER_WARNING:
-                        $type = self::LOG_WARNING;
-                        break;
-
-                    case E_USER_NOTICE:
-                        $type = self::LOG_NOTICE;
-                        break;
-
-                    case E_USER_DEPRECATED:
-                        $type = self::LOG_DEPRECATED;
-                        break;
-
-                    default:
-                       $type = self::LOG_ERROR;
-                }
-                
-                self::log($message, $type, $file, $line);
-
+                self::parseError($type, $message, $file, $line);
+                 
                 return !SYSTEM_DEBUG; // Show/hide error message
+                
             });
             
             // Handle not catched exceptions
-            set_exception_handler(function($e) {  
-                if(SYSTEM_DEBUG)
-                    echo $e->getMessage().' (Exception not catched) in '.$e->getFile().' on line '.$e->getLine();
-
-                self::log($e->getMessage().' (Exception not catched)', self::LOG_ERROR, $e->getFile(), $e->getLine());
+            set_exception_handler(function($e) {
+                                
+                foreach(self::$exceptions as $name => $callback) {
+                    if(is_string($name) && is_a($e, $name)) {                        
+                        $prevent = call_user_func($callback, $name);
+                        break;
+                    }
+                }
+                
+                if(!isset($prevent) || !$prevent)
+                    trigger_error(get_class($e).' not catched : '.$e->getMessage().' in '.$e->getFile().' on line '.$e->getLine(), E_USER_ERROR);
+                
             });
         }
         
-        public static function handler($level, Closure $callback) {
-            self::$handler[$level] = $callback;   
+        /**
+         * Parse error for registration
+         * @param   integer     $type       User error type code
+         * @param   string      $message    Associated error message
+         * @param   string      $file       Concerned file by the error
+         * @param   integer     $line       Line where the error occured in the file
+        **/
+        private static function parseError($type, $message, $file, $line) {
+            
+            switch ($type) {
+                case E_USER_ERROR:
+                    $type = self::LOG_ERROR;
+                    break;
+
+                case E_USER_WARNING:
+                    $type = self::LOG_WARNING;
+                    break;
+
+                case E_USER_NOTICE:
+                    $type = self::LOG_NOTICE;
+                    break;
+
+                case E_USER_DEPRECATED:
+                    $type = self::LOG_DEPRECATED;
+                    break;
+
+                default:
+                   $type = self::LOG_ERROR;
+            }
+
+            if(isset(self::$handlers[$type])) 
+                $prevent = call_user_func(self::$handlers[$type], $message, $file, $line);
+            
+            if(!isset($prevent) || !$prevent)
+               self::log($message, $type, $file, $line);
+
+        }
+        
+        /**
+         * Set a custom error callback
+         * @param mixed     $level      Error's level to catch
+         * @param Closure   $callback   Fallback for this error
+        **/
+        public static function catchError($level, Closure $callback) {
+            self::$handlers[$level] = $callback;  
+        }
+        
+        /**
+         * Catch custom exceptions
+         * @param Closure $callback     Exception fallback closure
+         * @param string  $name         Exception's name that you want to catch
+        **/ 
+        public static function catchException($callback, $name = 'Exception') {
+            self::$exceptions[$name] = $callback;
         }
         
         /**
@@ -105,16 +146,25 @@
                 'line' => (!empty($line) ? $line : $backtrace['line']),
             );
             
-            
-            if($type == self::LOG_ERROR && !SYSTEM_DEBUG):
-				throw new LogicException($message);
-            endif;
         }
+        
+        /**
+         * Returns last error informations
+         * or false on logs empty
+        **/
+        public static function getLastError() {
+            return (($total = count(self::$logs)) ? self::$logs[$total-1] : false);
+        }
+        
         
         /**
          * Register logs in a file
         **/
         public static function register() {
+                        
+            if(($error = error_get_last()) && ($total = count(self::$logs)) && $error != self::$logs[$total-1])
+                self::parseError($error['type'], $error['message'], $error['file'], $error['line']);
+                        
             if(empty(self::$logs)) return;
                 
             $file = fopen(root(PATH_LOGS . date('/Y-m-d').'.log'), 'a+');
@@ -137,7 +187,7 @@
             fclose($file);
             
             // Send errors
-            if(!empty($errors)):
+            if(!empty($errors) && !empty($_SERVER['SERVER_ADMIN'])):
                     
                 try {
                         
@@ -155,6 +205,8 @@
                 }
             
             endif;
+                                    
+            return self::getLastError();
         }        
         
     }

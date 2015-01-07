@@ -7,7 +7,7 @@
  *		/!\ Changing these parameters may cause permanent damages and malfunctions /!\
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
  *
- * 
+ * @package System/Configuration
 **/
 
 

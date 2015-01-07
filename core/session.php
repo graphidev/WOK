@@ -1,10 +1,7 @@
 <?php
     
     /**
-     * Manage request cookies.
-     * Can also crypt and uncrypt them (security feature)
-     *
-     * Reserved sessions' names : language, uniqid
+     * Manage sessions (using default PHP session features)
      *
      * @require Core/Cookie
      * @package Core

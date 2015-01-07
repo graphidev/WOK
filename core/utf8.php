@@ -4,8 +4,12 @@
      * UTF 8 compatible functions
      * Please check PHP documentation for usage
      *
-     * @package Helpers
+     * @package Core/Helpers/UTF-8
     **/
+	
+	/**
+	 * Set UTF-8 namespace
+	**/
     namespace UTF8;
 
     /**

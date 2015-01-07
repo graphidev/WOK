@@ -1,5 +1,9 @@
 <?php
     
+	/**
+	 * @package Libraries
+	**/
+ 
     /**
      * cURL (class)
      *
@@ -7,9 +11,7 @@
      * @author Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @licence CC BY 4.0 <http://creativecommons.org/licenses/by/4.0/>
      *
-     * @package Libraries
     **/
-
     class cURL {
 		
 		const VERSION = '3.0.0';

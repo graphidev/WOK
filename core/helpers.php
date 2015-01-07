@@ -4,7 +4,7 @@
      * This file contains all the helpers functions. 
      * Beware, some of them use some configuration constants
      *
-     * @package Helpers
+     * @package Core/Helpers
     **/
 
     

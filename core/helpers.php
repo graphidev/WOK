@@ -44,7 +44,9 @@
 
 
     /**
-     * Load library if available
+     * Load library if available.
+	 * Deprecated : Use Fn::load instead
+	 * @deprecated 
     **/
     function load_library($name) {
         if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php"))

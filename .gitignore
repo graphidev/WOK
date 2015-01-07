@@ -7,3 +7,4 @@ var/cache/*
 var/manifest.xml
 vendor/*
 composer.lock
+docs/*

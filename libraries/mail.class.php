@@ -145,7 +145,7 @@
          * @see Mail::setSubject
 	 	**/
 	 	public function setObject($subject) {
-		 	$this->setSubject($subjet);
+		 	$this->setSubject($subject);
 	 	}
 		
         

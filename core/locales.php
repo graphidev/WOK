@@ -140,7 +140,7 @@
                     }, $translation);
 					
                     // Simple value replacement (:data or [:data])
-                    $translation = str_replace(array(":$index", "[:$index]"), $value, $translation);
+                    $translation = str_replace(array("[:$index]", ":$index"), $value, $translation);
                     
                 }
 			}

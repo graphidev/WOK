@@ -192,10 +192,10 @@
                 try {
                         
                     $mail = new Mail();
-                    $mail->object('['.SYSTEM_DOMAIN.'] Fatal error(s)');
-                    $mail->from($_SERVER['SERVER_ADMIN'], 'Bug tracker');
-                    $mail->to($_SERVER['SERVER_ADMIN']);
-                    $mail->content(implode(PHP_EOL, $errors), Mail::FORMAT_TEXT);
+                    $mail->setObject('['.SYSTEM_DOMAIN.'] Fatal error(s)');
+                    $mail->setFrom($_SERVER['SERVER_ADMIN'], 'Bug tracker');
+                    $mail->addTo($_SERVER['SERVER_ADMIN']);
+                    $mail->setBody(implode(PHP_EOL, $errors), Mail::FORMAT_TEXT);
                     $mail->send();
                         
                 } catch(Exception $e) {

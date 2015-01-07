@@ -41,7 +41,7 @@ templateTheme: bootstrap # or: bootstrap
 groups: packages # also: namespace, packages, none; auto will detect namespace first, than packages
 
 # access levels of included method and properties
-accessLevels: [public, protected, private] # also [private]
+accessLevels: [public, protected] # also [private]
 
 # include elements marked as @internal/{@internal}
 internal: true

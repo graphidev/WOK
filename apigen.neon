@@ -1,6 +1,6 @@
-# Input and output path
+# Input and output pathes
 source: ./
-destination: ./doc
+destination: ./docs
 
 # list of scanned file extensions (e.g. php5, phpt...)
 extensions: [php]

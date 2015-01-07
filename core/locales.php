@@ -7,8 +7,7 @@
     **/
     class Locales {
         
-        private static $locales     = array();
-        
+        private static $locales     = array();        
         
         /**
          * Load a locale file
@@ -46,12 +45,11 @@
                     if($beginwith != '#' && $beginwith != '!'):
                         $path = trim(str_replace('.', "']['", strstr(trim(addslashes($line)), '=', true))); // Property name
                         $value = trim(addslashes(str_replace('=', '', strstr($line, '=', false)))); // Property value
-                        $value = str_replace(array('\\\\r\\\\n', '\\\\r', '\\\\n'), PHP_EOL, $value); // Allow breaklines in value           
-                        $value = htmlentities($value);
-            
+                        $value = str_replace(array('\\\\r\\\\n', '\\\\r', '\\\\n'), PHP_EOL, $value); // Allow breaklines in value           		
+			
                         $data = array();
                         eval("\$data['$path']='$value';");
-            
+						            
                         $origin = (isset(self::$locales[$language][$locale]) ? self::$locales[$language][$locale] : array());
                         self::$locales[$language][$locale] = array_merge_recursive($origin, $data);
                     endif;
@@ -81,9 +79,9 @@
             
             if(empty($locale)): // locale by default
                 $locale = 'default';
-                $nodes = explode('.', $path);
+                $nodes = $path;
             else:
-                $nodes = explode('.', str_replace(':', '', strstr($path, ':')));
+                $nodes = str_replace(':', '', strstr($path, ':'));
             endif;
             
             // Load locale if it isn't.
@@ -93,70 +91,66 @@
             // Return the finale node value
             if(isset(self::$locales[$language][$locale]))
                 $translation = self::$locales[$language][$locale];
+			
             else
                 $translation = null;
 
-            foreach($nodes as $i => $node) {
-                if(is_array($translation) && isset($translation[$node])):
-                    $translation = $translation[$node];
-                else: // Try to get the default locale
-                    trigger_error("Locales '$path'($language) not found", E_USER_NOTICE);
-                    if($language != SYSTEM_DEFAULT_LANGUAGE):
-                        $translation = self::_e($path, $data, SYSTEM_DEFAULT_LANGUAGE);
-                    else:
-                        return $path;
-                    endif;
-                endif;
-                
-            }
+			$translation = array_value($nodes, $translation, false);
+						
+			if(is_array($translation) || $translation === false) { // Invalid node value
+				trigger_error("Locales '$path'($language) not found", E_USER_NOTICE);
+				
+				if($language != SYSTEM_DEFAULT_LANGUAGE)
+					$translation = self::_e($path, $data, SYSTEM_DEFAULT_LANGUAGE);
+				
+				else
+					return $path;
+			}
             
-            
-            /**
-             * default      :input
-             * resume       (:index|length)
-             * date/time    [:index|format] [:index]
-             * money        {:index|format} {:index}
-             * reference    &[locale:node.get.name]
-             * reference    &[~:node.get.name]
-            **/
-            if(!empty($data)):
+            if(!empty($data)) { 
+				
                 foreach($data as $index => $value) {
-                    
-                    // Replace with a date format [advanced]
-                    $translation = preg_replace_callback("#\[:$index\|(.+)\]#isU", function($matches) use (&$value){
+										
+					/**
+					 * Date format
+					 * @syntax &[:data|format] or &[:data]
+					**/
+                    $translation = preg_replace_callback('#&\[:'.preg_quote($index).'\|(.+)\]#isU', function($matches) use (&$value){
                         return strftime($matches[1], strtotime($value));
                     }, $translation);
+					
+                    $translation = str_replace("&[:$index]", strftime('%c', strtotime($value)), $translation);
                     
-                    // Replace with a money format [advanced]
-                    $translation = preg_replace_callback("#\{:$index\|(.+)\}#isU", function($matches) use (&$value){
+					/**
+					 * Money format
+					 * @syntax $[:data|format] or $[:data]
+					**/
+                    $translation = preg_replace_callback('#\$\[:'.preg_quote($index).'\|(.+)\]#isU', function($matches) use (&$value){
                         return money_format($matches[1], $value);
                     }, $translation);
-                    
-                    // Limit the data length (words number)
-                    $translation = preg_replace_callback("#\(:$index\|[0-9]+\)#isU", function($matches) use (&$value){
-                        return resume($value, intval($matches[1]));                        
+
+                    $translation = str_replace("$[:$index]", money_format('%i', floatval($value)), $translation);
+					
+					/**
+					 * Custom data format 
+					 * @syntax %[:data|format]
+					**/
+                    $translation = preg_replace_callback('#\%\[:'.preg_quote($index).'\|(.+)\]#isU', function($matches) use (&$value){
+                        return sprintf($matches[1], $value);
                     }, $translation);
-                    
-                    // Replace with a date format [basic]
-                    $translation = str_replace("[:$index]", strftime('%c', strtotime($value)), $translation);
-                    
-                    // Replace with locale money format [basic]
-                    $translation = str_replace("{:$index}", money_format('%i', floatval($value)), $translation);
-                    
-                    // Replace with the value
-                    $translation = str_replace(":$index", $value, $translation);
+					
+                    // Simple value replacement (:data or [:data])
+                    $translation = str_replace(array(":$index", "[:$index]"), $value, $translation);
                     
                 }
-            endif;
-            
-            // Replace with an other translation
-            $translation = preg_replace_callback("#&\[(.+)\]#isU", function($matches) use (&$locale){
-                return Locales::_e(str_replace('~', $locale, $matches[1]));
+			}
+			
+            // Replace by an other translation @[path]
+            $translation = preg_replace_callback("#\@\[(.+)\]#isU", function($matches) use (&$locale, $language){
+				return Locales::_e(str_replace('~', $locale, $matches[1]), array(), $language);
             }, $translation);
             
-            
-            
-            return $translation;
+            return entitieschars($translation);
                                 
         }
         

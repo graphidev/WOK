@@ -47,7 +47,7 @@ accessLevels: [public, protected] # also [private]
 internal: false
 
 # generate documentation for PHP internal classes
-php: true
+php: false
 
 # generate highlighted source code for elements
 sourceCode: true

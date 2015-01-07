@@ -22,7 +22,7 @@
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
 
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
-    const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
+    const SYSTEM_LANGUAGES              = 'en_US'; // System accepted languages (separate with space)
 
     
     /**

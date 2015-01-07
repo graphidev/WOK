@@ -474,7 +474,7 @@
     
     /**
      * Check if the variable is a closure function
-     * @param mixed     $function
+     * @param mixed     $function		The variable to check
      * @return boolean
     **/
     function is_closure(&$variable) {
@@ -482,10 +482,12 @@
     }
 
     /**
-     * Alias of is_closure helper
+     * Check if it is a function either a closure
+	 * @param mixed		$variable		The variable to check
+	 * @return boolean
     **/
     function is_function(&$variable) {
-        return is_closure($variable);   
+        return function_exists($variable) || is_closure($variable);   
     }
 
 ?>

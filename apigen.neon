@@ -1,3 +1,7 @@
+# Input and output path
+source: ./
+destination: ./doc
+
 # list of scanned file extensions (e.g. php5, phpt...)
 extensions: [php]
 

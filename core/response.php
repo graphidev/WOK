@@ -417,8 +417,25 @@
         **/
         public static function content(Closure $content, $status = 200) {
             $response = new Response;
-            $response->content = function() use($content, $response) { 
-                call_user_func($content, $response); 
+            $response->content = function() use($content, $response) {
+				
+				if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
+                    
+                    echo Cache::get($response->cachefile);
+                    
+                }
+                else {
+                
+					$data = call_user_func($content, $response); 
+
+                    if(!empty($response->cachetime))
+                        Cache::put($response->cachefile, $data);
+                    
+                    echo $data;
+                
+                }
+				
+                
             };
             return $response;
         }
@@ -450,13 +467,13 @@
                 foreach($this->headers as $name => $value) {
                     @header("$name: $value", true);
                 }
-
+				
                 // Output content
                 if(is_closure($this->content)):
                     call_user_func($this->content, array($this));
 
                 else:
-
+				
                     if(is_closure($this->data)) // Generate data value
                         $this->data = call_user_func($this->data);
 

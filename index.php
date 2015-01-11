@@ -1,119 +1,108 @@
 <?php
-
+    
 	/**
      * Initialize WOK
     **/
 	require_once 'core/init.php';
-
-
-    /**
-     * Generate session and cookies requirements such as language
-     * We supposed that these session and cookies values are not 
-     * changed by custom developments (reserved keys)
-    **/
-    if(!Session::has('language') && Cookie::exists('language', true)):
-        Session::set('language', Cookie::get('language'));
-
-    else:
-        
-        $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
-        
-        if(!empty($languages))
-            $language = array_shift($languages);
-            
-        else
-            $language = SYSTEM_DEFAULT_LANGUAGE;
-        
-        Session::set('language', $language);
-
-        if(!Cookie::exists('language'))
-            Cookie::set('language', $language, 15811200);        
-
-    endif;
-
-    if(!Session::has('uniqid')):
-        Session::set('uniqid', Cookie::exists('uniqid') ? Cookie::get('uniqid') : uniqid(sha1(time())));
-        Cookie::set('uniqid', Session::get('uniqid'));
-    endif;
-
     
     /**
-     * Load XML manifest and initialize
-     * Request class according to manifest
+     * Initialise the framework environment
+     * This is required in order to process
+     * routing and dispatching request
     **/
-    Manifest::load();
-    Request::init();
-
+    Request::parse();
+    Router::instantiate();
+    Console::init();
 
     /**
-     * Set Custom things routes
-     * This should be use for development. Prefere using 
-     * XML manifest in order to keep framework structure
+     * Start buffering
+     * Response will be generated before they will
+     * be send. If an error occured, the response 
+     * will be erased and replaced by an error response.
+    **/
+    ob_start();
+
+    /**
+     * End callback
+     * this function will be called at the end of PHP execution
+    **/
+    register_shutdown_function(function() { 
+                
+        /**
+         * Register errors logs
+         * This will change response if an
+         * error occured from the beginning
+        **/
+        if(($error = Console::register()) && !SYSTEM_DEBUG) {
+            
+            ob_clean(); // Clean buffer
+                                                
+            Response::view('error', 500)->assign(array(
+                //'code' => $e->getCode(),
+                'message' => $error['message'],
+            ))->render();
+        }
+
+    });
+    
+
+    /**
+     * Ongoing maintenance 
+     * Output a 503 response
+    **/
+    if(SYSTEM_MAINTENANCE) {
+        Response::view('maintenance', 503)
+            ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance')
+            ->render();
+        exit;
+    }
+
+    /**
+     * Set Custom routes and filters
+     * Note that XML manifest and in-app PHP manifest
+     * can both be used on the same instance.
+     * However the XML one will be parsed first
     **/
     if(file_exists(root(PATH_VAR.'/manifest.php')))
         require_once(root(PATH_VAR.'/manifest.php'));
-    
-    
-    
-    /**
-     * Ongoing maintenance 
-    **/
-    Controller::route(SYSTEM_MAINTENANCE, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance');
-        Response::view('maintenance', 503);
-    }, true);
 
+    if(file_exists(root(PATH_VAR.'/filters.php')))
+        require_once(root(PATH_VAR.'/filters.php'));
 
     /**
-     * Set static pages controller (special)
+     * Output response according to controller's return
+     * Return false if no route have been find
     **/
-    Controller::route(Request::get('action') == 'static', function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, str_replace('/', '-', Request::uri()));
-        Response::view(Request::uri(), 200);
-    }, true);
-
+   // try {
+        if(!Router::dispatch()) {
+            Response::view('404', 404)
+                ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404')
+                ->render();   
+        }
+    /*}
+    catch(Exception $e) {
+        Response::view('404', 404)->assign(array(
+            'code' => $e->getCode(),
+            'message' => $e->getMessage()
+        ))->render();   
+    }
+    */
 
     /**
-     * Set manifest controllers
+     * Shutdown if there was at least one error
+     * during the response generation
+     * This will call the shutdown callback
+     * and change the response content
     **/
-    Controller::route(Request::get('action') ? true : false, function() {
-        list($controller, $action) = explode(':', strtolower(Request::get('action')));
-        if(file_exists(root(PATH_CONTROLLERS."/$controller.ctrl.php"))):
-            Controller::call($controller, $action);
-        else:
-            trigger_error("Controller '$controller' not found", E_USER_ERROR);
-        endif;
-    }, true);
+    if(Console::getLastError())
+        exit;
 
 
-    /**
-     * Set default homepage controller
-    **/
-    Controller::route(Request::uri() == '' || Request::uri() == '/' ? true : false, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, 'homepage');
-        Response::view('homepage', 200);
-    }, true);
-
-
-    /**
-     * If there is no response for any controller
-     * Just send a 404 response
-    **/
-    Controller::route(true, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');
-        Response::view('404', 404);
-    }, true);
-
-
-    /**
-     * Invoke the controller queue
-    **/
-    Controller::invoke();
-
-    
     /**
      * Output response
+     * The response may have been replaced 
+     * by the error manager (Console)
     **/
-    Response::output();
-
+    ob_end_flush();
+    
 ?>

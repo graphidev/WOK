@@ -287,6 +287,7 @@
     
     /**
      * Upload error exception
+	 * @package Libraries
     **/
     class UploadErrorException extends ExtendedException {
                 
@@ -337,6 +338,7 @@
 
     /**
      * Zip error exception
+	 * @package Libraries
     **/
     class ZipOpenException extends ExtendedException {        
         

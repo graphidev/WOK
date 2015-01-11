@@ -4,7 +4,7 @@
      * This file contains all the helpers functions. 
      * Beware, some of them use some configuration constants
      *
-     * @package Helpers
+     * @package Core/Helpers
     **/
 
     
@@ -44,15 +44,14 @@
 
 
     /**
-     * Load library if available
+     * Load library if available.
+	 * Deprecated : Use Fn::load instead
+	 * @deprecated 
     **/
     function load_library($name) {
-        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php")):        
-            $e = new ExtendedInvalidArgumentException("Library $name not found");
-            $e->setCallFromTrace();
-            throw $e;
-        endif;
-            
+        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php"))
+			trigger_error('Library '.$name.' can\'t be loaded with load_library($name). File '.$name.'.library.php not found.', E_USER_ERROR);
+                    
         require_once $library;
     }
 
@@ -64,8 +63,11 @@
      * @return array
     **/
     function get_accepted_languages(array $reference = array()) {
-        $accepted  = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
-                
+        if(!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))         
+            $accepted = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
+        else
+            $accepted = explode(' ', SYSTEM_LANGUAGES);
+        
         if(!empty($reference))
             $languages = array_intersect($accepted, $reference);
         
@@ -84,8 +86,8 @@
      * @param array     $data
      * @return string
     **/
-    function _e($path, $data = array()) {
-        return Locales::_e($path, $data);
+    function _e($path, $data = array(), $language = null) {
+        return Locales::_e($path, $data, (!empty($language) ? $language : Request::language()));
     }
 
 
@@ -294,6 +296,36 @@
         return is_dir($path) || @mkdir($path, $mode, true); 
     }
 
+
+    /**
+     * Remove all directory's content and itself.
+     * The process is stopped at the first error.
+     *
+     * param    string      $path       The directory's path
+    **/
+    function removedir($dir) {
+        
+        $data = scandir($path = root($dir)); //root('/var/tmp/test')
+        
+        foreach($data as $file) {
+            if(!in_array($file, array('.', '..'))) {
+                
+                if(is_file($path.'/'.$file) || is_link($path.'/'.$file)) {
+                    if(!@unlink($path.'/'.$file)) return false;
+                }
+
+                elseif(is_dir($path.'/'.$file)) {
+                    if(!removedir($dir.'/'.$file)) return false;
+                    
+                }
+                
+            }   
+        }
+        
+        return @rmdir($path);
+        
+    }
+
     
     /**
      * Analyse a folder and return files and subfolders names
@@ -444,7 +476,7 @@
     
     /**
      * Check if the variable is a closure function
-     * @param mixed     $function
+     * @param mixed     $function		The variable to check
      * @return boolean
     **/
     function is_closure(&$variable) {
@@ -452,10 +484,12 @@
     }
 
     /**
-     * Alias of is_closure helper
+     * Check if it is a function either a closure
+	 * @param mixed		$variable		The variable to check
+	 * @return boolean
     **/
     function is_function(&$variable) {
-        return is_closure($variable);   
+        return function_exists($variable) || is_closure($variable);   
     }
 
 ?>

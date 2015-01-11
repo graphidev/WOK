@@ -58,16 +58,13 @@
         **/
         public function __construct($path) {    
             
-            if(!file_exists($path)) // Check file existence
-                throw new ExtendedInvalidArgumentException('Invalid image path', array('path'=> $path));
-            
-             if(!is_readable($path)) // Check file readable
-                throw new ExtendedLogicException('Image not readable', array('path'=> $path, 'readable' => false));
-            
+            if(!is_readable($path)) // Check file existence
+				throw new InvalidArgumentException('', 321);
+			
             $mime = get_mime_type($path);
             
             if(!in_array($mime, $this->authorized)) // && is_image
-                throw new ExtendedInvalidArgumentException('Invalid file type', array('mime'=> $mime));
+                throw new InvalidArgumentException('Invalid file type', 320);
             
             // Get image settings
             $this->path = $path;
@@ -227,7 +224,7 @@
         **/
         public function get($information) {
             if(!isset($this->$information))
-                throw new ExtendedLogicException('Undefined information', array('information'=>$information));
+                throw new LogicException('Undefined information', 321);
             
             return $this->$information;
         }

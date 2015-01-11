@@ -7,22 +7,23 @@
  *		/!\ Changing these parameters may cause permanent damages and malfunctions /!\
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
  *
+ * @package System/Configuration
 **/
 
 
     /**
      * Sytem informations
      * These informations are required in most of core classes
+	 *
+	 * @package System
     **/
     const SYSTEM_PROTOCOL               = 'http'; // System default protocol
     const SYSTEM_DOMAIN                 = 'localhost'; // Server domain name or IP address
     const SYSTEM_DIRECTORY              = '/wok'; // Relative system directory path
 
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
-    const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
+    const SYSTEM_LANGUAGES              = 'en_US'; // System accepted languages (separate with space)
 
-    // System default language
-    define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ',') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ',', true)));
     
     /**
      * Project environnement state

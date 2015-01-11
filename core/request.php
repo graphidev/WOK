@@ -1,190 +1,93 @@
 <?php
 
     /**
-     * Define Manifest action to use and 
-     * contains request informations 
-     * (parameters, headers, URI, domain, ...)
+     * Parse request and define informations about it.
+     * Allows to get request informations anywhere.
      *
      * @package Core
     **/
-    class Request extends Manifest {
+    class Request {
         
-        protected static $uri       = '';
-        protected static $method    = '';
-        protected static $format    = '';
-        protected static $action    = '';
-        protected static $parameters    = array(
-            'URI' => array(),
-            'GET' => array(),
-            'POST' => array(),
-            'FILES' => array()
-        );
+        protected static $query     = '/';
+        protected static $uri       = '/';
+        protected static $method    = 'GET';
+        protected static $format    = null;
+        protected static $language  = SYSTEM_DEFAULT_LANGUAGE;
+        protected static $inputs    = array();
+        
+        /**
+         * Prevent the usage of the __construct() method
+        **/
+        private function __construct(){}
         
         /**
          * Build request and define current controller:action to use
         **/
-        public static function init() {
-            $query          = substr($_SERVER['REQUEST_URI'], strlen(SYSTEM_DIRECTORY));
-            $static         = preg_replace('#([a-z0-9\.-/]+)?(\?(.+))?$#iSU', "$1", $query);
-            $additional     = str_replace($static, '', preg_replace('#([a-z0-9/\.-]+)?(\?(.+))$#iSU', "$3", $query));
-                        
-            /**
-             * Define global request informations
-            **/
-            self::$uri           = $static;
-            self::$format        = pathinfo($static, PATHINFO_EXTENSION);
-            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
-                    
-            /**
-             * Define request parameters
-            **/
-            if(!empty($_GET)): // GET parameters
-                self::$parameters['GET'] = strip_magic_quotes($_GET);
+        public static function parse() {
             
-            elseif(!empty($additional)):
-                foreach(explode('&', $additional) as $i => $parameter) {
+            /** Request parameters définition **/
+            self::$query        = substr($_SERVER['REQUEST_URI'], strlen(SYSTEM_DIRECTORY));
+            self::$uri          = (strpos(self::$query, '?') ? strstr(self::$query, '?', true) : self::$query);
+            self::$format        = pathinfo(self::$uri, PATHINFO_EXTENSION);
+            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
+            
+            
+            /** Language definition **/
+            $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
+            if(Cookie::exists('language', true) && in_array($language = Cookie::get('language'), $languages)) {
+                self::$language = $language;
+            }
+            elseif(Session::exists('language', true) && in_array($language = Session::get('language'), $languages)) {
+                self::$language = Session::get('language');   
+            }
+            elseif(!empty($languages)) {
+                self::$language = array_shift($languages);
+            }
+            else {
+                self::$language = SYSTEM_DEFAULT_LANGUAGE;   
+            }
+
+            Session::set('language', self::$language);
+            Cookie::set('language', self::$language, 15811200);
+            
+            
+            /** Force $_GET parameters definition **/
+            if(empty($_GET) && ($parameters = substr(self::$query, strlen(self::$uri)+1))):
+                foreach(explode('&', $parameters) as $i => $parameter) {
                     @list($name, $value) = explode('=', $parameter);
-                    self::$parameters['GET'][$name] = urldecode($value);
+                    $_GET[$name] = (isset($value) ? $value : true);
                 }
             
             endif;
-                
-            if(!empty($_POST)) // POST parameters
-                self::$parameters['POST'] = strip_magic_quotes($_POST);
-                
-            if(!empty($_FILES)) // FILES parameters
-                self::$parameters['FILES'] = &$_FILES;
+                                    
+        }
+        
+        
+        /**
+         * Get a GET option data
+         * @param string    $name       The GET item name
+         * @return  mixed   The input value or null
+        **/
+        public static function parameter($name) {
+            if(!isset($_GET[$name]))
+                return null;
             
-            /**
-             * Add URI parameters and action
-            **/
-            foreach(parent::$manifest as $request) {    
-                
-                if(($request['uri'] == self::$uri || preg_match('#^'.$request['regexp'].'$#isU', self::$uri))
-                   && in_array(self::$method, $request['methods'])
-                   && (empty($request['domain']) || (!empty($request['domain']) && $request['domain'] == self::domain()))
-                  && (!Session::has('language') || in_array(Session::get('language'), $request['languages']))):
-                                    
-                    $break = (count($request['parameters']) ? null : true);
-                    $index = 1; // URI parameter index     
-                                                    
-                    foreach($request['parameters'] as $param) {
-                        
-                        // URI parameters
-                        if($param['type'] == 'URI'):
-                        
-                            $value = preg_replace('#^'.$request['regexp'].'$#isU', '$'.$index, self::get('uri'));
-                            if(preg_match('#^'.$param['regexp'].'$#isU', $value)):
-                                self::$parameters['URI'][$param['name']] = $value;
-                                $break = (!empty($break) && !$break) ? false : true;
-                            else:
-                                $break = false;
-                            endif;
-                        
-                            $index++;
-                        
-                        // FILES parameters
-                        elseif($param['type'] == 'FILE' && isset(self::$parameters['FILES'][$param['name']])):
-                            $break = (!empty($break) && !$break) ? false : true;
-                        
-                        // Globals (GET, POST, ...) parameters
-                        elseif(isset(self::$parameters[$param['type']][$param['name']])):
-                        
-                            $value = &self::$parameters[$param['type']][$param['name']];
-                                                    
-                            if((!empty($param['value']) && $param['value'] == $value) 
-                               || empty($param['regexp']) 
-                               || $param['regexp'] == 'any' 
-                               || $param['type'] == 'FILE' 
-                               || $param['regexp'] == gettype($value) 
-                               || ($param['regexp'] == 'numeric' && is_numeric($value)) 
-                               || preg_match('#^'.$param['regexp'].'$#isU', $value)):
-                                $break = (!empty($break) && !$break) ? false : true;
-                                                        
-                            else:
-                                $break = false;
-                        
-                            endif;
-                        
-                        else:
-                            
-                            $break = false;
-                        
-                        endif;
-                        
-                    }
-                                    
-                    
-                    // Check tokens parameters
-                    foreach($request['tokens'] as $token) {
-                        if(!empty(self::$parameters[$token['mode']][$token['name']]) 
-                           && ($authorized = Token::authorized($token['name'], self::$parameters[$token['mode']][$token['name']], $token['time'])))
-                            $break = (!empty($break) && !$break) ? false : true;
-                        else
-                            $break = false;
-                    }
-                    
-                
-                    // Check cookies parameters
-                    foreach($request['cookies'] as $cookie) {
-                        if($exists = Cookie::exists($cookie['name']))
-                            $value = Cookie::get($cookie['name'], $cookie['crypted']);
-                        
-                        if($exists && 
-                            (
-                                (!empty($cookie['value']) && $cookie['value'] == $value) 
-                                || $cookie['regexp'] == gettype($value) 
-                                || ($cookie['regexp'] == 'numeric' && is_numeric($value))  
-                                || preg_match('#'.$cookie['regexp'].'#', $value)
-                                || (empty($cookie['value']) && empty($cookie['regexp'])))
-                            )
-                            $break = (!empty($break) && !$break) ? false : true;
-                            
-                         else
-                             $break = false;
-                    }
-                    
-                    // Check session parameters
-                    foreach($request['sessions'] as $session) {                        
-                        if(Session::has($session['name']) && 
-                           
-                            (
-                                (!empty($session['value']) && $session['value'] == Session::get($session['name'])) 
-                                || $session['regexp'] == gettype($value) 
-                                || ($session['regexp'] == 'numeric' && is_numeric(Session::get($session['name'])))  
-                                || preg_match('#'.$session['regexp'].'#', Session::get($session['name'])))
-                                || (empty($session['value']) && empty($session['regexp']))
-                            )
-                            $break = (!empty($break) && !$break) ? false : true;
-                            
-                         else
-                             $break = false;
-                    }
-                
-                    if(!empty($break)):
-                        self::$action = $request['action'];
-                        break;
-                    endif;
-                    
-                endif;
+            return urldecode($_GET[$name]);
+        }
+        
+        /**
+         * Get a POST input data
+         * @param string    $name       The POST item name
+         * @return  mixed   The input value or null
+        **/
+        public static function input($name = null) {
+            if(self::$method == 'PUT') {
+                $input = fopen("php://input", "r");                
+                return (!$input ? $input : null);
             }
-                                    
-        }     
-        
-        
-        /**
-         * Get request parameter
-         * @param string    $name
-         * @param string    $method
-         * @return mixed
-        **/ 
-        public static function parameter($name, $method = null) {
-            if(empty($method))
-                $method = self::$method;
-            
-            $method = strtoupper($method);
-            
-            return (!empty(self::$parameters[$method][$name]) ? array_value($name, self::$parameters[$method]) : false);
+            else {
+                return array_value($name, $_POST, null);
+            }
         }
         
         /**
@@ -192,29 +95,11 @@
          * @param string    $name
          * @return string
         **/
-        public static function file($name) {
-            return self::parameter($name, 'FILES');  
-        }
-        
-        /**
-         * Get FILES parameter
-         * @param string    $name
-         * @return string
-        **/
-        public static function segment($name) {
-            return self::parameter($name, 'URI');  
-        }
-        
-        /**
-         * Get GET parameter
-         * @param string    $name
-         * @return string
-        **/
-        public static function get($information) {
-            if(!isset(self::$$information))
-                trigger_error("Undefined parameter Request::\$$information", E_USER_ERROR);
+        public static function file($name) {            
+            if(!isset($_FILES[$name]))
+                return null;
             
-            return self::$$information;
+            return $_FILES[$name]; 
         }
         
         /**
@@ -260,12 +145,8 @@
          * @param string $verify
          * @return mixed (boolean, string)
         **/
-        public static function method($verify = null) {
-            if(!empty($verify)):
-                return (self::$method == mb_strtoupper($verify));
-            else:
-                return self::$method;
-            endif;
+        public static function method() {
+            return self::$method;
         }
         
         /**
@@ -273,12 +154,8 @@
          * @param string $verify
          * @return mixed
         **/
-        public static function format($verify = null) {
-            if(!empty($verify)):
-                return (self::$format == $verify);
-            else:
-                return self::$format;
-            endif;
+        public static function format() {
+            return self::$format;
         }
         
         /**
@@ -287,6 +164,22 @@
         **/
         public static function uri() {
             return self::$uri;     
+        }
+        
+        /**
+         * Get request query (with GET parameters)
+         * @return string
+        **/
+        public static function query() {
+            return self::$query;     
+        }
+        
+        /**
+         * Get request language 
+         * @return string
+        **/
+        public static function language() {
+            return self::$language;     
         }
         
         /**

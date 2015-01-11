@@ -1,16 +1,19 @@
 <?php 
+
     /**
      *    Welcome in WOK initialize file
      *
      * You don't have to edit any line of this file.
      * To define some settings, please have a look to settings.php
      * To add / call some options, please use options.php
+	 *
+	 * @package System
      *
     **/
     
 	const WOK_MAJOR_VERSION        = 1; // Major version
-	const WOK_MINOR_VERSION        = 2; // Minor version
-	const WOK_RELEASE_VERSION      = 11; // Release version
+	const WOK_MINOR_VERSION        = 3; // Minor version
+	const WOK_RELEASE_VERSION      = 4; // Release version
 	const WOK_EXTRA_RELEASE        = 'stable'; // Extra version
     
     // Define full WOK version (without extra release)
@@ -62,6 +65,18 @@
         session_start();
 
         /**
+         * Define system timezone
+        **/
+        @date_default_timezone_set(SYSTEM_TIMEZONE);
+
+        /*
+         * Define default system language
+         * Also initialize default locale
+        */
+        define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ' ') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ' ', true)));
+        setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF-8');
+    
+        /**
          * Autoload libraries
          * Core, Controllers, Models and external libraries
         **/
@@ -111,10 +126,6 @@
         if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once $options;
         
-        Console::handle(); // Listen to and manage errors
-        
-        
-
     endif;
 
     /**

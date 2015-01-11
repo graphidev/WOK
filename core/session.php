@@ -1,10 +1,7 @@
 <?php
     
     /**
-     * Manage request cookies.
-     * Can also crypt and uncrypt them (security feature)
-     *
-     * Reserved sessions' names : language, uniqid
+     * Manage sessions (using default PHP session features)
      *
      * @require Core/Cookie
      * @package Core
@@ -28,15 +25,6 @@
             }
             return $strict ? !empty($path) : true;
         }
-        
-        /**
-         * Alias of Session::exists()
-         * Session::has deprecated as of v1.2.7
-        **/
-        public static function has($parameter, $strict = false) {
-            return self::exists($parameter, $strict);            
-        }
-        
         
         /**
          * Get session informations

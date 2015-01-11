@@ -22,7 +22,7 @@
     $domain = php_uname('n');
     $directory = str_replace(dirname(SYSTEM_ROOT), '', SYSTEM_ROOT);
     $timezone = @date_default_timezone_get();
-    $languages = array('en_EN');
+    $languages = array('en_US');
     $url = $protocol.$domain.$directory;
     
     // Customize configuration

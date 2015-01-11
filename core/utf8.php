@@ -4,12 +4,18 @@
      * UTF 8 compatible functions
      * Please check PHP documentation for usage
      *
-     * @package Helpers
+     * @package Core/Helpers/UTF-8
     **/
+	
+	/**
+	 * Set UTF-8 namespace
+	**/
     namespace UTF8;
 
     /**
-     * str_split 
+     * Convert a string to an array
+	 *
+	 * @see http://php.net/str_split
      * @param string    $string
      * @param integer   $split_length
      * @return array
@@ -27,7 +33,9 @@
     }
 
     /**
-     * strrev
+     * Reverse a string
+	 *
+	 * @see http://php.net/strrev
      * @param string    $string
      * @return string
     **/
@@ -37,7 +45,9 @@
     }
 
     /**
-     * ucfirst
+     * Make a string's first character uppercase
+	 *
+	 * @see http://php.net/ucfirst
      * @param string
      * @return string
     **/

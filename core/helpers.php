@@ -318,7 +318,7 @@
     **/
     function rmpath($dir) {
         
-        $data = scandir($path = root($dir)); //root('/var/tmp/test')
+        $data = scandir($path = $dir);
         
         foreach($data as $file) {
             if(!in_array($file, array('.', '..'))) {

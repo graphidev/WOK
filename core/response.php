@@ -136,11 +136,11 @@
             
             if($file && !SYSTEM_DEBUG): // Cache file
                 $this->cachetime = $time;
+			 	$this->cachefile = 'responses/'.Session::get('language').'/'.$file;
                 
                 if($status == self::CACHE_PROTECTED)
-                    $this->cachefile = $file.'-'.session_id();
-                else
-                    $this->cachefile = $file;
+                    $this->cachefile .= '-'.session_id();
+                   
             endif;
                                     
             return $this;

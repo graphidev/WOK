@@ -18,7 +18,7 @@
          * @param string     $file      Cache file
         **/
         private static function path($file) {
-            return root(PATH_CACHE.'/'.Session::get('language').'-'.$file);   
+            return root(PATH_CACHE.'/'.$file);   
         }
 		
 		/**

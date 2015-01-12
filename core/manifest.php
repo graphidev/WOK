@@ -63,6 +63,7 @@
                 }
 
                 if(!SYSTEM_DEBUG) { // Register cached manifest
+					mkpath(root(PATH_TMP));
                     $json = fopen($tmp, 'w+');
                     fwrite($json, json_encode(array(
                         'routes' => self::$routes,

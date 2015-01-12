@@ -166,8 +166,10 @@
                 self::parseError($error['type'], $error['message'], $error['file'], $error['line']);
                         
             if(empty(self::$logs)) return;
-                
-            $file = fopen(root(PATH_LOGS . date('/Y-m-d').'.log'), 'a+');
+            
+			
+			mkpath($path = root(PATH_LOGS));
+            $file = fopen($path . date('/Y-m-d').'.log', 'a+');
             
             $errors = array(); 
             foreach(self::$logs as $i => $log) {

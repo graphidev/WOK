@@ -9,6 +9,7 @@
     
     /**
      * Extended exception
+	 * @deprecated
     **/
     class ExtendedException extends Exception {
         
@@ -98,6 +99,7 @@
 
     /**
      * Extended InvalidArgument exception
+	 * @deprecated
     **/
     class ExtendedInvalidArgumentException extends InvalidArgumentException {
         
@@ -187,6 +189,7 @@
     
     /**
      * Extended Logic exception
+	 * @deprecated
     **/
     class ExtendedLogicException extends LogicException {
         

@@ -15,20 +15,24 @@
         **/
         private static function _load($locale, $language) { 
             $source = root(PATH_LOCALES.'/'.$language."/$locale.properties");
-            $parsed = root(PATH_TMP.'/'.str_replace('/', '.', $language.".$locale.json"));
-            if(file_exists($parsed)):
-                if(file_exists($source) && filemtime($source) > filemtime($parsed)):
-                    self::_generate($locale, $language);
-                else:
-                    self::$locales[$language][$locale] = json_decode(file_get_contents($parsed), true);
-                endif;
-            
-            elseif(file_exists($source)):
-                self::_generate($locale, $language);
-            
-            else:
-                self::$locales[$language][$locale] = array();
-            endif;
+			$cached = 'locales/'.$language.'/'.str_replace('/', '.', $locale.'.json');
+			
+			if(Cache::exists($cached)):
+
+				if(file_exists($source) && Cache::time($cached) < filemtime($source))
+					self::_generate($locale, $language);
+
+				else
+					self::$locales[$language][$locale] = json_decode(Cache::get($cached), true);
+				
+			
+			elseif(file_exists($source)):
+				self::_generate($locale, $language);
+			
+			else:
+			   self::$locales[$language][$locale] = array();
+			
+		   	endif;
         }
         
         
@@ -58,11 +62,8 @@
                 fclose($handle);
             endif;
             
-			mkpath($path = root(PATH_TMP));
-            $tmp = str_replace('/', '.', $locale);
-            $json = fopen($path.'/'.$language.".$tmp.json", 'w+');
-            fwrite($json, json_encode(self::$locales[$language][$locale]));
-            fclose($json);
+			$tmp = str_replace('/', '.', $locale);
+			Cache::put('locales/'.$language.'/'.$tmp.'.json', json_encode(self::$locales[$language][$locale]));
         }
         
         

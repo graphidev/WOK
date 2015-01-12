@@ -328,7 +328,7 @@
                 }
 
                 elseif(is_dir($path.'/'.$file)) {
-                    if(!removedir($dir.'/'.$file)) return false;
+                    if(!rmpath($dir.'/'.$file)) return false;
                     
                 }
                 

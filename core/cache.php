@@ -92,7 +92,35 @@
             if(self::exists($file))
                 unlink(self::path($file));
         }
-                
+		
+		/**
+		 * Clean partially or completely the cache
+		 * @param 	array  	$folders	The folders to clean (optional)
+		**/
+		public static function clean(array $folders = array()) {
+			
+			if(!empty($folders)) {
+
+				foreach($folders as $path) {
+										
+					if(file_exists(($folder = root(PATH_CACHE.$path)))) {
+						if(!is_dir($folder))
+							trigger_error('Removing cache: ' . $path . ' is not a folder', E_USER_ERROR);
+					
+						rmpath($folder);
+					}
+					
+				}
+				
+			}
+			else {
+				
+				rmpath(root(PATH_CACHE));
+				
+			}
+			
+		}
+		
         
     }
 

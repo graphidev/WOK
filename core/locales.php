@@ -58,8 +58,9 @@
                 fclose($handle);
             endif;
             
+			mkpath($path = root(PATH_TMP));
             $tmp = str_replace('/', '.', $locale);
-            $json = fopen(root(PATH_TMP.'/'.$language.".$tmp.json"), 'w+');
+            $json = fopen($path.'/'.$language.".$tmp.json", 'w+');
             fwrite($json, json_encode(self::$locales[$language][$locale]));
             fclose($json);
         }

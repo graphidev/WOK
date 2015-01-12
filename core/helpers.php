@@ -284,17 +284,30 @@
        
         return $data;
     }
+	
 
+	/**
+     * Create directory's path recursively if not exists
+     *
+     * @param string     	$path		The path to create
+	 * @param integer		$mode		The mode to set to folders
+	 * @return	boolean		Return if the path is available
+    **/
+	function mkpath($path, $mode = 0755) {
+		return is_dir($path) || @mkdir($path, $mode, true); 
+	}
     
     /**
      * Check directory's path
      * Create directory if not exists
-     *
-     * param string     $path
+	 *
+     * @see mkpath()
+     * @param string     $path
+	 * @deprecated
     **/
     function makedir($path, $mode = 0755) {
-        return is_dir($path) || @mkdir($path, $mode, true); 
-    }
+        return mkpath($path, $mode); 
+    }	
 
 
     /**
@@ -303,7 +316,7 @@
      *
      * param    string      $path       The directory's path
     **/
-    function removedir($dir) {
+    function rmpath($dir) {
         
         $data = scandir($path = root($dir)); //root('/var/tmp/test')
         
@@ -326,6 +339,18 @@
         
     }
 
+  	/**
+     * Check directory's path
+     * Create directory if not exists
+	 *
+     * @see mkpath()
+     * @param string     $path
+	 * @deprecated
+    **/
+    function removedir($path) {
+        return rmpath($path); 
+    }	
+	
     
     /**
      * Analyse a folder and return files and subfolders names

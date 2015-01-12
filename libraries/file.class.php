@@ -9,7 +9,7 @@
      *
      * @require cURL class (v2.1)
      * @require get_mime_type() function
-     * @require makedir() function
+     * @require mkpath() function
      * @required ExtendedExceptions
      * @require UploadErrorException
      * @require ZipOpenException
@@ -71,7 +71,7 @@
         private function _download($url, $directory) {
             try {
         
-                if(!makedir($directory))
+                if(!mkpath($directory))
                     throw new ExtendedException("Unable to create temporary directory ({$directory} : check permissions)");
                 
                 if(!is_writable($directory))
@@ -164,7 +164,7 @@
         **/
         public function move($destination, $copy = false) {
             $destination = $this->_replace($destination); // Replace with file values
-            if(!makedir(dirname($destination))) // Generate folders
+            if(!mkpath(dirname($destination))) // Generate folders
                 throw new ExtendedException("Unable to create directory {$destination} (check permissions)");
             
             if(!is_writable(dirname($destination)))
@@ -230,7 +230,7 @@
             $destination = $this->_replace($destination); // Replace with file values            
             $filename = $this->_replace($filename);
             
-            if(!makedir(dirname($destination))) // Generate folders
+            if(!mkpath(dirname($destination))) // Generate folders
                 throw new ExtendedException("Unable to create directory {$destination} (check permissions)");
             
             if(is_bool($flags)):

@@ -60,7 +60,7 @@
         **/
 		public static function put($file, $data) {
 			$path = self::path($file);                
-            makedir(dirname($path));
+            mkpath(dirname($path));
             file_put_contents($path, $data);
 			return $data;
 		}

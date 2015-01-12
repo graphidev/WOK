@@ -10,7 +10,7 @@
      * @require GD2 library
      * @require EXIF class
      * @require get_mime_type() function
-     * @require makedir() function
+     * @require mkpath(() function
      * @require ExtendedExceptions
      * @require PHP 5.5+ for WEBP format support
      *
@@ -189,7 +189,7 @@
         public function save($path = null, $option = self::SAVE_CLEAR) {
             
             if(!empty($path))
-                makedir(dirname($path), 0755);
+                mkpath((dirname($path), 0755);
             
             else // Default : save as original
                 $path = $this->path;

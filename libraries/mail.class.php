@@ -75,7 +75,8 @@
 					
                     else:
 					
-                        $this->_checkEmail($value);					
+                        $this->_checkEmail($value);
+						$this->_preventBreakLines($name);
                         $this->To[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 					
                     endif;
@@ -96,6 +97,7 @@
 	 	**/
 	 	public function addCc($email, $name = null, $bind = false) {
            	$this->_checkEmail($email);
+			$this->_preventBreakLines($name);
 
             if($bind)
                 $this->Bcc[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
@@ -111,6 +113,8 @@
 	 	**/
 	 	public function setFrom($email, $name = null) {
             $this->_checkEmail($email);
+			$this->_preventBreakLines($name);
+			
             $this->From = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 			$this->FromMail = $email;
 			
@@ -126,6 +130,8 @@
 	 	**/
 	 	public function setReplyTo($email, $name = null) {
             $this->_checkEmail($email);
+			$this->_preventBreakLines($name);
+			
             $this->reply = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 			$this->replyMail = $email;
 	 	}
@@ -259,6 +265,16 @@
 		private function _checkEmail($email) {
 			if(!filter_var($email, FILTER_VALIDATE_EMAIL))            
                 throw new InvalidArgumentException($email, 311);
+		}
+		
+		/**
+		 * Prevent whitespaces and so email injection
+		 * @throws InvalidArgumentException
+		 * @param	string	$input		String to check
+		**/
+		private function _preventLineBreaks($input) {
+			if(preg_match('#(<CR>|<LF>|0x0A|%0A|0x0D|%0D|\\n|\\r|\s)+#i', $input))
+				throw new DomainException($input, 311);
 		}
 
 	 			

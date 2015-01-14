@@ -103,23 +103,21 @@
         
         /**
          * Define a route
-         * @param   string|array        $method         The request method
-         * @param   string              $domain         The request domain
-         * @param   string              $uri            The request URI
-         * @param   array               $parameters     The request URI parameters
-         * @param   string|Closure      $action         The route action (can be a controller method or a callback)
+		 * @param   string              $uri            The request URI
+		 * @param   string|Closure      $action         The route action (can be a controller method or a callback)
+		 * @param   array      			$additionals    Optional parameters : domain(string), method(string|array), parameters(array), filter(string|Closure)
          * @param   string|Closure      $filter         The route filter's name or callback
         **/
-        public static function register($method = array(), $domain='~', $uri ='/', $parameters = array(), $action = 'Root:index', $filter = null) {
-            
-            self::$routes[] = array(
+        public static function register($uri, $action, array $additionals = array(), $filter = null) {
+           	
+			if(!empty($additionals['method']) && is_string($additionals['method']))
+				$additionals['method'] = explode('|', $additionals['method']);
+
+			self::$routes[] = array_merge(array(
                 'uri' => $uri,
-                'method' => (is_string($method) ? explode('|', $method) : $method),
                 'action' => $action,
-                'parameters' => $parameters,
-                'domain' => $domain,
-                'filter' => $filter,
-            );
+				'filter' => $filter
+            ), $additionals);
             
         }
         

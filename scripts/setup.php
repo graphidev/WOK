@@ -51,7 +51,7 @@
             echo "Which languages are supported in your project ?\n";
             echo "* The languages codes must correspond to the ISO 639 norm (country_LANGUAGE)\n";
             echo "* The program will ask you a new language until you press Enter (empty value)\n";
-            echo "* If you won't define any language, the 'en_EN' code will be applied\n";
+            echo "* If you won't define any language, the 'en_US' code will be applied\n";
                 
             $languages = array();
             $new = true;
@@ -61,7 +61,7 @@
                     $languages[] = $new;
             }
             if(count($languages) == 0)
-                $languages = array('en_EN');
+                $languages = array('en_US');
             
             echo "\n";
 

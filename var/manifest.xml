@@ -21,15 +21,11 @@
             - name (required) : The parameter's name
             - regexp (required) : The parameter's pattern
     -->
-    
+
     <route uri="/cms" action="CMS:index" />
     <route uri="/cms/:page(\.:extension)?" action="CMS:page">
         <param name="page" regexp="[a-z0-9_/-]+" />
         <param name="extension" regexp="md|text" />
-    </route>
-    
-    <route uri="/:locale/:test/dev" action="Development:index" filter="locale">
-        <param name="test" regexp="[\w]+" />
     </route>
     
     <!-- Default homepage route -->

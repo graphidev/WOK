@@ -11,8 +11,8 @@
      * routing and dispatching request
     **/
     Request::parse();
-    Router::instantiate();
     Console::init();
+	Router::init();
 
     /**
      * Start buffering

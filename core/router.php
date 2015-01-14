@@ -50,10 +50,17 @@
                     // Apply filter if it exists
                     if(!empty($route['filter'])) {
                         
-                        if(!isset(parent::$filters[$route['filter']]))
-                                trigger_error("Undefined filter {$route['filter']} for this route : $class:$action", E_USER_ERROR);
-                                                
-                        $filtering = call_user_func_array(parent::$filters[$route['filter']], array($route, $parameters));
+						if(is_closure($route['filter']))
+							$filter = $route['filter'];
+
+						elseif(isset(parent::$filters[$route['filter']]))
+							$filter = parent::$filters[$route['filter']];
+
+						else
+                        	trigger_error("Undefined filter {$route['filter']} for this route : $class:$action", E_USER_ERROR);
+                        
+						
+                        $filtering = call_user_func_array($filter, array($route, $parameters));
                                                 
                     }
                     else {

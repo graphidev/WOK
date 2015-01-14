@@ -76,7 +76,7 @@
                     else:
 					
                         $this->_checkEmail($value);
-						$this->_preventBreakLines($name);
+						$this->_preventLineBreaks($name);
                         $this->To[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 					
                     endif;
@@ -97,7 +97,7 @@
 	 	**/
 	 	public function addCc($email, $name = null, $bind = false) {
            	$this->_checkEmail($email);
-			$this->_preventBreakLines($name);
+			$this->_preventLineBreaks($name);
 
             if($bind)
                 $this->Bcc[] = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
@@ -113,7 +113,7 @@
 	 	**/
 	 	public function setFrom($email, $name = null) {
             $this->_checkEmail($email);
-			$this->_preventBreakLines($name);
+			$this->_preventLineBreaks($name);
 			
             $this->From = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 			$this->FromMail = $email;
@@ -130,7 +130,7 @@
 	 	**/
 	 	public function setReplyTo($email, $name = null) {
             $this->_checkEmail($email);
-			$this->_preventBreakLines($name);
+			$this->_preventLineBreaks($name);
 			
             $this->reply = (!empty($name) ? '"=?UTF-8?B?'.base64_encode($name).'?=" <'.$email.'>' : $email);
 			$this->replyMail = $email;

@@ -170,7 +170,7 @@
                     @list($class, $action) = explode(':', strtolower($route['action']));
                     
                     // Apply filter if it exists
-                    if(!empty($route['filter'])) {
+                    if(!empty($route['filter'])) {						
                         
 						if(is_closure($route['filter']))
 							$filter = $route['filter'];
@@ -179,10 +179,10 @@
 							$filter = self::$filters[$route['filter']];
 
 						else
-                        	trigger_error("Undefined filter {$route['filter']} for this route : $class:$action", E_USER_ERROR);
-                        
+                        	trigger_error('Undefined filter for the taken route', E_USER_ERROR);
+
+						$filtering = call_user_func_array($filter, array($route, $parameters));
 						
-                        $filtering = call_user_func_array($filter, array($route, $parameters));
                                                 
                     }
                     else {

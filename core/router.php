@@ -10,7 +10,7 @@
      * @package Core
     **/    
 
-    class Router extends Manifest {
+    class Router {
         
         protected static $routes    = array();
         protected static $patterns  = array();

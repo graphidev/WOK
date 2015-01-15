@@ -20,21 +20,6 @@
             
         }
     });
-    
-    /**
-     * Definition of the CLI filter
-     * Prevent the usage of a controller if this is not a CLI request
-    **/
-    Router::filter('cli', function($route, $parameters) {
-        if(!Request::cli()) return false;
-    });
 
-    /**
-     * Definition of the AJAX filter
-     * Prevent the usage of a controller if this is not an AJAX request
-    **/
-    Router::filter('ajax', function($route, $parameters) {
-        if(!Request::ajax()) return false;
-    });
 
 ?>

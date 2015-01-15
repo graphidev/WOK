@@ -73,20 +73,12 @@
      * Output response according to controller's return
      * Return false if no route have been find
     **/
-   // try {
-        if(!Router::dispatch()) {
-            Response::view('404', 404)
-                ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404')
-                ->render();   
-        }
-    /*}
-    catch(Exception $e) {
-        Response::view('404', 404)->assign(array(
-            'code' => $e->getCode(),
-            'message' => $e->getMessage()
-        ))->render();   
-    }
-    */
+	if(!Router::dispatch()) {
+		Response::view('404', 404)
+			->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404')
+			->render();   
+	}
+
 
     /**
      * Shutdown if there was at least one error

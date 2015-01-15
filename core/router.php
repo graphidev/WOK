@@ -147,6 +147,7 @@
          * Return false for not found route
         **/        
         public static function dispatch() {
+
             foreach(self::$routes as $route) {
                 
                 // Prepare route regexp of the URI
@@ -156,14 +157,13 @@
                 foreach($patterns as $name => $pattern) {
                     $regexp = str_replace(":$name", "(?<$name>$pattern)", $regexp);
                 }
-                
                                                 
                 // Check the route
-                if((empty($route['domain']) || (!empty($route['domain']) && $route['domain'] == Request::domain()))       // Check domain
+                if(($route['uri'] == Request::uri() || preg_match('#^'.$regexp.'$#isU', Request::uri(), $parameters))       // Check URI
                    && (empty($route['method']) || in_array(Request::method(), $route['method']))                                // Check method
-                   && ($route['uri'] == Request::uri() || preg_match('#^'.$regexp.'$#isU', Request::uri(), $parameters))        // Check URI
-                  ) {                
-                    
+                   && (empty($route['domain']) || (!empty($route['domain']) && $route['domain'] == Request::domain()))        // Check domain
+                  ) {      
+															
                     // Current parameters
                     if(!isset($parameters) || is_null($parameters)) $parameters = array();
                     $parameters = array_intersect_key($parameters, $patterns);
@@ -186,9 +186,9 @@
                                                 
                     }
                     else {
-                        $filtering = false;
+                        $filtering = null;
                     }
-                    
+										                    
                     // This is THE route, execute the dispatcher
                     if(is_null($filtering) || $filtering) {
                         

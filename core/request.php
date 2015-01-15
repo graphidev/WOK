@@ -135,7 +135,7 @@
          * Check CLI request life
          * @return boolean
         **/
-        function cli() {
+        public static function cli() {
             return (!isset($_SERVER['SERVER_SOFTWARE']) && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
         }
         

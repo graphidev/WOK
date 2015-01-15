@@ -171,7 +171,7 @@
                     if(is_closure($response->data))
                         $response->data = call_user_func($response->data);
 
-                    $buffer = View::parse($template, $response->data, true);       
+                    $buffer = View::parse($template, $response->data, false);       
                 
                     if(!is_null($response->handler))
                         $buffer = call_user_func($response->handler, $buffer, $response->data, $response->code);

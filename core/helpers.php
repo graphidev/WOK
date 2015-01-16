@@ -358,6 +358,7 @@
      * @param string    $path
      * @param array     $ignore
      * @return array
+	 * @deprecated
 	**/
 	function explore($dir, $ignore = array()) {
         if(!is_readable($dir)) return false;

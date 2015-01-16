@@ -3,8 +3,9 @@
 	/**
      * Initialize WOK
     **/
-	require_once 'core/init.php';
-    
+	if(! require_once 'core/init.php' )
+		exit('System settings not available.');
+		
     /**
      * Initialise the framework environment
      * This is required in order to process

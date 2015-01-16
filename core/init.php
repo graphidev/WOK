@@ -126,7 +126,19 @@
         if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once $options;
         
+		/**
+		 * Prevent not loaded settings
+		 * This can be catched by include script
+		**/
+		return true;
+
     endif;
+
+	/**
+	 * On settings not loaded, return false.
+	 * this allow to prevent bad usage of the init file.
+	**/
+	return false;
 
     /**
      * That's it !

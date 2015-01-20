@@ -100,22 +100,23 @@
 		public static function clean(array $folders = array()) {
 			
 			if(!empty($folders)) {
-
+				
 				foreach($folders as $path) {
+					
+					$folder = root(PATH_CACHE.$path);
 										
-					if(file_exists(($folder = root(PATH_CACHE.$path)))) {
-						if(!is_dir($folder))
-							trigger_error('Removing cache: ' . $path . ' is not a folder', E_USER_ERROR);
-					
-						rmpath($folder);
-					}
-					
+					if(!file_exists($folder) || !is_dir($folder))
+						trigger_error('Removing cache: ' . $path . ' is not a folder', E_USER_ERROR);
+
+					elseif(!rmpath($folder))
+						return false;
+
 				}
 				
 			}
 			else {
 				
-				rmpath(root(PATH_CACHE));
+				return rmpath(root(PATH_CACHE));
 				
 			}
 			

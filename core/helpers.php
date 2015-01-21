@@ -25,7 +25,7 @@
         if(($length = strlen(SYSTEM_DIRECTORY)) != 0 && substr($path, 0, $length) == SYSTEM_DIRECTORY)
             $path = substr($path, $length);
                
-        return "$protocol://$domain$port".SYSTEM_DIRECTORY."$path";
+        return "$protocol://$domain$port".SYSTEM_DIRECTORY.$path;
 	}
 	
 

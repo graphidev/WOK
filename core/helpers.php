@@ -297,20 +297,6 @@
 	function mkpath($path, $mode = 0755) {
 		return is_dir($path) || @mkdir($path, $mode, true); 
 	}
-	
-    
-    /**
-     * Check directory's path
-     * Create directory if not exists
-	 *
-     * @see mkpath()
-     * @param string     $path
-	 * @deprecated
-    **/
-    function makedir($path, $mode = 0755) {
-        return mkpath($path, $mode); 
-    }	
-
 
     /**
      * Remove all directory's content and itself.
@@ -342,64 +328,13 @@
         return @rmdir($path);
         
     }
-
-  	/**
-     * Check directory's path
-     * Create directory if not exists
-	 *
-     * @see mkpath()
-     * @param string     $path
-	 * @deprecated
-    **/
-    function removedir($path) {
-        return rmpath($path); 
-    }	
-	
     
-    /**
-     * Analyse a folder and return files and subfolders names
-     * Please use this function carefuly : it is recursive
-     * @param string    $path
-     * @param array     $ignore
-     * @return array
-	 * @deprecated
-	**/
-	function explore($dir, $ignore = array()) {
-        if(!is_readable($dir)) return false;
-        
-        $ignore     = array_merge($ignore, array('.', '..', '.DS_Store', 'Thumbs.db'));
-	    $handle     = opendir($dir);
-	    $array      = array();
-	    
-	    while(false !== ($entry = readdir($handle))):
-	        $entry = trim($entry);
-	        if(!in_array($entry, $ignore)):
-	            if(is_dir("$dir/$entry")):
-	                $array[$entry] = explore($dir.'/'.$entry, $ignore);
-	            endif;
-	                
-	        endif;
-	    endwhile;
-	    
-	    rewinddir($handle);
-	    
-	    while(false !== ($entry = readdir($handle))):
-	        if(!in_array($entry, $ignore)):
-	            if(is_file($dir.'/'.$entry)):
-	                $array[$entry] = $entry;
-	            endif;
-	        endif;
-	    endwhile;
-	    
-	    closedir($handle);
-	    
-	    return $array;
-	}
-
 
     /**
-     * Encode a path (such as url_encode() function)
-     * @param string    $path
+     * Encode a path 
+     * @param 	string    $path 	Path to convert
+	 * @return	string				Returns the encoded path
+	 * @note Instead of the native url_encode function, accented letters are converted to non accented ones
     **/
     function path_encode($string) {
         

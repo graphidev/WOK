@@ -41,20 +41,7 @@
         
 		return SYSTEM_ROOT.$path;
 	}
-
-
-    /**
-     * Load library if available.
-	 * Deprecated : Use Fn::load instead
-	 * @deprecated 
-    **/
-    function load_library($name) {
-        if(!file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES."/$name.library.php"))
-			trigger_error('Library '.$name.' can\'t be loaded with load_library($name). File '.$name.'.library.php not found.', E_USER_ERROR);
-                    
-        require_once $library;
-    }
-
+	
     
     /**
      * Get accepted languages

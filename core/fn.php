@@ -4,7 +4,7 @@
      * Functions autoloader that allow you to get 
      * functions access without calling file
 	 *
-	 * @package Libraries
+	 * @package Core
     **/
     class Fn {
         

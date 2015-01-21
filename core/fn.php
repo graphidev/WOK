@@ -4,6 +4,7 @@
      * Functions autoloader that allow you to get 
      * functions access without calling file
 	 *
+	 * @note	Classes are autoloaded. You don't need this to load them.
 	 * @package Core
     **/
     class Fn {

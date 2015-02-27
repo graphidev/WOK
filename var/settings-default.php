@@ -1,8 +1,8 @@
-<?php 
+<?php
 /**
  *
  *	This file contains all the system settings. This parameters are defined at the setup step.
- *	
+ *
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
  *		/!\ Changing these parameters may cause permanent damages and malfunctions /!\
  *	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**	**
@@ -22,12 +22,13 @@
 	const SYSTEM_TIMEZONE               = 'Europe/Paris'; // System timezone
     const SYSTEM_LANGUAGES              = 'en_EN'; // System accepted languages (separate with space)
 
-    
+
     /**
      * Project environnement state
     **/
     const SYSTEM_DEBUG                  = true;
     const SYSTEM_MAINTENANCE            = false;
+    const ERROR_REPORTING_LEVEL         = E_ALL;
 
 
     /**

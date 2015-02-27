@@ -455,22 +455,20 @@
          * Output response
          * (execute last defined response)
         **/
-        public function render($reset = false) {
+        public function render($headers) {
             
             try { 
-                
-                if($reset) // Reset headers
-                    $this->cache(self::DISABLE_CACHE, self::CACHE_PRIVATE);
-                
-                // Send headers
-                http_response_code($this->code);
-                foreach($this->headers as $name => $value) {
-                    @header("$name: $value", true);
-                }
+                    
+				if($headers) { // Send headers
+					http_response_code($this->code);
+					foreach($this->headers as $name => $value) {
+						@header("$name: $value", true);
+					}
+				}
 				
                 // Output content
                 if(is_closure($this->content)):
-                    call_user_func($this->content, array($this));
+                    return call_user_func($this->content, array($this));
 
                 else:
 				
@@ -480,7 +478,7 @@
                     if(is_closure($this->handler)) // Apply a callback
                        $this->content = call_user_func($this->handler, $this->content, $this->data, $this->code);
 
-                    echo $this->content;
+                    return $this->content;
 
                 endif;
                               

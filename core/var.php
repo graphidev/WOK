@@ -15,11 +15,11 @@
 		private static $variables = array();
 
 
-		/**
-		 * Disable construction method
-		 * This class have to been used statically
-		**/
+		// Disable object instanciation method
+		// This class have to been used statically
 		private function __construct() {}
+		private function __destruct() {}
+		private function __clone() {}
 
 
 		/**

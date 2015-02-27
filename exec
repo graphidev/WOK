@@ -1,37 +1,48 @@
+#!/usr/bin/env php
 <?php
 
-	/**
-	 * Load settings and define autoloader
-	**/
-	if(! require_once 'core/init.php' )
-		exit('System settings not available');
+	require_once 'core/init.php';
 
 	/**
-	 * Load HTTP requierements
+	 * Prevent non CLI usage
 	**/
-	require_once 'core/http.php';
+	if(! (!getenv('SERVER_SOFTWARE') && (PHP_SAPI == 'cli' || (is_numeric(getenv('argc')) && getenv('argc') > 0))) )
+	   trigger_error('Non CLI usage prohibited', E_USER_ERROR);
 
-	App::init(new Request);
-
-	App::router()->register()
-
-	App::request()
-
-	Request::set($entrypoint);
 
 	/**
-	 * Initialize request form the entry point
-	 * As of HTTP request, every parameter will be calculated
+	 * Output framework version
+	 * Use `-v` or `--version` syntax
 	**/
-	Console::init(); // Forced initialization
-	Request::parse();
+	$cmd = getopt('v', array('version'));
+	if(isset($cmd['v']) || isset($cmd['version'])) {
+		echo WOK_VERSION.PHP_EOL;
+		exit;
+	}
 
-	$stdin = fopen('php://stdin', 'r');
-	$d = stream_get_contents($stdin);
-	var_dump($stdin,$d);
-	exit;
+	// artisan controller:action -l fr_FR --param value
+	Router::register('Tools:cleanCache', array(
+		'parameters' => array(
+			'folder' => '[a-z]+'
+		)
+	));
 
- 	/**
+	/**
+	 * Initialize the entrypoint
+	**/
+	$app = App::init( new Command($argv) );
+
+	App:run();
+
+	Command::init($argv);
+
+	if(!Command::action())
+		trigger_error('Undefined action. Please allow the following syntax: exec controller:action --param value', E_USER_ERROR);
+
+	Console::init();
+
+
+	/**
      * Start buffering
      * Response will be generated before they will
      * be send. If an error occured, the response
@@ -43,7 +54,6 @@
      * End callback
      * this function will be called at the end of PHP execution
     **/
-
     register_shutdown_function(function() {
 
         /**
@@ -55,6 +65,7 @@
 
             ob_clean(); // Clean buffer
 
+			/* @TODO output text response */
             Response::view('error', 500)->assign(array(
                 //'code' => $e->getCode(),
                 'message' => $error['message'],
@@ -62,21 +73,12 @@
 			->render(true);
         }
 
+		echo PHP_EOL;
+
     });
 
 
-    /**
-     * Ongoing maintenance
-     * Output a 503 response
-    **/
-    if(SYSTEM_MAINTENANCE) {
-        Response::view('maintenance', 503)
-            ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance')
-            ->render(true);
-        exit;
-    }
-
-    /**
+	/**
      * Set Custom routes and filters
      * Note that XML manifest and in-app PHP manifest
      * can both be used on the same instance.
@@ -88,25 +90,32 @@
     if(file_exists(root(PATH_VAR.'/filters.php')))
         require_once(root(PATH_VAR.'/filters.php'));
 
-    /**
+
+
+	/**
      * Output response according to controller's return
      * Return false if no route have been find
     **/
-	$route = Router::find(Request::uri(), Request::method(), Request::domain());
+	$route = Router::match(Command::action(), Command::parameters());
 
 	if(!$route) // Route not found
-		$response = Response::view('404', 404)->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');
+		$response = Response::content(function() {
+			echo 'Controller not found';
+			return false;
+		});
 
-	elseif($route instanceof Response) // Rerouted
+	if($route instanceof Response) // Rerouted
 		$response = $route;
 
 	elseif($route instanceof StdClass) // Route found
-		$response = Dispatcher::run($action->controller, $action->parameters);
-	
-	// Generate response
-	$response->render(true);
+		$response = Dispatcher::run($route->controller, $route->parameters);
 
-    /**
+
+	// Generate response
+	$output = $response->render(false);
+
+
+	 /**
      * Shutdown if there was at least one error
      * during the response generation
      * This will call the shutdown callback
@@ -123,4 +132,4 @@
     **/
     ob_end_flush();
 
-	exit;
+	exit($output);

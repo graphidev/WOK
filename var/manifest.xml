@@ -21,7 +21,18 @@
             - name (required) : The parameter's name
             - regexp (required) : The parameter's pattern
     -->
-
+    
+    <route action="CLI:action">
+    	<param name=""></param>
+    </route>
+    
+    <!-- Development views -->
+    <route uri="/development" action="Development:index" filter="debug" />
+    <route uri="/development/cache" action="Development:cache" filter="debug" />
+    <route uri="/development/settings" action="Development:settings" filter="debug"></route>
+	
+  	<route uri="/cmdline" action="Development:commandLine" filter="cli" />
+   
     <route uri="/cms" action="CMS:index" />
     <route uri="/cms/:page(\.:extension)?" action="CMS:page">
         <param name="page" regexp="[a-z0-9_/-]+" />

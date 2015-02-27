@@ -6,19 +6,34 @@
      *
      * @package Core
     **/
-    class Request {
+    class Request extends Entrypoint {
         
         protected static $query     = '/';
         protected static $uri       = '/';
+		protected static $headers	= array();
         protected static $method    = 'GET';
         protected static $format    = null;
-        protected static $language  = SYSTEM_DEFAULT_LANGUAGE;
-        protected static $inputs    = array();
-        
+		protected static $inputs    = array();
+		
         /**
          * Prevent the usage of the __construct() method
         **/
-        private function __construct(){}
+        private function __construct() {}
+		
+		
+		/**
+		 * Get instance of Request
+		**/
+		
+		/**
+		 * Get request informations
+		**/
+		public function __get($name) {
+			if(isset(self::$$name))
+				trigger_error('Request: undefined information '.$name, E_USER_ERROR);
+			
+			return self::$$name;
+		}
         
         /**
          * Build request and define current controller:action to use
@@ -27,28 +42,28 @@
             
             /** Request parameters définition **/
             self::$query        = substr($_SERVER['REQUEST_URI'], strlen(SYSTEM_DIRECTORY));
-            self::$uri          = (strpos(self::$query, '?') ? strstr(self::$query, '?', true) : self::$query);
-            self::$format        = pathinfo(self::$uri, PATHINFO_EXTENSION);
-            self::$method        = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
-            
+            self::$uri         	= (strpos(self::$query, '?') ? strstr(self::$query, '?', true) : self::$query);
+            self::$format       = pathinfo(self::$uri, PATHINFO_EXTENSION);
+            self::$method       = mb_strtoupper($_SERVER['REQUEST_METHOD']);            
+            self::$headers		= getallheaders();
             
             /** Language definition **/
             $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
             if(Cookie::exists('language', true) && in_array($language = Cookie::get('language'), $languages)) {
-                self::$language = $language;
+                parent::$language = $language;
             }
             elseif(Session::exists('language', true) && in_array($language = Session::get('language'), $languages)) {
-                self::$language = Session::get('language');   
+                parent::$language = Session::get('language');   
             }
             elseif(!empty($languages)) {
-                self::$language = array_shift($languages);
+                parent::$language = array_shift($languages);
             }
             else {
-                self::$language = SYSTEM_DEFAULT_LANGUAGE;   
+                parent::$language = SYSTEM_DEFAULT_LANGUAGE;   
             }
-
-            Session::set('language', self::$language);
-            Cookie::set('language', self::$language, 15811200);
+			
+            Session::set('language', parent::$language);
+            Cookie::set('language', parent::$language, 15811200);
             
             
             /** Force $_GET parameters definition **/
@@ -108,7 +123,7 @@
         **/
         public static function header($parameter, $split = false) {
             if(!isset($_SERVER[$parameter]))
-                trigger_error("Request header $parameter does not exists", E_USER_ERROR);
+                return false;
                 
             return ($split ? explode(',', $_SERVER[$parameter]) : $_SERVER[$parameter]);     
         }
@@ -132,20 +147,14 @@
         
         
         /**
-         * Check CLI request life
-         * @return boolean
-        **/
-        public static function cli() {
-            return (!isset($_SERVER['SERVER_SOFTWARE']) && (PHP_SAPI == 'cli' || (is_numeric($_SERVER['argc']) && $_SERVER['argc'] > 0)));
-        }
-        
-        
-        /**
          * Check or get method
          * @param string $verify
          * @return mixed (boolean, string)
         **/
-        public static function method() {
+        public static function method($value = null) {
+			if(!empty($method))
+				return ($method == mb_strtouper($value));
+			
             return self::$method;
         }
         
@@ -172,14 +181,6 @@
         **/
         public static function query() {
             return self::$query;     
-        }
-        
-        /**
-         * Get request language 
-         * @return string
-        **/
-        public static function language() {
-            return self::$language;     
         }
         
         /**

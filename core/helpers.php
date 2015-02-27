@@ -1,16 +1,16 @@
 <?php
-    
+
     /**
-     * This file contains all the helpers functions. 
+     * This file contains all the helpers functions.
      * Beware, some of them use some configuration constants
      *
      * @package Core/Helpers
     **/
 
-    
+
     /**
      * Generate an absolute URL with local project configuration
-     * 
+     *
      * @param   string      $path 		The path to extend
      * @param   string      $domain		The base domain
      * @param   string      $protocol	The protocol to use
@@ -19,16 +19,16 @@
 	 * @note	This function could be used to define an external URL. However is not recommended.
     **/
 	function path($path = null, $domain = SYSTEM_DOMAIN, $protocol = SYSTEM_PROTOCOL, $port = null) {
-        
+
         $domain = str_replace('~', SYSTEM_DOMAIN, $domain); // Default domain usage
         if(!empty($port)) $port = ":$port"; // Adding port if defined
-                
+
         if(($length = strlen(SYSTEM_DIRECTORY)) != 0 && substr($path, 0, $length) == SYSTEM_DIRECTORY)
             $path = substr($path, $length);
-               
+
         return "$protocol://$domain$port".SYSTEM_DIRECTORY.$path;
 	}
-	
+
 
 	/**
      * Prefix path with the project root's path
@@ -38,14 +38,14 @@
 	 * @note This function does not expand symbolic links as realpath()
     **/
 	function root($path = null) {
-		
+
         // Windows' server compatibility
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
 		return SYSTEM_ROOT.$path;
-		
+
 	}
-	
-    
+
+
     /**
      * Get the user accepted languages
      *
@@ -53,22 +53,22 @@
      * @return 	array					Returns an array of locales codes
     **/
     function get_accepted_languages(array $reference = array()) {
-        if(!empty($_SERVER['HTTP_ACCEPT_LANGUAGE']))         
-            $accepted = explode(',', str_replace('-', '_', $_SERVER['HTTP_ACCEPT_LANGUAGE']));
+        if(isset($_SERVER) && !empty( $_SERVER['HTTP_ACCEPT_LANGUAGE']))
+            $accepted = explode(',', str_replace('-', '_', getenv('HTTP_ACCEPT_LANGUAGE') ));
         else
             $accepted = explode(' ', SYSTEM_LANGUAGES);
-        
+
         if(!empty($reference))
             $languages = array_intersect($accepted, $reference);
-        
+
         else
             $languages = $accepted;
-                
-        return $languages;        
+
+        return $languages;
     }
 
 
-    
+
     /**
      * Returns a locale's value
      *
@@ -78,7 +78,7 @@
 	 * @note Shortcut of Locales::_e() method
     **/
     function _e($path, $data = array(), $language = null) {
-        return Locales::_e($path, $data, (!empty($language) ? $language : Request::language()));
+        return Locales::_e($path, $data, (!empty($language) ? $language : Entrypoint::language()));
     }
 
 
@@ -92,7 +92,7 @@
     function xml_encode($array, $xml = 'document'){
         if(!is_object($xml))
             $xml = new SimpleXMLElement("<$xml/>");
-                
+
         foreach($array as $key => $value) {
             if(is_array($value)):
                 print_r($value);
@@ -104,13 +104,13 @@
 
         return $xml->asXML();
     }
-    
+
 
 
     /**
      * Order a two-dimensional array by a key
      *
-     * @param   array       $array			Array to order	
+     * @param   array       $array			Array to order
      * @param   string      $index			Key to use for ordering
      * @param   boolean     $ascending		Wether ascending order or not
      * @return  array						Returns the ordered array
@@ -122,15 +122,15 @@
             $ordered[$item[$index].$key] = $item;
         }
         ksort($ordered);
-        
+
         $array = array();
         foreach($ordered as $item){
             $array[]= $item;
         }
-        
-        if($ascending) 
+
+        if($ascending)
             $array = array_reverse($array);
-        
+
         return $array;
     }
 
@@ -144,7 +144,7 @@
     **/
     function array_dot($array, $prepend = '') {
         $output = array();
-  
+
         foreach ($array as $key => $value) {
 
             if(is_array($value))
@@ -152,9 +152,9 @@
 
             else
                 $output[$prepend.$key] = $value;
-            
+
          }
- 
+
          return $output;
     }
 
@@ -169,12 +169,12 @@
     **/
     function array_set($path, $value, &$array = array()) {
         $segments = explode('.', $path);
-        
+
         foreach($segments as $index){
             $array[$index] = null;
             $array = &$array[$index];
         }
-        
+
         $array = $value;
         return $array;
     }
@@ -189,19 +189,19 @@
     **/
     function array_value($path, $array, $default = null) {
         if(!empty($path)) {
-            
+
             $keys = explode('.', $path);
             foreach ($keys as $key) {
-                
+
                 if (isset($array[$key]))
                     $array = $array[$key];
                 else
                     return $default;
-                
+
             }
-            
+
         }
- 
+
         return $array;
     }
 
@@ -218,14 +218,14 @@
         foreach($segments as $i => $index){
             if(!isset($array[$index]))
                 return false;
-            
+
             if($i < $last)
                 $array = &$array[$index];
         }
-                
+
         if(!isset($array[$segments[$last]]))
             return false;
-        
+
         unset($array[$segments[$last]]);
         return true;
     }
@@ -244,20 +244,20 @@
 			$finfo = finfo_open($const);
 				return finfo_file($finfo, $file);
 			finfo_close($finfo);
-    
+
 		elseif(function_exists('mime_content_type')):
 			return mime_content_type($file);
-			
+
 		elseif(function_exists('exec')):
 			$mime = trim(exec('file -b --mime-type '.escapeshellarg($file)));
 			if (!$mime)
 		    	$mime = trim(exec('file --mime '.escapeshellarg($file)));
 		    if (!$mime)
 		    	$mime = trim(exec('file -bi '.escapeshellarg($file)));
-		    
+
 		    return $mime;
 		endif;
-		
+
 		return false;
 	}
 
@@ -271,20 +271,20 @@
      * @param   boolean           $force        Force convertion of still converted entities
      * @return  string|array                    Converted data
     **/
-    function entitieschars($data, $flags = ENT_COMPAT, $substrings = false,  $force = true) {    
+    function entitieschars($data, $flags = ENT_COMPAT, $substrings = false,  $force = true) {
         if(is_array($data) || $data instanceof Traversable) {
             foreach($data as $item => $value) {
-                $data[$item] =  entitieschars($value);  
-            }   
+                $data[$item] =  entitieschars($value);
+            }
         }
-        
+
         elseif(is_string($data)) {
             $data = $substrings ? htmlentities($data, $flags, 'UTF-8', $force) : htmlspecialchars($data, $flags, 'UTF-8', $force);
         }
-       
+
         return $data;
     }
-	
+
 
 	/**
      * Create directory's path recursively if it not exists
@@ -295,49 +295,49 @@
 	 * @note This function could returns false in case of in the lack of writing permission (errors generation disabled)
     **/
 	function mkpath($path, $mode = 0755) {
-		return is_dir($path) || @mkdir($path, $mode, true); 
+		return is_dir($path) || @mkdir($path, $mode, true);
 	}
 
     /**
      * Remove all directory's content and itself.
-     * 
+     *
      * @param    	string      $path       The directory's path
 	 * @return 		boolean		Return wether the folder have been removed or not
-	 * @note 	Could returns false in case of in the lack of writing permission (errors generation disabled). 
+	 * @note 	Could returns false in case of in the lack of writing permission (errors generation disabled).
 	 *			The process is stopped at the first error.
     **/
     function rmpath($dir) {
-        
+
         $data = scandir($path = $dir);
-        
+
         foreach($data as $file) {
             if(!in_array($file, array('.', '..'))) {
-                
+
                 if(is_file($path.'/'.$file) || is_link($path.'/'.$file)) {
                     if(!@unlink($path.'/'.$file)) return false;
                 }
 
                 elseif(is_dir($path.'/'.$file)) {
                     if(!rmpath($dir.'/'.$file)) return false;
-                    
+
                 }
-                
-            }   
+
+            }
         }
-        
+
         return @rmdir($path);
-        
+
     }
-    
+
 
     /**
-     * Encode a path 
+     * Encode a path
      * @param 	string    $path 	Path to convert
 	 * @return	string				Returns the encoded path
 	 * @note Instead of the native url_encode function, accented letters are converted to non accented ones
     **/
     function path_encode($string) {
-        
+
         $string = str_replace(array( // Characters replacements
             'á','à','â','ã','ª','ä','å','Á','À','Â','Ã','Ä','é','è','ê','ë','É','È','Ê','Ë',
             'í','ì','î','ï','Í','Ì','Î','Ï','œ','ò','ó','ô','õ','º','ø','Ø','Ó','Ò','Ô','Õ',
@@ -346,20 +346,20 @@
             'a','a','a','a','a','a','a','A','A','A','A','A','e','e','e','e','E','E','E','E',
             'i','i','i','i','I','I','I','I','oe','o','o','o','o','o','o','O','O','O','O','O',
             'u','u','u','U','U','U','c','C','N','n'
-        ), $string); 
-        
+        ), $string);
+
         // Special characters replaced with a dash
         $string = str_replace(array(' ', '/', '+'), '-', $string);
-        
+
         // Remove not authorized characters
         $string = preg_replace('#[^a-z0-9_-]#i', '', $string);
-        
-        return urlencode($string);   
+
+        return urlencode($string);
     }
 
-    
+
     /**
-     * Prevent magic quotes 
+     * Prevent magic quotes
 	 *
      * @note Magic quotes deprecated as of PHP 5.3 and removed as of PHP 5.4)
      * @param 	mixed 	$input		Information in which magic quotes have to be stripped
@@ -368,83 +368,20 @@
     function strip_magic_quotes($input) {
 		if(get_magic_quotes_gpc()):
 			if(is_array($input)):
-            
-				foreach($input as $k => $v) 
+
+				foreach($input as $k => $v)
 					$input[$k] = stripslashes($v);
-        
+
 			else:
-        
+
 				$input = stripslashes($input);
-        
+
 			endif;
 		endif;
-	
+
 		return $input;
 	}
 
-
-    if(!function_exists('http_response_code')):
-
-        /**
-         * Generate header status
-		 *
-		 * @note This function is the same as defined in PHP < 5.4
-		 * @see http://php.net/http_response_code
-         * @param 	integer   	$code		Corresponding HTTP code
-         * @return 	integer		Returns the defined code
-        **/
-        function http_response_code($code) {
-            switch($code) {
-                case 100: $message = 'Continue'; break;
-                case 101: $message = 'Switching Protocols'; break;
-                case 200: $message = 'OK'; break;
-                case 201: $message = 'Created'; break;
-                case 202: $message = 'Accepted'; break;
-                case 203: $message = 'Non-Authoritative Information'; break;
-                case 204: $message = 'No Content'; break;
-                case 205: $message = 'Reset Content'; break;
-                case 206: $message = 'Partial Content'; break;
-                case 300: $message = 'Multiple Choices'; break;
-                case 301: $message = 'Moved Permanently'; break;
-                case 302: $message = 'Moved Temporarily'; break;
-                case 303: $message = 'See Other'; break;
-                case 304: $message = 'Not Modified'; break;
-                case 305: $message = 'Use Proxy'; break;
-                case 400: $message = 'Bad Request'; break;
-                case 401: $message = 'Unauthorized'; break;
-                case 402: $message = 'Payment Required'; break;
-                case 403: $message = 'Forbidden'; break;
-                case 404: $message = 'Not Found'; break;
-                case 405: $message = 'Method Not Allowed'; break;
-                case 406: $message = 'Not Acceptable'; break;
-                case 407: $message = 'Proxy Authentication Required'; break;
-                case 408: $message = 'Request Time-out'; break;
-                case 409: $message = 'Conflict'; break;
-                case 410: $message = 'Gone'; break;
-                case 411: $message = 'Length Required'; break;
-                case 412: $message = 'Precondition Failed'; break;
-                case 413: $message = 'Request Entity Too Large'; break;
-                case 414: $message = 'Request-URI Too Large'; break;
-                case 415: $message = 'Unsupported Media Type'; break;
-                case 500: $message = 'Internal Server Error'; break;
-                case 501: $message = 'Not Implemented'; break;
-                case 502: $message = 'Bad Gateway'; break;
-                case 503: $message = 'Service Unavailable'; break;
-                case 504: $message = 'Gateway Time-out'; break;
-                case 505: $message = 'HTTP Version not supported'; break;
-                default:
-                    $code = 200;
-                    $message = 'OK';
-                break;
-            }
-
-            $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1');
-            header("$protocol $code $message", true, $code);
-            return $code;
-        }
-
-    endif;
-    
     /**
      * Check if the variable is a closure function
      * @param 	mixed     $variable		Variable to check
@@ -460,7 +397,7 @@
 	 * @return 	boolean						Returns wether the variable is a closure or a function name either none of these.
     **/
     function is_function(&$variable) {
-        return function_exists($variable) || is_closure($variable);   
+        return function_exists($variable) || is_closure($variable);
     }
 
 ?>

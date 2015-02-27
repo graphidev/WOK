@@ -1,4 +1,4 @@
-<?php 
+<?php
 
     /**
      *    Welcome in WOK initialize file
@@ -10,23 +10,23 @@
 	 * @package System
      *
     **/
-    
+
 	const WOK_MAJOR_VERSION        = 1; // Major version
 	const WOK_MINOR_VERSION        = 3; // Minor version
 	const WOK_RELEASE_VERSION      = 4; // Release version
 	const WOK_EXTRA_RELEASE        = 'stable'; // Extra version
-    
+
     // Define full WOK version (without extra release)
 	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);
-	
-    
+
+
     /*
      * The following lines will define default path of essential tools.
      * We suggest you to let them as they are for a better compatibility.
     **/
 
     // Define absolute root path
-	define('SYSTEM_ROOT', dirname(__DIR__)); 
+	define('SYSTEM_ROOT', dirname(__DIR__));
 
     const PATH_CORE             = '/core'; // Core path
     const PATH_VAR              = '/var'; // Config path
@@ -40,22 +40,31 @@
 	const PATH_TEMPLATES        = '/templates'; // Template's directory path
     const PATH_FILES            = '/files'; // Files' directory
     const PATH_TMP_FILES        = '/files/tmp'; // Temporary files' directory
+
+
+    /**
+     * Set UTF-8 as internal encoding
+     * and as response encoding
+    **/
+    mb_internal_encoding('UTF-8');
+    mb_http_output('UTF-8');
     
+
     /*
      * Once we have pathes, we can call essential libraries.
-     * But you first need to have a settings.php file. 
-     * Thereof contains all required constants to have functionnal libraries. 
+     * But you first need to have a settings.php file.
+     * Thereof contains all required constants to have functionnal libraries.
      * Without it, some troubles may appear.
     **/
     if(file_exists(SYSTEM_ROOT.PATH_VAR.'/settings.php')):
-        
+
         /**
          * All right ! Settings file exists.
          * We can load settings and required libraries
         **/
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
         require_once SYSTEM_ROOT.PATH_CORE . '/utf8.php'; // UTF-8 compatible functions
-        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers     
+        require_once SYSTEM_ROOT.PATH_CORE . '/helpers.php'; // Framework helpers
 
         /**
          * Initialize session
@@ -75,48 +84,48 @@
         */
         define('SYSTEM_DEFAULT_LANGUAGE', (strpos(SYSTEM_LANGUAGES, ' ') === false ? SYSTEM_LANGUAGES : strstr(SYSTEM_LANGUAGES, ' ', true)));
         setLocale(LC_ALL, SYSTEM_DEFAULT_LANGUAGE.'.UTF-8');
-    
+
         /**
          * Autoload libraries
          * Core, Controllers, Models and external libraries
         **/
         spl_autoload_register(function($name) {
-            
+
             $path = strtolower(str_replace('\\', DIRECTORY_SEPARATOR, $name));
-            
+
             /**
              * Exceptions
             **/
             if(substr($name, -9) == 'Exception')
                 require_once SYSTEM_ROOT.PATH_CORE . '/exceptions.php';
-            
+
             /**
              * Core libraries
             **/
             $class = strtolower($name);
             if(file_exists($class = SYSTEM_ROOT.PATH_CORE . "/$class.php"))
                 require_once $class;
-            
+
             /**
              * Controllers
             **/
             $controller = str_replace('controllers/', '', $path);
             if(file_exists($controller = SYSTEM_ROOT.PATH_CONTROLLERS . "/$controller.ctrl.php"))
                 require_once $controller;
-            
+
             /**
              * Models
             **/
             $model = str_replace('models/', '', $path);
             if(file_exists($model = SYSTEM_ROOT.PATH_MODELS . "/$model.mdl.php"))
                 require_once $model;
-            
+
             /**
              * External libraries
-            **/            
+            **/
             if(file_exists($library = SYSTEM_ROOT.PATH_LIBRARIES . "/$path.class.php"))
                 require_once $library;
-            
+
         });
 
         /**
@@ -125,7 +134,7 @@
         **/
         if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
 			require_once $options;
-        
+
 		/**
 		 * Prevent not loaded settings
 		 * This can be catched by include script

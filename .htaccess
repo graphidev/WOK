@@ -9,3 +9,11 @@
     #RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . index.php [L]
 </IfModule>
+
+# NGINX URL rewriting
+#if (!-f $request_filename){
+#	set $rule_0 1$rule_0;
+#}
+#if ($rule_0 = "1"){
+#	rewrite /. /index.php last;
+#}

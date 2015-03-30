@@ -35,9 +35,9 @@
         const CACHE_PROTECTED       = 'PROTECTED'; // Cache for autheticaed only
         const CACHE_PRIVATE         = 'PRIVATE'; // Cache private
         const DISABLE_CACHE         = 0; // Do not cache
-        const CACHETIME_SHORT       = 360; // 1 minutes
-        const CACHETIME_MEDIUM      = 216000; // 1 hour
-        const CACHETIME_LONG        = 5184000; // 24 hours
+        const CACHETIME_SHORT       = 1; // 60 secondes
+        const CACHETIME_MEDIUM      = 60; // 1 hour
+        const CACHETIME_LONG        = 1440; // 24 hoursf
 
         /**
          * Generate a new response object
@@ -90,56 +90,61 @@
         }
 
         /**
-         * Generate response cache
-         * Use headers and file
-         * @param integer   $time
-         * @param string    $status
-         * @param mixed     $file
-        **/
-        public function cache($time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED, $file = false) {
-            // Private cache : do not cache
-            if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
-                $headers = array(
-                    'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
-                    'Pragma'         => 'no-cache'
-                );
+	 * Initialize cache (both file and HTTP headers)
+	 * @param string	$file		File wherein the response will be cached
+	 * @param integer   $time		Duration (minutes) of the cache (both used by file and HTTP)
+	 * @param string 	$status 	Set either the cache is public, protected or private
+	**/
+	public function cache($file = null, $time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED) {
+		
+		// Set time unit as minutes
+		$time = $time * 60;
+		
+		// Private cache : do not cache
+		if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
+			$headers = array(
+				'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
+				'Pragma'         => 'no-cache'
+			);
 
-            // Public
-            elseif($time):
-                $headers['Cache-Control'] =  "max-age=$time, s-maxage=$time";
+		// Public
+		elseif($time):
+			$headers['Cache-Control'] =  "max-age=$time, s-maxage=$time";
 
-                if($status == self::CACHE_PROTECTED): // Public but do not cache
-                    $headers['Cache-Control'] .= ', public, no-cache, must-revalidate';
-                    $headers['Pragma'] = 'no-cache';
+			if($status == self::CACHE_PROTECTED): // Public but do not cache
+				$headers['Cache-Control'] .= ', public, no-cache, must-revalidate';
+				$headers['Pragma'] = 'no-cache';
 
-                else: // Public : cache if possible
-                    $headers['Cache-Control'] .= ', public';
-                    $headers['Pragma'] = 'cache';
+			else: // Public : cache if possible
+				$headers['Cache-Control'] .= ', public';
+				$headers['Pragma'] = 'cache';
 
-                endif;
+			endif;
 
-                $date = new \DateTime(date('r', time()+$time));
-                $date->setTimezone(new \DateTimeZone('GMT'));
-                $headers['Expires'] = $date->format('r');
-            endif;
+			$date = new \DateTime(date('r', time()+$time));
+			$date->setTimezone(new \DateTimeZone('GMT'));
+			$headers['Expires'] = $date->format('r');
+		endif;
 
-            // Send headers
-            $headers['Cache-Control'] .= ', no-transform'; // Never transform outputed data
-            $headers['Vary'] = 'Accept-Encoding';
+		// Never transform outputed data
+		$headers['Cache-Control'] .= ', no-transform'; 
+		$headers['Vary'] = 'Accept-Encoding';
+		
+		// Set response headers
+		$this->headers($headers);
+	
+		 // Set cache file
+		if($file && !SYSTEM_DEBUG):
+			$this->cachetime = $time;
+			$this->cachefile = 'output/'.Session::get('language').'/'.$file;
 
-            $this->headers($headers);
+			if($status == self::CACHE_PROTECTED)
+				$this->cachefile .= '-'.session_id();
 
-            if($file && !SYSTEM_DEBUG): // Cache file
-                $this->cachetime = $time;
-			 	$this->cachefile = 'output/'.Session::get('language').'/'.$file;
+		endif;
 
-                if($status == self::CACHE_PROTECTED)
-                    $this->cachefile .= '-'.session_id();
-
-            endif;
-
-            return $this;
-        }
+		return $this;
+	}
 
         /**
          * Redirect permanently or temporarily

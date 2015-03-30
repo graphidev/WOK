@@ -120,19 +120,20 @@
 
 
     /**
-     * Flatten a multi-dimensional associative array with dots.
+     * Flatten a multi-dimensional associative array.
      *
      * @param  array   	$array			Array to flat
+     * @param  string  	$separator		Items separator
      * @param  string  	$prepend		Items prefix
      * @return array					Returns a flatten array
     **/
-    function array_dot($array, $prepend = '') {
+    function array_flat($array, $separator = '.', $prepend = '') {
         $output = array();
 
         foreach ($array as $key => $value) {
 
             if(is_array($value))
-                $output = array_merge($output, array_dot($value, $prepend.$key.'.'));
+                $output = array_merge($output, array_flat($value, $separator, $prepend.$key.$separator));
 
             else
                 $output[$prepend.$key] = $value;
@@ -149,13 +150,16 @@
      * @param   string  	$path		Array's keys path
      * @param   mixed   	$value		Value to associate to the final key
      * @param   array   	$array		Source array that will contains the value
+	 * @param   string  	$path		Path items separator
      * @return  array					Returns the alterated array
     **/
-    function array_set($path, $value, &$array = array()) {
-        $segments = explode('.', $path);
+    function array_set($path, $value, &$array = array(), $separator = '.') {
+        $segments = explode($separator, $path);
 
         foreach($segments as $index){
-            $array[$index] = null;
+			if(!isset($array[$index]))
+            	$array[$index] = null;
+				
             $array = &$array[$index];
         }
 
@@ -169,12 +173,14 @@
      *
      * @param   string  	$path		Array's keys path
      * @param   array   	$array		Array that contains the value
+	 * @param   string  	$default	Default value (not found item)
+	 * @param   string  	$path		Path items separator
      * @return  mixed   				Returns an associated key's value
     **/
-    function array_value($path, $array, $default = null) {
+    function array_value($path, $array, $default = null, $separator = '.') {
         if(!empty($path)) {
 
-            $keys = explode('.', $path);
+            $keys = explode($separator, $path);
             foreach ($keys as $key) {
 
                 if (isset($array[$key]))
@@ -194,10 +200,11 @@
      *
      * @param   string  	$path		Array's keys path
      * @param   array   	$array		Array that contains the key
+	 * @param   string  	$path		Path items separator
      * @return  boolean   				Returns wether the key existed (and have been removed) or not
     **/
-    function array_unset($path, &$array) {
-        $segments = explode('.', $path);
+    function array_unset($path, &$array, $separator = '.') {
+        $segments = explode($separator, $path);
         $last = count($segments)-1;
         foreach($segments as $i => $index){
             if(!isset($array[$index]))

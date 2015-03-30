@@ -37,7 +37,7 @@
         const DISABLE_CACHE         = 0; // Do not cache
         const CACHETIME_SHORT       = 1; // 60 secondes
         const CACHETIME_MEDIUM      = 60; // 1 hour
-        const CACHETIME_LONG        = 1440; // 24 hoursf
+        const CACHETIME_LONG        = 1440; // 24 hours
 
         /**
          * Generate a new response object
@@ -90,61 +90,61 @@
         }
 
         /**
-	 * Initialize cache (both file and HTTP headers)
-	 * @param string	$file		File wherein the response will be cached
-	 * @param integer   $time		Duration (minutes) of the cache (both used by file and HTTP)
-	 * @param string 	$status 	Set either the cache is public, protected or private
-	**/
-	public function cache($file = null, $time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED) {
-		
-		// Set time unit as minutes
-		$time = $time * 60;
-		
-		// Private cache : do not cache
-		if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
-			$headers = array(
-				'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
-				'Pragma'         => 'no-cache'
-			);
+    	 * Initialize cache (both file and HTTP headers)
+    	 * @param string	$file		File wherein the response will be cached
+    	 * @param integer   $time		Duration (minutes) of the cache (both used by file and HTTP)
+    	 * @param string 	$status 	Set either the cache is public, protected or private
+    	**/
+    	public function cache($file = null, $time = self::CACHETIME_SHORT, $status = self::CACHE_PROTECTED) {
 
-		// Public
-		elseif($time):
-			$headers['Cache-Control'] =  "max-age=$time, s-maxage=$time";
+    		// Set time unit as minutes
+    		$time = $time * 60;
 
-			if($status == self::CACHE_PROTECTED): // Public but do not cache
-				$headers['Cache-Control'] .= ', public, no-cache, must-revalidate';
-				$headers['Pragma'] = 'no-cache';
+    		// Private cache : do not cache
+    		if(!$time || $status == self::CACHE_PRIVATE || SYSTEM_DEBUG):
+    			$headers = array(
+    				'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
+    				'Pragma'         => 'no-cache'
+    			);
 
-			else: // Public : cache if possible
-				$headers['Cache-Control'] .= ', public';
-				$headers['Pragma'] = 'cache';
+    		// Public
+    		elseif($time):
+    			$headers['Cache-Control'] =  "max-age=$time, s-maxage=$time";
 
-			endif;
+    			if($status == self::CACHE_PROTECTED): // Public but do not cache
+    				$headers['Cache-Control'] .= ', public, no-cache, must-revalidate';
+    				$headers['Pragma'] = 'no-cache';
 
-			$date = new \DateTime(date('r', time()+$time));
-			$date->setTimezone(new \DateTimeZone('GMT'));
-			$headers['Expires'] = $date->format('r');
-		endif;
+    			else: // Public : cache if possible
+    				$headers['Cache-Control'] .= ', public';
+    				$headers['Pragma'] = 'cache';
 
-		// Never transform outputed data
-		$headers['Cache-Control'] .= ', no-transform'; 
-		$headers['Vary'] = 'Accept-Encoding';
-		
-		// Set response headers
-		$this->headers($headers);
-	
-		 // Set cache file
-		if($file && !SYSTEM_DEBUG):
-			$this->cachetime = $time;
-			$this->cachefile = 'output/'.Session::get('language').'/'.$file;
+    			endif;
 
-			if($status == self::CACHE_PROTECTED)
-				$this->cachefile .= '-'.session_id();
+    			$date = new \DateTime(date('r', time()+$time));
+    			$date->setTimezone(new \DateTimeZone('GMT'));
+    			$headers['Expires'] = $date->format('r');
+    		endif;
 
-		endif;
+    		// Never transform outputed data
+    		$headers['Cache-Control'] .= ', no-transform';
+    		$headers['Vary'] = 'Accept-Encoding';
 
-		return $this;
-	}
+    		// Set response headers
+    		$this->headers($headers);
+
+    		 // Set cache file
+    		if($file && !SYSTEM_DEBUG):
+    			$this->cachetime = $time;
+    			$this->cachefile = 'output/'.Session::get('language').'/'.$file;
+
+    			if($status == self::CACHE_PROTECTED)
+    				$this->cachefile .= '-'.session_id();
+
+    		endif;
+
+    		return $this;
+    	}
 
         /**
          * Redirect permanently or temporarily
@@ -364,27 +364,30 @@
         /**
          * Define file response (also can force download)
          * @param string    $path
-         * @param boolean   $download
+         * @param string    $name
          * @param integer   $status
+         * @param boolean   $download
          *
          * @note Force Content-Type header with headers() method for files such as CSS and JS
         **/
-        public static function file($path, $download = false, $status = 200) {
+        public static function file($path, $name = null, $status = 200, $download = false) {
             $response = new Response;
 
             if(file_exists(root("$path"))) {
 
                 $response->status($status, get_mime_type(root($path)));
 
+                if(empty($name)) $name = basename($path);
+
                 if($download):
                     $response->headers(array(
-                        'Content-Disposition' => 'attachment; filename="'.basename($path).'"',
+                        'Content-Disposition' => 'attachment; filename="'.$name.'"',
                         'Pragma' => 'public',
                         'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0'
                     ));
                 else:
                     $response->headers(array(
-                        'Content-Disposition' => 'inline; filename="'.basename($path).'"'
+                        'Content-Disposition' => 'inline; filename="'.$name.'"'
                     ));
                 endif;
 

@@ -9,7 +9,7 @@
      * @license     BSD <licence.txt>
     **/
 
-    if(! require_once 'framework/init.php')
+    if(! require_once 'framework/init.php' )
         trigger_error('Framework settings not available', E_USER_ERROR);
 
 
@@ -52,7 +52,7 @@
         if(SYSTEM_MAINTENANCE) {
 
             return Response::view('maintenance', 503)
-                ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance')
+                ->cache('maintenance', Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC)
                 ->render();
 
         }
@@ -84,7 +84,7 @@
         // Route not found
         else {
             $response = Response::view('404', 404)
-                ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');
+                ->cache('404', Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC);
         }
 
         return $response->render();

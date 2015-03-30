@@ -38,13 +38,17 @@
         protected $data;
 
 
+
+        //public function __construct($template, $root = true) {}
+
+
         /**
          * Shortcut to the non-static parse method
          * @see View::parse
         **/
-        public static function display($template, array $data = array()) {
+        public static function display($template, array $data = array(), $root = true) {
             $view = new self;
-            return $view->parse($template, $data);
+            return $view->parse($template, $data, $root);
         }
 
 
@@ -59,17 +63,19 @@
          * @param   boolean     $entities       Convert caracters to HTML entites
          * @return  boolean     True if the template file have been called, false otherwise
         **/
-        public function parse($template, array $data = array()) {
+        public function parse($template, array $data = array(), $root = true) {
 
             if(!file_exists($file = root(self::PATH_TEMPLATES.'/'.$template.'.tpl.php')))
-                trigger_error('Template "$template" not found in '.self::PATH_TEMPLATES, E_USER_ERROR);
+                trigger_error('Template "'.$template.'" not found in '.self::PATH_TEMPLATES, E_USER_ERROR);
 
-            $this->path = substr( dirname($file), strlen(SYSTEM_ROOT.self::PATH_TEMPLATES) );
+
+            if($root)
+                $this->path = substr( dirname($file), strlen(SYSTEM_ROOT.self::PATH_TEMPLATES) );
+
             $this->data = new \Framework\Utils\Collection( (array) $data );
 
             ob_start();
 
-            //extract($entities ? entitieschars($data) : $data);
             include $file;
 
             $buffer = ob_get_contents();
@@ -94,7 +100,7 @@
             if(!empty($this->path))
                 $path =  $this->path . '/' . $path;
 
-            echo self::display($path, (!empty($data) ? $data : (array) $this->data));
+            echo self::display($path, (!empty($data) ? $data : (array) $this->data), false);
         }
 
         /**
@@ -102,9 +108,7 @@
          * @param $property    string       Data's name
         **/
         public function __isset($property) {
-
-            return isset($this->data[$property]);
-
+            return (isset($this->data[$property]) && !is_null($this->data[$property]));
         }
 
         /**
@@ -113,8 +117,8 @@
         **/
         public function __get($property) {
 
-            if(!isset($this->data[$property]))
-                trigger_error('View : Unable to get "'.$property.'" data', E_USER_ERROR);
+            if(!isset($this->data[$property]) && !is_null($this->data[$property]))
+                trigger_error('Unable to get "'.$property.'" data in this view', E_USER_ERROR);
 
             return $this->data[$property];
 
@@ -125,7 +129,7 @@
          * @param $property    string       Data's name
         **/
         public function path($asset) {
-            return path(self::PATH_TEMPLATES.$asset);
+            return path(self::PATH_TEMPLATES.$this->path.$asset);
         }
 
     }

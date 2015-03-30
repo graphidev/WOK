@@ -38,9 +38,8 @@
         protected $data;
 
 
-
         //public function __construct($template, $root = true) {}
-
+        
 
         /**
          * Shortcut to the non-static parse method
@@ -50,7 +49,6 @@
             $view = new self;
             return $view->parse($template, $data, $root);
         }
-
 
 
         /**
@@ -103,6 +101,7 @@
             echo self::display($path, (!empty($data) ? $data : (array) $this->data), false);
         }
 
+
         /**
          * Check whether a data exists or not
          * @param $property    string       Data's name
@@ -110,6 +109,7 @@
         public function __isset($property) {
             return (isset($this->data[$property]) && !is_null($this->data[$property]));
         }
+
 
         /**
          * Get data value
@@ -123,6 +123,19 @@
             return $this->data[$property];
 
         }
+
+
+        /**
+         * Get data value
+         * @note Returns the alternative value data is not found
+         * @param   string    $path           Data path
+         * @param   mixed     $alternative    Alternative value
+         * @return  Returns the data value either the alternative one
+        **/
+        public function data($path, $alternative = null) {
+            return array_value($path, $this->data, $alternative, '->');
+        }
+
 
         /**
          * Get assets path

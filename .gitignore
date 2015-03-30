@@ -1,11 +1,7 @@
 .DS_Store
-/var/settings.php
-/files/tmp/*
-/var/tmp/*
-/var/logs/*
-/var/cache/*
-/var/manifest.xml
+/storage/*
 /vendor/*
+/packages/*
 /composer.lock
 /docs/*
 var/settings.php

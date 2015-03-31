@@ -140,6 +140,11 @@
 
                     $parameters = array_intersect_key($parameters, $route['parameters']);
 
+                    // Replace parameters within action
+                    foreach($parameters as $name => $value) {
+                        $action = str_replace(':'.$name, $value, $action);
+                    }
+
                     // Split the controller and its action
                     $controller = strstr($action, '->', true);
                     $method     = substr(strstr($action, '->', false), 2);

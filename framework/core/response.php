@@ -136,7 +136,7 @@
     		 // Set cache file
     		if($file && !SYSTEM_DEBUG):
     			$this->cachetime = $time;
-    			$this->cachefile = 'output/'.Session::get('language').'/'.$file;
+    			$this->cachefile = 'output/'.$file;
 
     			if($status == self::CACHE_PROTECTED)
     				$this->cachefile .= '-'.session_id();
@@ -172,11 +172,13 @@
                 // Update cache file path
                 $response->cachefile .= '.html';
 
-                // Output cached view
-                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)
-                   && Cache::time($response->cachefile) > filemtime(root(View::PATH_TEMPLATES."/$template.php"))):
+                $cache = new Cache($response->cachefile);
 
-                    echo Cache::get($response->cachefile);
+                // Output cached view
+                if(!empty($response->cachetime)
+                    && $cache->recent($response->cachetime, root(View::PATH_TEMPLATES."/$template.php"))):
+
+                    echo $cache->get();
 
                 else: // Generate view
 
@@ -190,7 +192,7 @@
                         $view = call_user_func($response->handler, $view, $response->data, $response->code);
 
                     if(!empty($response->cachetime))
-                        Cache::put($response->cachefile, $view);
+                        $cache->put($view);
 
                     echo $view;
 
@@ -214,9 +216,11 @@
                 // Update cache file path
                 $response->cachefile .= '.html';
 
-                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
+                $cache = new Cache($response->cachefile);
 
-                    echo Cache::get($response->cachefile);
+                if(!empty($response->cachetime) && $cache->recent($response->cachetime)) {
+
+                    echo $cache->get($response->cachefile);
 
                 }
                 else {
@@ -229,7 +233,7 @@
                         $response->data = $content;
 
                     if(!empty($response->cachetime))
-                        Cache::put($response->cachefile, $response->data);
+                        $cache->put($response->cachefile, $response->data);
 
                     echo $response->data;
 
@@ -250,10 +254,13 @@
             $response->status($status, 'application/json; charset=utf-8');
             $response->content = function() use($response, $data) {
 
+                $this->cachefile .= '.json';
 
-                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
+                $cache = new Cache($response->cachefile);
 
-                    echo Cache::get($response->cachefile);
+                if(!empty($response->cachetime) && $cache->recent($response->cachetime)) {
+
+                    echo $cache->get($response->cachefile);
 
                 }
                 else {
@@ -268,7 +275,7 @@
                     $json = json_encode($response->data);
 
                     if(!empty($response->cachetime))
-                        Cache::put($response->cachefile, $json);
+                        $cache->put($response->cachefile, $json);
 
                     echo $json;
 
@@ -292,9 +299,11 @@
                 // Update cache file path
                 $response->cachefile .= '.xml';
 
-                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
+                $cache = new Cache($response->cachefile);
 
-                     echo Cache::get($response->cachefile);
+                if(!empty($response->cachetime) && $cache->recent($response->cachetime)) {
+
+                     echo $cache->get($response->cachefile);
 
                 }
                 else {
@@ -309,7 +318,7 @@
                     $xml = xml_encode($response->data, 'document');
 
                     if(!empty($response->cachetime))
-                        Cache::put($response->cachefile, $xml);
+                        $cache->put($response->cachefile, $xml);
 
                     echo $xml;
 
@@ -333,9 +342,11 @@
                 // Update cache file path
                 $response->cachefile .= '.txt';
 
-                if(!empty($response->cachetime) && Cache::exists($response->cachefile, $response->cachetime)) {
+                $cache = new Cache($response->cachefile);
 
-                    echo Cache::get($response->cachefile);
+                if(!empty($response->cachetime) && $cache->recent($response->cachefile, $response->cachetime)) {
+
+                    echo $cache->get($response->cachefile);
 
                 }
                 else {
@@ -347,7 +358,7 @@
                         $response->data = call_user_func($response->data);
 
                     if(!empty($response->cachetime))
-                        Cache::put($response->cachefile, $response->data);
+                        $cache->put($response->cachefile, $response->data);
 
                     echo $response->data;
 

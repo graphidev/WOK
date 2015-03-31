@@ -1,132 +1,153 @@
 <?php
 
-    /**
-     * Web Operational Kit
-     * The neither huger no micro extensible framework
-     *
-     * @copyright   All right reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
-     * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
-     * @license     BSD <license.txt>
-    **/
+	/**
+	* Web Operational Kit
+	* The neither huger no micro extensible framework
+	*
+	* @copyright   All right reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
+	* @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
+	* @license     BSD <license.txt>
+	**/
 
-    namespace Framework\Core;
+	namespace Framework\Core;
 
-    /**
-     * Store and get cache items
-     *
-     * @package Core
-    **/
-    class Cache {
+	/**
+     * Store and get cached data
+	**/
+	class Cache {
 
-        /**
-         * @const self::PATH_CACHE      Cache storage path
-        **/
-        const PATH_CACHE            = '/storage/cache';
+		/**
+		 * @var string 	$file		Cache file path
+		**/
+		private $file;
 
-        const CACHETIME_SHORT       = 360; // 1 minutes
+		/**
+		 * @const PATH_CACHE		Cache storage folder path
+		**/
+		const PATH_CACHE = '/storage/cache';
+
+		const CACHETIME_SHORT       = 360; // 1 minutes
         const CACHETIME_MEDIUM      = 216000; // 1 hour
         const CACHETIME_LONG        = 5184000; // 24 hours
 		const CACHETIME_UNDEFINED	= 0;
 
 
-        /**
-         * Get cache file path and create necessary subfolders
-         * @param string     $file      Cache file
-        **/
-        private static function path($file) {
-            return root(self::PATH_CACHE.'/'.$file);
-        }
-
 		/**
-		 * Register data and return it if
-		 * the cache file doesn't exists
+		 * Set cache file path
+		 * @param string	$path		Cache file relative path
 		**/
-		public static function register($file, $time, $data) {
-			if(self::exists($file, $time))
-				return self::get($file);
-			else
-				return self::put($file, call_user_func($data));
+		public function __construct($path) {
+			$this->file = root(self::PATH_CACHE.'/'.$path);
 		}
-
-        /**
-         * Check if a cache file is available. It also can check if the file is up to date
-         * @param string    $file     Cache file name
-         * @param integer   $time     Cache file living time
-        **/
-        public static function exists($file, $time = 0) {
-            return (file_exists($path = self::path($file)) && (empty($time) || (!empty($time) && (time() < filemtime($path)+$time) > 0)));
-        }
-
-        /**
-         * Get cache file update time
-         * @param   string  $file       Cache file name
-        **/
-        public static function time($file) {
-            if(!self::exists($file))
-                trigger_error("Cache file $file doesn't exists", E_USER_ERROR);
-
-            return filemtime(self::path($file));
-        }
-
-
-		 /**
-         * Generate a cache file. Replace previous content if still exists
-         * @param   string      $file       Cache file name
-         * @param   mixed       $data       Data to store in the file
-        **/
-		public static function put($file, $data) {
-			$path = self::path($file);
-            mkpath(dirname($path));
-            file_put_contents($path, $data);
-			return $data;
-		}
-
-        /**
-         * Get file cache content
-         * @param string    $file   The file cache name
-        **/
-        public static function get($file) {
-            if(!self::exists($file))
-                trigger_error("Cache file $file doesn't exists", E_USER_ERROR);
-
-            ob_start();
-
-            readfile(self::path($file));
-
-            $buffer = ob_get_contents();
-            ob_end_clean();
-
-            return $buffer;
-
-        }
-
-        /**
-         * Remove a cached file
-         * @param   string  $file   The cached file path
-        **/
-        public static function destroy($file) {
-            if(self::exists($file))
-                unlink(self::path($file));
-        }
 
 		/**
-		 * Clean partially or completely the cache
-		 * @param 	array  	$folders	The folders to clean (optional)
+		 * Check weither the cache file exists or not
+		 * @return Boolean
+		**/
+		public function exists() {
+			return file_exists($this->file);
+		}
+
+
+		/**
+		 * Know if the cache file is most recent than given parameters
+		 * @note This function also apply Cache::exists() method before
+		 * @param 	integer|string		$compare 		The information to compare to
+		 * @return Boolean
+		**/
+		public function recent($compare/*, ...*/){
+
+
+
+			if(!$this->exists())
+				return false;
+
+
+			if(\func_num_args()) {
+				$lastupdate = filemtime($this->file);
+				foreach(\func_get_args() as $compare) {
+					if(
+						(is_int($compare) && $lastupdate > time() + $compare)
+						|| (is_string($compare) && file_exists($compare) && $lastupdate > filemtime($compare))
+					) {
+						return false;
+					}
+				}
+
+			}
+
+			return true;
+
+		}
+
+		/**
+		 * Return the cached data
+		 * @return 	Return the cached data or FALSE if the file doesn't exists
+		**/
+		public function get() {
+			if($this->exists())
+				return file_get_contents($this->file);
+
+			else
+				return false;
+
+		}
+
+		/**
+		 * Register data in the cache file
+		 * @param 	mixed 	$data		Data to store
+		 * @return 	Return the cached data or FALSE if the data have not been stored
+		**/
+		public function put($data) {
+			mkpath(dirname($this->file));
+            $register = file_put_contents($this->file, $data);
+
+			return ($register ? $data : false);
+		}
+
+
+		/**
+		 * Register data in the cache file or return if they are stil available
+		 * @param 	Closure 	$data		Closure that return data to store
+		 * @param 	integer 	$time		Time that the cache file is available
+		 * @return 	Return the cached data or FALSE if the file doesn't exists
+		**/
+		public function register(\Closure $data, $time = 0) {
+
+			if($time && $this->recent($time))
+				return $this->get();
+
+			else
+				return $this->put(call_user_func($data));
+
+		}
+
+		/**
+		 * Remove cache file
+		 * @return 	Boolean of the success of the operation
+		**/
+		public function remove(){
+			if($this->exists())
+				return unlink($this->file);
+		}
+
+
+		/**
+		 * Clean partially or completely the cache files
+		 * @note This function is independant of Cache class objects
+		 * @note If the $folders argument is not set, then every the cache files and folders will be deleted
+		 * @param 	array  	$folders	The folders to clean
 		**/
 		public static function clean(array $folders = array()) {
-
 			if(!empty($folders)) {
 
+				$deleted = false;
 				foreach($folders as $path) {
+					if(is_dir( $folder = root(self::PATH_CACHE.$path) )) {
 
-					$folder = root(self::PATH_CACHE.$path);
+						if(!rmpath($folder)) /* => */ throw new RuntimeException($folder);
 
-					if(!file_exists($folder) || !is_dir($folder))
-						trigger_error('Removing cache: ' . $path . ' is not a folder', E_USER_ERROR);
-
-					elseif(!rmpath($folder))
-						return false;
-
+					}
 				}
 
 			}
@@ -135,10 +156,6 @@
 				return rmpath(root(self::PATH_CACHE));
 
 			}
-
 		}
 
-
-    }
-
-?>
+	}

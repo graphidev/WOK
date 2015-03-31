@@ -63,12 +63,12 @@
             if(!class_exists($controller))
                 trigger_error('Controller ' . $module . ' doesn\'t exists', E_USER_ERROR);
 
-            elseif(!method_exists($controller, $action))
+            elseif(!is_callable(array($controller = new $controller($this->services), $action), false))
                 trigger_error('Action ' . $action . ' doesn\'t exists in controller ' . $controller, E_USER_ERROR);
 
 
             return call_user_func_array(array(
-                new $controller($this->services),
+                $controller,
                 $action
             ), $parameters);
 

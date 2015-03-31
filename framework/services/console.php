@@ -33,6 +33,11 @@
         private $handlers  = array();
 
         /**
+         * @var $format       Log format
+        **/
+        private $format    = '[:type] - :message | :file : :line';
+
+        /**
          * @const   PATH_LOGS       Relative logs path
         **/
         const PATH_LOGS         = '/storage/logs';
@@ -49,7 +54,11 @@
          * Initialize logs and reporting callbacks
          * @param int   $level      Error handling level
         **/
-        public function __construct($level = E_ALL) {
+        public function __construct($level = E_ALL, $format = null) {
+
+            // Set log format
+            if(!empty($format))
+                $this->format = $format;
 
             // Define reporting tools
             error_reporting( $level );
@@ -58,13 +67,40 @@
             set_error_handler(function($type, $message, $file, $line) {
                 if(!(error_reporting() & $type)) return;
 
+                // Get real error caller from backtrace
+                $backtrace = debug_backtrace();
+                $backtrace = array_slice($backtrace, 1);
+
+                foreach($backtrace as $key => $contexte) {
+        			if(empty($contexte['class']) && $contexte['function'] == 'trigger_error')
+        				unset($backtrace[$key]);
+
+        			else
+        				break;
+        		}
+
+                $caller = current($backtrace);
+                $file = $caller['file'];
+                $line = $caller['line'];
+                $type = $this->getType($type);
+
+
                 if(isset($this->handlers[$type]))
                     $prevent = call_user_func($this->handlers[$type], $message, $file, $line);
 
-                if(!isset($prevent) || !$prevent)
-                   $this->log($message, $type, $file, $line);
+                if(!isset($prevent) || !$prevent) {
+                    $this->log($message, $type, $file, $line);
 
-                return !SYSTEM_DEBUG; // Show/hide error message
+                    if(SYSTEM_DEBUG) {
+                        $prevent = true;
+                        echo $this->parse($type, $message, $file, $line) . PHP_EOL;
+                        if($type == 'ERROR') exit;
+                    }
+
+                }
+
+                // Disable/enable built-in behavior (showing error)
+                return (!empty($prevent) ? true : !SYSTEM_DEBUG);
 
             });
 
@@ -99,7 +135,6 @@
             ob_start();
         }
 
-
         /**
          * Register a log. Also can define an error (type)
          * @param   string      $message     Log message
@@ -108,6 +143,39 @@
          * @param   string      $line        Generated log file line
         **/
         public function log($message, $type = self::LOG_NOTICE, $file = null, $line = null) {
+
+            if(!is_string($type))
+                $type = $this->getType($type);
+
+            if(empty($file) || empty($line)) {
+                $backtrace = debug_backtrace();
+                $backtrace = array_shift($backtrace);
+                $file = (!empty($file) ? $file : $backtrace['file']);
+                $line = (!empty($line) ? $line : $backtrace['line']);
+            }
+
+
+            $log = array(
+                'message'   => $message,
+                'type'      => $type,
+                'file'      => $file,
+                'line'      => $line
+            );
+
+            $this->logs[] = $log;
+
+            // Save as error
+            if(in_array($type, array(self::LOG_WARNING, self::LOG_ERROR)))
+                $this->errors = $log;
+        }
+
+
+        /**
+         * Get a string type from PHP error types
+         * @param   string     $type    PHP error type
+         * @return  Returns the textual type
+        **/
+        private function getType($type) {
 
             switch ($type) {
                 case E_USER_ERROR:
@@ -130,26 +198,40 @@
                    $type = (is_string($type) ? $type : self::LOG_ERROR);
             }
 
-            if(empty($file) || empty($line)) {
-                $backtrace = debug_backtrace();
-                $backtrace = array_shift($backtrace);
-                $file = (!empty($file) ? $file : $backtrace['file']);
-                $line = (!empty($line) ? $line : $backtrace['line']);
-            }
+            return $type;
+        }
 
+        /**
+         * Parse a log from the defined format
+         * @param   string      $type        Log type
+         * @param   string      $message     Log message
+         * @param   string      $file        Generated log file
+         * @param   string      $line        Generated log file line
+        **/
+        private function parse($type, $message, $file, $line) {
 
-            $log = array(
-                'message'   => $message,
-                'type'      => $type,
-                'file'      => $file,
-                'line'      => $line
+            $log = str_replace(
+                // Variables to replace
+                array(
+                    ':type',
+                    ':message',
+                    ':file',
+                    ':line'
+                ),
+
+                // Replacement values
+                array(
+                    $type,
+                    $message,
+                    $file,
+                    $line
+                ),
+
+                // Original format
+                $this->format
             );
 
-            $this->logs[] = $log;
-
-            // Save as error
-            if(in_array($type, array(self::LOG_WARNING, self::LOG_ERROR)))
-                $this->errors = $log;
+            return $log;
         }
 
 
@@ -183,11 +265,8 @@
 
             foreach($this->logs as $i => $log) {
 
-                $row = '['.date('H:i:s').'] [:type] - :message | :file : :line' . PHP_EOL;
-
-                foreach($log as $param => $value) {
-                    $row = str_replace(":$param", $value, $row);
-                }
+                $log = $this->parse($log['type'], $log['message'], $log['file'], $log['line']);
+                $row = '['.date('H:i:s').'] - '. $log . PHP_EOL;
 
                 fwrite($file, $row);
 

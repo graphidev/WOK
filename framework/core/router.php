@@ -85,10 +85,10 @@
         **/
         public function match($controller, $action, array $parameters = array()) {
 
-            if(!isset($this->route[$controller.':'.$action]))
+            if(!isset($this->route[$controller.'->'.$action]))
                 return false;
 
-            $regexps = $this->route[$controller.':'.$action]['parameters'];
+            $regexps = $this->route[$controller.'->'.$action]['parameters'];
             foreach($regexps as $name => $regexp) {
                 if(!isset($parameters[$name]) || !preg_match('#^'.$regexp.'$#isU', $parameters[$name]))
                     return false;
@@ -141,8 +141,8 @@
                     $parameters = array_intersect_key($parameters, $route['parameters']);
 
                     // Split the controller and its action
-                    $controller = strstr($action, ':', true);
-                    $method     = substr(strstr($action, ':', false), 1);
+                    $controller = strstr($action, '->', true);
+                    $method     = substr(strstr($action, '->', false), 2);
 
                     // Check route filters
                     if(!empty($route['filters'])) {

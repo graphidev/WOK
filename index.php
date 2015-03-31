@@ -36,8 +36,9 @@
     use Framework\Core\Response;
 
 
-    // Call events
-    $events->trigger('application->run:before', array($services));
+    // Trigger event listeners
+    $parameters = array($services);
+    $events->trigger('application->before:run', $parameters);
 
 
     /**
@@ -76,7 +77,7 @@
             // No response sent
             if(is_null($response))
                 trigger_error(
-                    'Controller '.$route->controller.':'.$route->action
+                    'Controller '.$route->controller.'->'.$route->action
                     .' didn\'t returned any response', E_USER_ERROR);
 
         }

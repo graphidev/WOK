@@ -57,19 +57,16 @@
 		**/
 		public function recent($compare/*, ...*/){
 
-
-
 			if(!$this->exists())
 				return false;
-
 
 			if(\func_num_args()) {
 				$lastupdate = filemtime($this->file);
 				foreach(\func_get_args() as $compare) {
-					if(
-						(is_int($compare) && $lastupdate > time() + $compare)
-						|| (is_string($compare) && file_exists($compare) && $lastupdate > filemtime($compare))
-					) {
+					if((is_int($compare) && $lastupdate < $compare)) {
+						return false;
+					}
+					elseif(is_string($compare) && $lastupdate < @filemtime($compare)) {
 						return false;
 					}
 				}

@@ -176,7 +176,7 @@
 
                 // Output cached view
                 if(!empty($response->cachetime)
-                    && $cache->recent($response->cachetime, root(View::PATH_TEMPLATES."/$template.php"))):
+                    && $cache->recent(time() + $response->cachetime, root(View::PATH_TEMPLATES."/$template.php"))):
 
                     echo $cache->get();
 
@@ -218,7 +218,7 @@
 
                 $cache = new Cache($response->cachefile);
 
-                if(!empty($response->cachetime) && $cache->recent($response->cachetime)) {
+                if(!empty($response->cachetime) && $cache->recent(time()+$response->cachetime)) {
 
                     echo $cache->get($response->cachefile);
 
@@ -258,7 +258,7 @@
 
                 $cache = new Cache($response->cachefile);
 
-                if(!empty($response->cachetime) && $cache->recent($response->cachetime)) {
+                if(!empty($response->cachetime) && $cache->recent(time()+$response->cachetime)) {
 
                     echo $cache->get($response->cachefile);
 
@@ -301,7 +301,7 @@
 
                 $cache = new Cache($response->cachefile);
 
-                if(!empty($response->cachetime) && $cache->recent($response->cachetime)) {
+                if(!empty($response->cachetime) && $cache->recent(time()+$response->cachetime)) {
 
                      echo $cache->get($response->cachefile);
 
@@ -344,7 +344,7 @@
 
                 $cache = new Cache($response->cachefile);
 
-                if(!empty($response->cachetime) && $cache->recent($response->cachefile, $response->cachetime)) {
+                if(!empty($response->cachetime) && $cache->recent(time()+$response->cachetime, $response->cachetime)) {
 
                     echo $cache->get($response->cachefile);
 

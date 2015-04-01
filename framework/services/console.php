@@ -67,23 +67,27 @@
             set_error_handler(function($type, $message, $file, $line) {
                 if(!(error_reporting() & $type)) return;
 
+
                 // Get real error caller from backtrace
                 $backtrace = debug_backtrace();
                 $backtrace = array_slice($backtrace, 1);
-
-                foreach($backtrace as $key => $contexte) {
-        			if(empty($contexte['class']) && $contexte['function'] == 'trigger_error')
-        				unset($backtrace[$key]);
-
-        			else
-        				break;
-        		}
-
                 $caller = current($backtrace);
-                $file = $caller['file'];
-                $line = $caller['line'];
-                $type = $this->getType($type);
+                
+                if($caller['function'] == 'trigger_error') {
 
+                    foreach($backtrace as $key => $contexte) {
+            			if(empty($contexte['class']) && $contexte['function'] == 'trigger_error')
+            				unset($backtrace[$key]);
+
+            			else
+            				break;
+            		}
+
+                    $caller = current($backtrace);
+                    $file = (!empty($caller['file']) ? $caller['file'] : $file);
+                    $line = (!empty($caller['line']) ? $caller['line'] : $line);
+
+                }
 
                 if(isset($this->handlers[$type]))
                     $prevent = call_user_func($this->handlers[$type], $message, $file, $line);
@@ -93,7 +97,7 @@
 
                     if(SYSTEM_DEBUG) {
                         $prevent = true;
-                        echo $this->parse($type, $message, $file, $line) . PHP_EOL;
+                        echo $this->parse($this->getType($type), $message, $file, $line) . PHP_EOL;
                         if($type == 'ERROR') exit;
                     }
 

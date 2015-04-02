@@ -74,9 +74,12 @@
             // Get translation
             $translation = array_value($path, self::$locales[$this->language][$file], $path);
 
+            if(!is_string($translation))
+                return false;
+
             $self = $this;
 
-            // Data parser ( [function:input|param1|param2|...] )
+            // Data parser ( [function:input|param|param|...] )
             $translation = preg_replace_callback('#\[([a-z0-9_]+):([a-z0-9]+)(\|.+){0,}\]#U', function($m) use($self, $values) {
 
                 // No parser avalaible
@@ -102,7 +105,9 @@
                 // Add data value
                 array_push($parameters, $values[ $m[2] ]);
 
-                return call_user_func_array( $self->parsers[ $m[1] ], array_reverse($parameters));
+                $output =  call_user_func_array( $self->parsers[ $m[1] ], array_reverse($parameters));
+
+                return ($output ? $output : $m[0]);
 
             }, $translation);
 
@@ -117,15 +122,15 @@
 
             }, $translation);
 
-
             // Replace reference ( &[file->node.get.value] or &[this->node.get.value] )
-            $translation = preg_replace_callback('#&\[(.+)->(.+)\]#U', function($m) use($self, $file) {
-                $file = str_replace('this', $file, $m[1]);
-                $reference = $self->translate($file.'->'.$m[2]);
-                return (($reference == $m[1]) ? $m[0] : $reference);
+            $translation = preg_replace_callback('#&\[(.+)->(.+)\]#U', function($m) use($self, $file, $path) {
+                $source = str_replace('this', $file, $m[1]);
+
+                $reference = $self->translate($source.'->'.$m[2]);
+
+                return ((!$reference || $reference == $m[1]) ? $m[0] : $reference);
 
             }, $translation);
-
 
             return $translation;
         }

@@ -83,8 +83,8 @@
         **/
         public function load($library) {
 
-            if(!file_exists($path = root(PATH_PACKAGES .'/'. $library . '.library.php')))
-                trigger_error('Call to undefined library '. $library .' within '. PATH_LIBRARIES, E_USER_ERROR);
+            if(!file_exists($path = root(self::PATH_PACKAGES .'/'. $library . '.library.php')))
+                trigger_error('Call to undefined library '. $library .' within '. SYSTEM_ROOT.'/'.self::PATH_PACKAGES, E_USER_ERROR);
 
             require_once $path;
         }

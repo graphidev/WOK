@@ -7,10 +7,6 @@
     class Router {
 
         /**
-         *
-        **/
-
-        /**
          * @var array   Routes collection
         **/
         private $routes = array();

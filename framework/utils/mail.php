@@ -9,7 +9,7 @@
 	* @license     BSD <license.txt>
 	**/
 
-	namespace Framework\Services;
+	namespace Framework\Utils;
 
 	/**
      * The Mail class is destinated to smooth

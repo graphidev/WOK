@@ -66,7 +66,6 @@
          * We can load settings and basic libraries
         **/
         require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
-        //require_once SYSTEM_ROOT.PATH_CORE . '/utils/utf8.php'; // UTF-8 compatible functions
         require_once SYSTEM_ROOT.PATH_CORE . '/utils/helpers.php'; // Framework helpers
 
         /**
@@ -83,7 +82,7 @@
         spl_autoload_register(function($name) {
 
             $path = strtolower(str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $name));
-			
+
 			if(substr($path, 0, 11) == 'controllers')
 				$path .= '.ctrl';
 

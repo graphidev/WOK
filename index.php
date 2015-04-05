@@ -12,12 +12,11 @@
     if(! require_once 'framework/init.php' )
         trigger_error('Framework settings not available', E_USER_ERROR);
 
-
     /**
      * Instanciate entry point
      * and load applications services
     **/
-    $request    = new Framework\Core\Request;
+    $request    = new Framework\Runtime\Request;
     $router     = require_once 'var/routes.php';
 
     $services   = require_once 'var/services.php';
@@ -33,8 +32,6 @@
      * Instanciate application
     **/
     $app = new Framework\Core\Application( $services );
-    use Framework\Core\Response;
-
 
     // Trigger event listeners
     $parameters = array($services);
@@ -47,19 +44,6 @@
     $app->run(function() use($app, $router, $request) {
 
         /**
-         * Ongoing maintenance
-         * Returns a default maintenance response
-        **/
-        if(SYSTEM_MAINTENANCE) {
-
-            return Response::view('maintenance', 503)
-                ->cache('maintenance', Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC)
-                ->render();
-
-        }
-
-
-        /**
          * Look for a defined route
          * Execute the matched route or return 404
         **/
@@ -69,24 +53,23 @@
             'domain'    => $request->domain,
         ));
 
+        if(!$route) {
+
+            $route = new StdClass;
+            $route->controller = 'Errors';
+            $route->action     = 'routeNotFound';
+            $route->parameters = array();
+
+        }
+
         // Execute controller's action
-        if($route) {
+        $response = $app->exec($route->controller, $route->action, $route->parameters);
 
-            $response = $app->exec($route->controller, $route->action, $route->parameters);
-
-            // No response sent
-            if(is_null($response))
-                trigger_error(
-                    'Controller '.$route->controller.'->'.$route->action
-                    .' didn\'t returned any response', E_USER_ERROR);
-
-        }
-
-        // Route not found
-        else {
-            $response = Response::view('404', 404)
-                ->cache('404', Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC);
-        }
+        // No response sent
+        if(is_null($response))
+            trigger_error(
+                'Controller '.$route->controller.'->'.$route->action
+                .' didn\'t returned any response', E_USER_ERROR);
 
         return $response->render();
 

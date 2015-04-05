@@ -9,7 +9,7 @@
      * @license     BSD <license.txt>
     **/
 
-    namespace Framework\Core;
+    namespace Framework\Utils;
 
     /**
      * Manage request cookies.
@@ -35,8 +35,7 @@
         public static function set($name, $value, $duration = 0, $crypt = false, $domain = null) {
             $expire = (!empty($duration) ? time()+$duration : $duration);
 
-            if(Request::secure() || $crypt)
-                $value = self::_encrypt($value, $expire);
+            if($crypt) $value = self::_encrypt($value, $expire);
 
             $path = SYSTEM_DIRECTORY != '' ? SYSTEM_DIRECTORY : '/';
 

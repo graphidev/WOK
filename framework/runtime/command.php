@@ -9,13 +9,13 @@
      * @license     BSD <license.txt>
     **/
 
-    namespace Framework\EntryPoints;
+    namespace Framework\Runtime;
 
     class Command extends Entrypoint {
 
         public function __construct($argv) {
 
-            
+
 
         }
 

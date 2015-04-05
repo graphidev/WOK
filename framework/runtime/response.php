@@ -9,8 +9,9 @@
      * @license     BSD <license.txt>
     **/
 
-    namespace Framework\Core;
+    namespace Framework\Runtime;
 
+    use \Framework\Utils\Cache;
 
     /**
      * Define Response headers and body.
@@ -136,7 +137,7 @@
     		 // Set cache file
     		if($file && !SYSTEM_DEBUG):
     			$this->cachetime = $time;
-    			$this->cachefile = '/output/'.$file;
+    			$this->cachefile = $file;
 
     			if($status == self::CACHE_PROTECTED)
     				$this->cachefile .= '-'.session_id();
@@ -482,7 +483,10 @@
          * Output response
          * (execute last defined response)
         **/
-        public function render($module = null) {
+        public function render() {
+
+            if(!empty($this->cachefile))
+                $this->cachefile = '/output/'.$this->cachefile;
 
             try {
 
@@ -514,7 +518,7 @@
                     $output = call_user_func($this->fallback, $e);
 
                 if(!empty($output) && $output instanceof Response)
-                    $output->render();
+                    return $output;
 
                 else
                     throw $e;

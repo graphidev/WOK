@@ -9,7 +9,7 @@
      * @license     BSD <license.txt>
     **/
 
-    namespace Framework\Core;
+    namespace Framework\Runtime;
 
     /**
      * The Request class contains the representation of
@@ -17,7 +17,7 @@
      * super globals data and parameters informations.
      * @note Some informations may not be override for security reasons
     **/
-    class Request  extends Entrypoint {
+    class Request {
 
         /**
          * @var object  Class static instance
@@ -98,8 +98,7 @@
                 'parameters'    => $_GET,
                 'files'         => $_FILES,
                 'data'          => $_POST,
-                'range'         => (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false),
-                'language'      => ''
+                'range'         => (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false)
             ), $informations);
 
             // Calculate application base
@@ -117,7 +116,6 @@
             $this->parameters = $set->parameters;
             $this->data       = $set->data;
             $this->files      = $set->files;
-            $this->language   = $set->language;
 
             // Force parameters definition
             if(empty($this->parameters) && ($parameters = substr($this->query, strlen($this->query)+1))):

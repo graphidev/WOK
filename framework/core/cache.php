@@ -37,7 +37,7 @@
 		 * @param string	$path		Cache file relative path
 		**/
 		public function __construct($path) {
-			$this->file = root(self::PATH_CACHE.'/'.$path);
+			$this->file = root(self::PATH_CACHE.$path);
 		}
 
 		/**

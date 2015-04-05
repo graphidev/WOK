@@ -136,7 +136,7 @@
     		 // Set cache file
     		if($file && !SYSTEM_DEBUG):
     			$this->cachetime = $time;
-    			$this->cachefile = 'output/'.$file;
+    			$this->cachefile = '/output/'.$file;
 
     			if($status == self::CACHE_PROTECTED)
     				$this->cachefile .= '-'.session_id();

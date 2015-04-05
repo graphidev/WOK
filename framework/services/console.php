@@ -54,7 +54,7 @@
          * Initialize logs and reporting callbacks
          * @param int   $level      Error handling level
         **/
-        public function __construct($level = E_ALL, $format = null) {
+        public function __construct($level = E_ALL, $hidden = false) {
 
             // Set log format
             if(!empty($format))
@@ -64,7 +64,7 @@
             error_reporting( $level );
 
             // Handle errors
-            set_error_handler(function($type, $message, $file, $line) {
+            set_error_handler(function($type, $message, $file, $line) use($hidden){
                 if(!(error_reporting() & $type)) return;
 
 
@@ -72,7 +72,7 @@
                 $backtrace = debug_backtrace();
                 $backtrace = array_slice($backtrace, 1);
                 $caller = current($backtrace);
-                
+
                 if($caller['function'] == 'trigger_error') {
 
                     foreach($backtrace as $key => $contexte) {
@@ -95,7 +95,7 @@
                 if(!isset($prevent) || !$prevent) {
                     $this->log($message, $type, $file, $line);
 
-                    if(SYSTEM_DEBUG) {
+                    if(!$hidden) { // Display errors
                         $prevent = true;
                         echo $this->parse($this->getType($type), $message, $file, $line) . PHP_EOL;
                         if($type == 'ERROR') exit;
@@ -104,7 +104,7 @@
                 }
 
                 // Disable/enable built-in behavior (showing error)
-                return (!empty($prevent) ? true : !SYSTEM_DEBUG);
+                return (!empty($prevent) ? true : $hidden);
 
             });
 
@@ -138,6 +138,10 @@
             // Start buffering
             ob_start();
         }
+
+        /**
+         * De
+        **/
 
         /**
          * Register a log. Also can define an error (type)
@@ -256,6 +260,16 @@
         **/
         public function setHandler($type, \Closure $callback) {
             $this->handlers[$type] = $callback;
+        }
+
+
+        /**
+         * Define a log format
+         * @note Please be careful redefining the log format. This could disable the interest of this class
+         * @param string    $format     The log format containing ":type", ":message", ":file" and ":line"
+        **/
+        public function setLogFormat($format) {
+            $this->format = $format;
         }
 
 

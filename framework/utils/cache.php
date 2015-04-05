@@ -9,7 +9,7 @@
 	* @license     BSD <license.txt>
 	**/
 
-	namespace Framework\Core;
+	namespace Framework\Utils;
 
 	/**
      * Store and get cached data

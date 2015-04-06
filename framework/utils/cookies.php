@@ -18,40 +18,56 @@
      * Reserved cookies' names : language, uniqid
      *
     **/
-    class Cookie {
+    class Cookies {
 
         const CRYPT_MODE = MCRYPT_MODE_CBC;
         const CRYPT_ALGORITHM = MCRYPT_RIJNDAEL_256;
 
+        protected $path;
+        protected $domain;
+        protected $salt;
+        protected $secure = false;
+
+        public function __construct($salt, $domain = null, $path = '/', $secure = false) {
+
+            $this->path     = $path;
+            $this->domain   = $domain;
+            $this->salt     = $salt;
+            $this->secure   = $secure;
+
+        }
 
         /**
          * Define a cookie
          * @param string    $name
          * @param string    $value
          * @param integer   $duration
+         * @param string    $crypt      Crypt key
          * @param domain    $domain
          * @return boolean
         **/
-        public static function set($name, $value, $duration = 0, $crypt = false, $domain = null) {
+        public function set($name, $value, $duration = 0, $crypt = false, $domain = null, $path = null) {
             $expire = (!empty($duration) ? time()+$duration : $duration);
 
-            if($crypt) $value = self::_encrypt($value, $expire);
+            if($crypt) $value = $this->_encrypt($value, $this->salt, $expire);
 
-            $path = SYSTEM_DIRECTORY != '' ? SYSTEM_DIRECTORY : '/';
+            $path   = (!empty($path) ? $path : $this->path);
+            $domain = (!empty($domain) ? $domain : $this->domain);
+            $secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
 
-            return setcookie($name, $value, $expire, $path, $domain, Request::secure(), Request::secure());
+            return setcookie($name, $value, $expire, $path, $domain, $secure, false);
 
         }
 
         /**
          * Get cookie value
          * @param string    $name
-         * @param boolean   $decrypt
+         * @param boolean   $decrypt    Decrypt salt
          * @return mixed
         **/
-        public static function get($name, $decrypt = false) {
-            if(self::exists($name))
-                return ($decrypt ? self::_decrypt(strip_magic_quotes($_COOKIE[$name])) : strip_magic_quotes($_COOKIE[$name]));
+        public function get($name, $decrypt = false) {
+            if($this->exists($name))
+                return ($decrypt ? $this->_decrypt($_COOKIE[$name], $this->salt) : $_COOKIE[$name]);
             else
                 return false;
         }
@@ -62,7 +78,7 @@
          * @param boolean   $strict
          * @return boolean
         **/
-        public static function exists($name, $strict = false) {
+        public function exists($name, $strict = false) {
             if($strict && !empty($_COOKIE[$name]))
                 return true;
             else
@@ -74,15 +90,15 @@
          * @param string    $name
          * @return boolean
         **/
-        public static function destroy($name) {
+        public function destroy($name) {
             return setcookie($name, '', 1);
         }
 
         /**
          * Destroy all existing cookies
         **/
-        public static function clean() {
-            $cookies = array_keys(strip_magic_quotes($_COOKIE));
+        public function clean() {
+            $cookies = array_keys($_COOKIE);
             for($i=0; $i < count($cookies); $i++)
                 setcookie($cookies[$i], '',time()-1);
         }
@@ -91,8 +107,8 @@
          * Get all cookies
          * @return array
         **/
-        public static function all() {
-            return strip_magic_quotes($_COOKIE);
+        public function all() {
+            return $_COOKIE;
         }
 
 
@@ -102,10 +118,10 @@
          * @param integer   $expire
          * @return string
         **/
-        private static function _encrypt($value, $expire) {
-            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
-            $iv = self::_iv($expire, $module);
-            mcrypt_generic_init($module, COOKIES_SALT, $iv);
+        private function _encrypt($value, $salt, $expire) {
+            $module = mcrypt_module_open($this->CRYPT_ALGORITHM, '', $this->CRYPT_MODE, '');
+            $iv = $this->_iv($expire, $module);
+            mcrypt_generic_init($module, $salt, $iv);
 
             $encrypted = mcrypt_generic($module, $value);
 
@@ -120,12 +136,12 @@
          * @param string    $value
          * @return string
         **/
-        private static function _decrypt($value) {
+        private function _decrypt($value, $salt) {
             list($value, $expire) = explode('|', $value);
 
-            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
-            $iv = self::_iv(base64_decode($expire), $module);
-            mcrypt_generic_init($module, COOKIES_SALT, $iv);
+            $module = mcrypt_module_open($this->CRYPT_ALGORITHM, '', $this->CRYPT_MODE, '');
+            $iv = $this->_iv(base64_decode($expire), $module);
+            mcrypt_generic_init($module, $salt, $iv);
 
             $decrypted   = mdecrypt_generic($module, base64_decode($value));
 
@@ -141,7 +157,7 @@
          * @param resource
          * @return
         **/
-        private static function _iv($key, &$module) {
+        private function _iv($key, &$module) {
             $size = mcrypt_enc_get_iv_size($module);
             $iv = sha1($key);
 

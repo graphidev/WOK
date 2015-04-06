@@ -64,8 +64,18 @@
             if(!$this->has($service))
                 trigger_error('Service "' . $service . '" not registered', E_USER_ERROR);
 
-            if(is_closure($this->collection[$service]) || is_string($this->collection[$service]))
+            if(is_closure($this->collection[$service])) {
                 return call_user_func_array($this->collection[$service], $parameters);
+            }
+
+            elseif(is_string($this->collection[$service])) {
+
+                if(is_string($this->collection[$service]) && !class_exists($this->collection[$service], true))
+                    trigger_error('Service '.$service.' is not a callable class', E_USER_);
+
+                $class = new \ReflectionClass($this->collection[$service]);
+                return $class->newInstanceArgs($parameters);
+            }
 
             return $this->collection[$service];
 

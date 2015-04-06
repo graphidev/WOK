@@ -69,13 +69,6 @@
         require_once SYSTEM_ROOT.PATH_CORE . '/utils/helpers.php'; // Framework helpers
 
         /**
-         * Initialize session
-         * Also define a custom session name for compatibility
-        **/
-        session_name(SESSION_NAME);
-        session_start();
-
-        /**
          * Autoload classes by default
          * Libraries pathes uses namespaces
         **/

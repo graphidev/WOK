@@ -62,8 +62,7 @@
         public function get($service, array $parameters = array()) {
 
             if(!$this->has($service))
-                return null;
-                //trigger_error('[' . __CLASS__ . '] Service ' . $service . ' not registered', E_USER_ERROR);
+                trigger_error('Service "' . $service . '" not registered', E_USER_ERROR);
 
             if(is_closure($this->collection[$service]) || is_string($this->collection[$service]))
                 return call_user_func_array($this->collection[$service], $parameters);

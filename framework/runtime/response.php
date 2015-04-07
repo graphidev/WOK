@@ -474,7 +474,7 @@
          * get wrong will within content generation
          * @param   Closure     $callback       Anonymous function that will be called
         **/
-        public function fallback(Closure $callback) {
+        public function fallback(\Closure $callback) {
 			$this->fallback = $callback;
 			return $this;
         }
@@ -512,13 +512,13 @@
                 endif;
 
             }
-            catch(Exception $e) {
+            catch(\Exception $e) {
 
                 if(is_closure($this->fallback))
                     $output = call_user_func($this->fallback, $e);
 
                 if(!empty($output) && $output instanceof Response)
-                    return $output;
+                    return $output->render();
 
                 else
                     throw $e;

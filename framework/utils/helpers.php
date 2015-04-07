@@ -7,28 +7,6 @@
      * @package Core/Helpers
     **/
 
-    /**
-     * Generate an absolute URL with local project configuration
-     *
-     * @param   string      $path 		The path to extend
-     * @param   string      $domain		The base domain
-     * @param   string      $protocol	The protocol to use
-     * @param   string      $port		The additional port
-     * @return  string		The absolute URL
-	 * @note	This function could be used to define an external URL. However is not recommended.
-    **/
-	function path($path = null, $domain = SYSTEM_DOMAIN, $protocol = SYSTEM_PROTOCOL, $port = null) {
-
-        $domain = str_replace('~', SYSTEM_DOMAIN, $domain); // Default domain usage
-        if(!empty($port)) $port = ":$port"; // Adding port if defined
-
-        if(($length = strlen(SYSTEM_DIRECTORY)) != 0 && substr($path, 0, $length) == SYSTEM_DIRECTORY)
-            $path = substr($path, $length);
-
-        return "$protocol://$domain$port".SYSTEM_DIRECTORY.$path;
-	}
-
-
 	/**
      * Prefix path with the project root's path
      *
@@ -159,7 +137,7 @@
         foreach($segments as $index){
 			if(!isset($array[$index]))
             	$array[$index] = null;
-				
+
             $array = &$array[$index];
         }
 

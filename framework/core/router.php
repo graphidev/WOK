@@ -34,6 +34,7 @@
 
 			$route = $this->routes[$action];
 			$domain = (!empty($route['domain']) ? $route['domain'] : SYSTEM_DOMAIN);
+            $protocol = (!empty($route['protocol']) ? $route['protocol'].':' : null);
 
 			// Check parameters values
 			foreach($route['parameters'] as $name => $regexp) {
@@ -44,11 +45,14 @@
 					trigger_error('Router::url() : parameter "'. $name .'" doesn\'t match the REGEXP for '.$action, E_USER_ERROR);
 			}
 
+
+            // Replace parameters values in the route
 			foreach($parameters as $index => $value) {
 				$route['path'] = str_replace(":$index", $value, $route['path']);
 			}
 
-			return path($route['path'], $domain);
+            return $protocol.'//'.$domain.$route['path'];
+
         }
 
 

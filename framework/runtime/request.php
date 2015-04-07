@@ -25,6 +25,16 @@
         private static $instance;
 
         /**
+         * @var string  String representation of the request protocol
+        **/
+        protected $protocol;
+
+        /**
+         * @var string  Root request base
+        **/
+        protected $base;
+
+        /**
          * @var string  Absolute request URI (without project base)
         **/
         protected $query;
@@ -70,6 +80,11 @@
         protected $data = array();
 
         /**
+         * @var integer Data range
+        **/
+        protected $range;
+
+        /**
          * @var stream  PUT request content
         **/
         protected $content;
@@ -86,36 +101,25 @@
          * either custom informations.
          * @param array   $informations   Custom request informations
         **/
-        public function __construct(array $informations = array()) {
-
-            // Check custom settings
-            $set = (object) array_merge(array(
-                'query'         => $_SERVER['REQUEST_URI'],
-                'domain'        => $_SERVER['HTTP_HOST'],
-                'port'          => $_SERVER['SERVER_PORT'],
-                'method'        => $_SERVER['REQUEST_METHOD'],
-                'headers'       => getallheaders(),
-                'parameters'    => $_GET,
-                'files'         => $_FILES,
-                'data'          => $_POST,
-                'range'         => (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false)
-            ), $informations);
+        public function __construct() {
 
             // Calculate application base
             $root = realpath($_SERVER["DOCUMENT_ROOT"]);
-            $base = substr(SYSTEM_ROOT, strlen($root));
+            $this->base = substr(SYSTEM_ROOT, strlen($root));
 
             // Register informations
-            $this->query      = (string) (!empty($base) ? substr($set->query, strlen($base)) : $set->query);
+            $this->query      = (string) (!empty($this->base) ? substr($_SERVER['REQUEST_URI'], strlen($this->base)) : $_SERVER['REQUEST_URI']);
             $this->path       = (strpos($this->query, '?') ? strstr($this->query, '?', true) : $this->query);
             $this->format     = pathinfo($this->path, PATHINFO_EXTENSION);
-            $this->domain     = $set->domain;
-            $this->port       = $set->port;
-            $this->method     = mb_strtoupper($set->method);
-            $this->headers	  = $set->headers;
-            $this->parameters = $set->parameters;
-            $this->data       = $set->data;
-            $this->files      = $set->files;
+            $this->domain     = $_SERVER['HTTP_HOST'];
+            $this->protocol   = strtolower(strstr($_SERVER['SERVER_PROTOCOL'], '/', true) . ($this->secure() ? 'S' : ''));
+            $this->port       = $_SERVER['SERVER_PORT'];
+            $this->method     = mb_strtoupper($_SERVER['REQUEST_METHOD']);
+            $this->headers	  = getallheaders();
+            $this->parameters = $_GET;
+            $this->data       = $_POST;
+            $this->files      = $_FILES;
+            $this->range      = (isset($_SERVER['HTTP_RANGE']) ? $_SERVER['HTTP_RANGE'] : false);
 
             // Force parameters definition
             if(empty($this->parameters) && ($parameters = substr($this->query, strlen($this->query)+1))):
@@ -215,6 +219,13 @@
         public static function ajax() {
             $xhr = getenv('HTTP_X_REQUESTED_WITH');
             return (!empty($xhr) && mb_strtolower($xhr) == 'xmlhttprequest');
+        }
+
+        /**
+         * Get the string formatted request
+        **/
+        public function __toString() {
+            return strtoupper($this->protocol).' '.$this->path.' '.$this->port;
         }
 
     }

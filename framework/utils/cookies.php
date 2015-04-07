@@ -46,16 +46,16 @@
          * @param domain    $domain
          * @return boolean
         **/
-        public function set($name, $value, $duration = 0, $crypt = false, $domain = null, $path = null) {
-            $expire = (!empty($duration) ? time()+$duration : $duration);
+        public function set($name, $value, $duration = 0, $crypt = false, $path = null, $domain = null) {
 
-            if($crypt) $value = $this->_encrypt($value, $this->salt, $expire);
+            $expire = (!empty($duration) ? time()+$duration : 0);
+
+            if($crypt) $value = $this->_encrypt($value, $expire);
 
             $path   = (!empty($path) ? $path : $this->path);
             $domain = (!empty($domain) ? $domain : $this->domain);
-            $secure = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on');
 
-            return setcookie($name, $value, $expire, $path, $domain, $secure, false);
+            return setcookie($name, $value, $expire, $path, $domain, $this->secure, $this->secure);
 
         }
 
@@ -66,10 +66,10 @@
          * @return mixed
         **/
         public function get($name, $decrypt = false) {
-            if($this->exists($name))
-                return ($decrypt ? $this->_decrypt($_COOKIE[$name], $this->salt) : $_COOKIE[$name]);
-            else
+            if(!$this->exists($name))
                 return false;
+
+            return ($decrypt ? $this->_decrypt($_COOKIE[$name]) : $_COOKIE[$name]);
         }
 
         /**
@@ -90,7 +90,7 @@
          * @param string    $name
          * @return boolean
         **/
-        public function destroy($name) {
+        public function delete($name) {
             return setcookie($name, '', 1);
         }
 
@@ -118,10 +118,10 @@
          * @param integer   $expire
          * @return string
         **/
-        private function _encrypt($value, $salt, $expire) {
-            $module = mcrypt_module_open($this->CRYPT_ALGORITHM, '', $this->CRYPT_MODE, '');
+        private function _encrypt($value, $expire) {
+            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
             $iv = $this->_iv($expire, $module);
-            mcrypt_generic_init($module, $salt, $iv);
+            mcrypt_generic_init($module, $this->salt, $iv);
 
             $encrypted = mcrypt_generic($module, $value);
 
@@ -136,12 +136,12 @@
          * @param string    $value
          * @return string
         **/
-        private function _decrypt($value, $salt) {
+        private function _decrypt($value) {
             list($value, $expire) = explode('|', $value);
 
-            $module = mcrypt_module_open($this->CRYPT_ALGORITHM, '', $this->CRYPT_MODE, '');
+            $module = mcrypt_module_open(self::CRYPT_ALGORITHM, '', self::CRYPT_MODE, '');
             $iv = $this->_iv(base64_decode($expire), $module);
-            mcrypt_generic_init($module, $salt, $iv);
+            mcrypt_generic_init($module, $this->salt, $iv);
 
             $decrypted   = mdecrypt_generic($module, base64_decode($value));
 

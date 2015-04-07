@@ -9,7 +9,7 @@
      * @license     BSD <license.txt>
     **/
 
-    namespace Framework\Core;
+    namespace Framework\Runtime;
 
     /**
      * Define methods to parse templates.
@@ -39,7 +39,7 @@
 
 
         //public function __construct($template, $root = true) {}
-        
+
 
         /**
          * Shortcut to the non-static parse method

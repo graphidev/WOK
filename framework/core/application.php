@@ -13,7 +13,7 @@
 
     /**
      * The Application class define methods
-     * used to run the framework
+     * used to run the framework environment
      * @package Framework
     **/
     class Application {
@@ -45,7 +45,8 @@
         **/
         public function run(\Closure $action) {
 
-            exit( call_user_func($action, $this->services) );
+            $response = call_user_func($action, $this->services);
+            exit( $response->render() );
 
         }
 
@@ -67,7 +68,6 @@
 
             if(!is_callable(array($class, $action), false))
                 trigger_error('Action ' . $action . ' doesn\'t exists in controller ' . $controller, E_USER_ERROR);
-
 
             return call_user_func_array(array(
                 $class,

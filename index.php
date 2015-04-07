@@ -14,18 +14,20 @@
 
     /**
      * Instanciate entry point
-     * and load applications services
+     * and load application services
     **/
     $request    = new Framework\Runtime\Request;
     $router     = require_once 'var/routes.php';
 
     $services   = require_once 'var/services.php';
-    $services->register( 'framework:request', $request );
-    $services->register( 'framework:router',  $router );
+    $services->register('request', $request);
+    $services->register('router',  $router);
+    $services->register('session',  new Framework\Utils\Session);
+    $services->register('cookies',  '\Framework\Utils\Cookies');
 
     if(!$services->has('events')) {
         $events = new \Framework\Services\Events;
-        $services->register('framework:events', $events);
+        $services->register('events', $events);
     }
 
     /**
@@ -33,9 +35,6 @@
     **/
     $app = new Framework\Core\Application( $services );
 
-    // Trigger event listeners
-    $parameters = array($services);
-    $events->trigger('application->before:run', $parameters);
 
 
     /**
@@ -53,14 +52,8 @@
             'domain'    => $request->domain,
         ));
 
-        if(!$route) {
-
-            $route = new StdClass;
-            $route->controller = 'Errors';
-            $route->action     = 'routeNotFound';
-            $route->parameters = array();
-
-        }
+        if(!$route)
+            trigger_error('This request ('.$request.') has not any associated route', E_USER_ERROR);
 
         // Execute controller's action
         $response = $app->exec($route->controller, $route->action, $route->parameters);
@@ -71,6 +64,6 @@
                 'Controller '.$route->controller.'->'.$route->action
                 .' didn\'t returned any response', E_USER_ERROR);
 
-        return $response->render();
+        return $response;
 
     });

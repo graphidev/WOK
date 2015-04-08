@@ -32,10 +32,20 @@ As I said, no extra-features would be present. But there is some of them that I 
 ## Versioning convention
 Because WOK is evolving according to requierements, there is no plan about versions (except for huge features i think about). However, versioning convention can be defined as following : MAJOR.MINOR:PATCH-EXTRA
 
-**MAJOR** : Main project changements (restructuration, rebuild or LTS versions)
-**MINOR** : New features, backwards compatibility is not provided
-**PATCH** : Security, bugs fixes, optimisation or light improvements (e.g: implementation/update of a library)
-**EXTRA** : This is a note about the version such as "beta", either "RC", or "stable" (or a specific version)
+
+**MAJOR** : Main projects chagements such as a restructuration
+
+**MINOR** : New features, providing backward compatibility
+
+**PATCH** : Security fixes, bug fixes, or optimisation of an existing code
+
+**EXTRA**: Note about the version defining what type of major either minor version it is. It could be :
+- prototype : draft of a future version (may be aborted)
+- alpha : in development version (fixed principle)
+- beta : fixing bugs and security breaks (looking to feedbacks)
+- stable : production usable version
+
+Each update of the code has to increment the version number, following the previous versioning convention
 
 ## Requirements
 

@@ -45,13 +45,19 @@
          * Generate a new mail
          * @param array   $headers		See Mail::addHeaders()
 	 	**/
-	 	public function __construct(array $headers = array()) {
-            $this->addHeaders(array_merge(array(
-				'X-Mailer' => 'PHP/'.PHP_VERSION
-			), $headers));
+	 	public function __construct($object, $email, $name = null) {
+			
+			// X-Mailer header (PHP)
+            $this->addHeaders(array('X-Mailer' => 'PHP/'.PHP_VERSION));
 
 			// Set default format
 			$this->format = self::FORMAT_TEXT;
+			
+			// Define object
+			$this->setObject($object);
+			
+			// Register author
+			$this->setFrom($email, $name)
 	 	}
 
 
@@ -116,7 +122,7 @@
 	 	 * @param string     $email		From email address
 	 	 * @param string     $name		From name
 	 	**/
-	 	public function setFrom($email, $name = null) {
+	 	private function setFrom($email, $name = null) {
             $this->_checkEmail($email);
 			$this->_preventLineBreaks($name);
 
@@ -146,7 +152,7 @@
          * Define email subject
          * @param string    $subject		Email subject
 	 	**/
-	 	public function setSubject($subject) {
+	 	private function setSubject($subject) {
 		 	$this->subject = '=?UTF-8?B?'.base64_encode($subject).'?=';
 	 	}
 
@@ -155,7 +161,7 @@
          * Alias of setSubject
          * @see Mail::setSubject
 	 	**/
-	 	public function setObject($subject) {
+	 	private function setObject($subject) {
 		 	$this->setSubject($subject);
 	 	}
 
@@ -203,10 +209,10 @@
 	 	**/
 	 	public function send() {
             if(empty($this->To))
-                throw new \LogicException("developer:define.addressee", 210);
+                trigger_error('Sending mail require an addressee email address', E_USER_ERROR);
 
             if(empty($this->From))
-                $this->setFrom($_SERVER['SERVER_ADMIN']);
+                trigger_error('Sending mail require a sender email address', E_USER_ERROR);
 
 	 		// Required informations
 	 		$boundary = sha1(uniqid(microtime(), true)) . self::BREAKLINE; // Boundary

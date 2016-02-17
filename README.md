@@ -36,6 +36,7 @@ This framework releases versioning are based on the [Semantic versioning 2.0.0](
 
 **Note** : Each release (except patching ones) has also it's nice name (ex: Hydrogen, Helium, ...).
 
+
 ## Requirements
 
 Here is the price to use an awesome tool. But don't worry, just some little things :

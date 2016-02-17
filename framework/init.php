@@ -1,49 +1,43 @@
 <?php
 
-	/**
-	* Web Operational Kit
-	* The neither huger no micro extensible framework
-	*
-	* @copyright   All right reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
-	* @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
-	* @license     BSD <license.txt>
-	**/
-
     /**
-     *    Welcome in WOK initialize file
-     *
-     * You don't have to edit any line of this file.
-     * To define some settings, please have a look to settings.php
-     * To add / call some options, please use options.php
-	 *
+    * Web Operational Kit
+    * The neither huger nor micro humble framework
+    *
+    * @copyright   All rights reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
+    * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
+    * @license     BSD <license.txt>
     **/
 
-	const WOK_MAJOR_VERSION        = 2; // Major version
-	const WOK_MINOR_VERSION        = 0; // Minor version
-	const WOK_RELEASE_VERSION      = 0; // Release version
-	const WOK_EXTRA_RELEASE        = 'prototype'; // Extra version
+    /**
+     *    Welcome in the WOK initialization file
+     *
+     * You don't have to edit any line of this file.
+     * To add / call some options, please use /var/options.php
+     *
+    **/
+    const WOK_MAJOR_VERSION        = 2;         // Major version
+    const WOK_MINOR_VERSION        = 0;         // Minor version
+    const WOK_PATCH_VERSION        = 0;         // Patch version
+    const WOK_EXTRA_RELEASE        = 'alpha';   // Extra version
+    const WOK_RELEASE_NAME         = 'Helium';  // Release name
 
     // Define full WOK version (without extra release)
-	define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_RELEASE_VERSION);
+    define('WOK_VERSION', WOK_MAJOR_VERSION.'.'.WOK_MINOR_VERSION.':'.WOK_PATCH_VERSION);
 
 
     /*
-     * The following lines will define default path of essential tools.
+     * The following lines will define default paths of essential tools.
      * We suggest you to let them as they are for a better compatibility.
     **/
+    const PATH_CORE             = '/framework';         // Framework core's path
+    const PATH_STORAGE          = '/storage';           // Storage folder's path
+    const PATH_TEMPLATES        = '/templates';         // Views template's path
+    const PATH_VAR              = '/var';               // Application configuration path
+    const PATH_TMP              = '/tmp';               // Temporary files' directory
 
     // Define absolute project root path
-	define('SYSTEM_ROOT', dirname(__DIR__));
-
-    const PATH_CORE             = '/framework'; 		// Framework core's path
-	const PATH_PACKAGES 		= '/packages';			// Packages folder's path
-	const PATH_VAR              = '/var'; 				// Application configuration path
-	const PATH_STORAGE        	= '/storage'; 			// Storage folder's path
-
-	const PATH_TMP        		= '/storage/tmp'; 		// Temporary files' directory
-	const PATH_MEDIA            = '/storage/media'; 			// Files' directory
-
-
+    define('APPLICATION_ROOT', dirname(__DIR__));
 
     /**
      * Set UTF-8 as internal encoding
@@ -54,66 +48,47 @@
 
 
     /*
-     * Once we have pathes, we can call essential libraries.
-     * But you first need to have a settings.php file.
+     * Once we have pathes, we can require essential libraries.
      * Thereof contains all required constants to have functionnal libraries.
      * Without it, some troubles may appear.
     **/
-    if(file_exists(SYSTEM_ROOT.PATH_VAR.'/settings.php')):
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/supports.php';       // Compatibility functions
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/unicode.php';        // Unicode helpers
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/system.php';         // System helpers
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/variables.php';      // Variables helpers
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/strings.php';        // Strings helpers
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/arrays.php';         // Arrays helpers
+    require_once APPLICATION_ROOT.PATH_CORE . '/helpers/helpers.php';        // Others helpers
 
-        /**
-         * All right ! Settings file exists.
-         * We can load settings and basic libraries
-        **/
-        require_once SYSTEM_ROOT.PATH_VAR . '/settings.php'; // Framework settings
-        require_once SYSTEM_ROOT.PATH_CORE . '/utils/helpers.php'; // Framework helpers
-
-        /**
-         * Autoload classes by default
-         * Libraries pathes uses namespaces
-        **/
-        spl_autoload_register(function($name) {
-
-            $path = strtolower(str_replace(array('\\', '/'), DIRECTORY_SEPARATOR, $name));
-
-			if(substr($path, 0, 11) == 'controllers')
-				$path .= '.ctrl';
-
-			elseif(substr($path, 0, 6) == 'models')
-				$path .= '.mdl';
-
-			elseif(substr($path, 0, 9) != 'framework')
-				$path .= '.class';
-
-
-			if(file_exists($class = SYSTEM_ROOT.'/'.$path.'.php'))
-				require_once $class;
-
-        });
-
-        /**
-         * Once everything is fine loaded, we call the options file.
-         * This one will be used to add your own stuffs.
-        **/
-        if(file_exists($options = SYSTEM_ROOT.PATH_VAR.'/options.php'))
-			require_once $options;
-
-		/**
-		 * Prevent not loaded settings
-		 * This can be catched by including script
-		**/
-		return true;
-
-    endif;
-
-	/**
-	 * If settings could not be loaded, return false.
-	 * This allow to prevent bad usage of the init file.
-	**/
-	return false;
 
     /**
-     * That's it !
+     * Autoload classes by default
+     * Libraries pathes uses namespaces
     **/
+    spl_autoload_register(function($name) {
 
-?>
+        $path = mb_str_replace('\\', DIRECTORY_SEPARATOR, $name);
+
+        if(file_exists($class = APPLICATION_ROOT.PATH_CORE.'/'.$path.'.php'))
+            require_once $class;
+
+    });
+
+    /**
+     * Once everything is fine loaded, we call the options file.
+     * This one will be used to add your own stuffs.
+    **/
+    if(file_exists($options = APPLICATION_ROOT.PATH_VAR.'/options.php'))
+        require_once $options;
+
+    /**
+     * Prevent not loaded settings
+     * This can be catched by including script
+     * @note This is a previous versions compatibility stuff.
+    **/
+    return true;
+
+
+    /**
+     * That's it ! Let's play with WOK !
+    **/

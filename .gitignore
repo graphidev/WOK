@@ -1,7 +1,5 @@
 .DS_Store
-/storage/*
-/vendor/*
-/packages/*
 /composer.lock
-/docs/*
-var/settings.php
+/vendor/*
+/storage/*
+/tmp/*

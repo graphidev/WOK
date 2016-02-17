@@ -1,10 +1,10 @@
 # Web Operational Kit
 
-## About the nor huge neither micro framework
+## About the humble nor huge neither micro framework
 
-**WOK** is a framework build for developers who need some tools without having a factory.  It is not made for huge projects such as web apps. But it contains enought tools to build a CMS in a few days.
+**WOK** is a framework build for developers who need some tools without having a factory.  It is made for quick projets that could be iterative afterwards.
 
-The main idea of this framework is to give a base structure (MVC) and some essential tools (such as UTF8 revisited functions, compatibility helpers, ...). You will not find hundreds of configuration files but just one (and maybe an options file too, but that's all !). 
+The main idea of this framework is to give an architecture  (MVC) and some essential tools (such as UTF8 revisited functions, compatibility helpers, ...). You will not find hundreds of configuration files but just one (and maybe an options file too, but that's all !).
 
 As it's nickname is associated to : WOK is made for cooking, development cooking !
 
@@ -12,47 +12,44 @@ As it's nickname is associated to : WOK is made for cooking, development cooking
 
 As I said, no extra-features would be present. But there is some of them that I think every developer could need :
 
-- One-shot configuration and use (yeah, that's a feature !)
-- Multi platform (working on Windows and Unix-based systems)
-- MVC structure
-- URL rewriting
-- System environments (Debug, maintenance, production) 
-- Default behavior (for static pages)
-- Router using HTTP and URI parameters conditions
-- Response with file cache system and HTTP caching
-- Secure Cookies management (encryption)
-- Session tools (also working with cookies)
-- Helpers functions
-- Multilingual system (using locales)
-- Errors listener and log management (for debugging as example)
-- Extended exceptions classes
-- External libraries which are not required for the framework operations
+- MVC architecture
+- URL rewriting based
+- Helpers as unicode support and utilities functions
+- Modular components based, including :
+    - Application _(runtime container classes)_
+    - Router _(setting, getting and dispatching routes interface)_
+    - Message _(both HTTP and CLI input/ouput interfaces)_
+    - View _(a template manager and view generator)_
+    - Cache _(an interface to use caches systems)_
+    - Console _(logger environment)_
+    - Locales _(providing a translation interface)_
 
 
 ## Versioning convention
-Because WOK is evolving according to requierements, there is no plan about versions (except for huge features i think about). However, versioning convention can be defined as following : MAJOR.MINOR:PATCH-EXTRA
 
-**MAJOR** : Main project changements (restructuration, rebuild or LTS versions)
-**MINOR** : New features, backwards compatibility is not provided
-**PATCH** : Security, bugs fixes, optimisation or light improvements (e.g: implementation/update of a library)
-**EXTRA** : This is a note about the version such as "beta", either "RC", or "stable" (or a specific version)
+This framework releases versioning are based on the [Semantic versioning 2.0.0](http://semver.org/). This means that this project releases use the **MAJOR**.**MINOR**.**PATCH**-**EXTRA** template where :
+
+- **MAJOR** : represents a huge project change (and incompatibility with previous releases),
+- **MINOR** : represents project improvements (retaining backward compatibility)
+- **PATCH** : represents fixes and optimisations
+- **EXTRA** : is a keyword representing the development state of the release.
+
+**Note** : Each release (except patching ones) has also it's nice name (ex: Hydrogen, Helium, ...).
 
 ## Requirements
 
 Here is the price to use an awesome tool. But don't worry, just some little things :
 
-- Apache v2 server with URL Rewriting module
-- PHP v5.3 or higher (but always prefer an higher version)
+- Apache v2 server with URL Rewriting module (The nginx compatibility is not provided, for now)
+- PHP v5.4 or higher (but always prefer an higher version) (Not test in PHP v7)
 - Mcrytp library (used for cookies encryption)
 - SPL library (that should be present by default)
 
+
 ## Author
 
-My name is Sébastien. I have built this framework in order to answer positive to my customers requests. But I think that sharing tools is better than selling them. So, enjoy !
+My name is Sébastien. I have built this framework in order to answer positive to my customers requests when I was a freelance. But I think that sharing tools is better than selling them. So, please feel free to use, contribute and enjoy it !
 
-## Contributors
-
-Feel free to work on it and suggest features ! I will always love to talk about it !
 
 ## Licence
 

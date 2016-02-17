@@ -1,19 +1,15 @@
-# Always redirect to the controller file
-# this file analyse and treats all HTTP requests
-# Directories request are redirected to the
-# controller file in order to a better compatibility
-# Uncomment the second rewrite condition to allow them
 <IfModule mod_rewrite.c>
+
     RewriteEngine On
+
+    RewriteCond %{HTTPS} off
+    RewriteRule .* - [E=REQUEST_SCHEME:http]
+
+    RewriteCond %{HTTPS} on
+    RewriteRule .* - [E=REQUEST_SCHEME:https]
+
     RewriteCond %{REQUEST_FILENAME} !-f
     #RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . index.php [L]
-</IfModule>
 
-# NGINX URL rewriting
-#if (!-f $request_filename){
-#	set $rule_0 1$rule_0;
-#}
-#if ($rule_0 = "1"){
-#	rewrite /. /index.php last;
-#}
+</IfModule>

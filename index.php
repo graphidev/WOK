@@ -2,9 +2,9 @@
 
     /**
      * Web Operational Kit
-     * The neither huger no micro extensible framework
+     * The neither huger nor micro humble framework
      *
-     * @copyright   All right reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @copyright   All rights reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
      * @license     BSD <licence.txt>
     **/
@@ -16,54 +16,62 @@
      * Instanciate entry point
      * and load application services
     **/
-    $request    = new Framework\Runtime\Request;
-    $router     = require_once 'var/routes.php';
+    $request    = new Message\Request();
+    $settings   = new Application\Settings(require_once 'var/settings.php');
+    $router     = call_user_func(require_once 'var/routes.php', $settings);
+    $services   = call_user_func(require_once 'var/services.php', $settings);
 
-    $services   = require_once 'var/services.php';
+
+    /**
+     * Register framework services
+    **/
     $services->register('request', $request);
     $services->register('router',  $router);
-    $services->register('session',  new Framework\Utils\Session);
-    $services->register('cookies',  '\Framework\Utils\Cookies');
 
-    if(!$services->has('events')) {
-        $events = new \Framework\Services\Events;
-        $services->register('events', $events);
-    }
 
     /**
      * Instanciate application
     **/
-    $app = new Framework\Core\Application( $services );
+    $app = new Application\Application( $services );
 
+    /*
+    $app->before(function($services) use($settings) {
+
+
+        if($settings->app->basedir) {
+
+            $request    = $services->get('request');
+            $uri        = $request->getUri();
+            $path       = mb_substr($uri->getPath(), mb_strlen($settings->app->basedir));
+
+            $uri->withPath($path);
+            $request->withUri($uri);
+            $services->register('request', $this->request);
+
+        }
+
+    });
+    */
 
 
     /**
-     * Execute the application
+     * Define the application script
     **/
-    $app->run(function() use($app, $router, $request) {
+    $app->action(function() use($request, $router) {
 
-        /**
-         * Look for a defined route
-         * Execute the matched route or return 404
-        **/
-        $route = $router->find(array(
-            'path'      => $request->path,
-            'method'    => $request->method,
-            'domain'    => $request->domain,
-        ));
+        $action = $router->fetch(
+            $request->getMethod(),
+            $request->getUri()->getHost(),
+            $request->getUri()->getPath()
+        );
 
-        if(!$route)
-            trigger_error('This request ('.$request.') has not any associated route', E_USER_ERROR);
+        if(!$action)
+            trigger_error('This request ('.$request->getUri().') has not any associated route', E_USER_ERROR);
 
-        // Execute controller's action
-        $response = $app->exec($route->controller, $route->action, $route->parameters);
-
-        // No response sent
-        if(is_null($response))
-            trigger_error(
-                'Controller '.$route->controller.'->'.$route->action
-                .' didn\'t returned any response', E_USER_ERROR);
-
-        return $response;
+        return $action;
 
     });
+
+    /*
+     $app->after(function($services) {});
+    */

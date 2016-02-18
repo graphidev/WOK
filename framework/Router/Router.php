@@ -95,9 +95,8 @@
                     $pattern = str_replace('{'.$name.'}', "(?<$name>$regexp)", $pattern);
                 }
 
-
                 // Invalid pattern
-                if($route->pattern != $uri && preg_match('#^'.$pattern.'$#isU', $uri, $parameters))
+                if($route->pattern != $uri && !preg_match('#^'.$pattern.'$#isU', $uri, $parameters))
                     continue;
 
                 $method     = substr(strstr($target, '->', false), 2);

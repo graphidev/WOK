@@ -116,18 +116,18 @@
 
         /**
          * Instanciate a file response
-         * @param   string      $file               Response file path or resource
+         * @param   string      $filepath           Response file path or resource
          * @param   string      $name               Response file name
          * @param   boolean     $download           Set the download response headers
          * @param   integer     $code               Response status code
         **/
-        static public function file($file, $name = null, $download = false, $code = 200) {
+        static public function file($filepath, $name = null, $download = false, $code = 200) {
 
             if(!is_readable($filepath))
                 throw new \RuntimeException('Not readable file '.$file);
 
-            if(is_resource($file)) {
-                $stream = $file;
+            if(is_resource($filepath)) {
+                $stream = $filepath;
             }
             else {
                 $stream   = fopen($filepath, 'r');
@@ -136,9 +136,14 @@
 
             if(empty($name)) $name = basename($path);
 
-            $response->headers->addHeader('Content-Type', 'application/octet-stream');
+            $mime = get_mime_type($filepath);
+            if(!$mime) $mime = 'application/octet-stream';
+
+            $response->headers->addHeader('Content-Type', $mime);
             $response->headers->addHeader('Content-Transfer-Encoding', 'Binary');
-            $response->headers->addHeader('Content-Length', $this->body->getSize());
+            $response->headers->addHeader('Content-Length', $response->body->getSize());
+
+            var_dump($response->headers);
 
             $response->headers->addHeader('Content-Disposition',
                 ($download ? 'attachment; filename="'.$name.'"' : 'inline; filename="'.$name.'"')

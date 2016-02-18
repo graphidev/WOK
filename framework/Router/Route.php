@@ -85,8 +85,8 @@
                 if(!preg_match('#^'.$regexp.'$#isU', $parameters[$name]))
                     trigger_error('Parameter "'. $name .'" doesn\'t match the REGEXP', E_USER_ERROR);
 
-                mb_str_replace($key, $value, $domain);
-                mb_str_replace($key, $value, $uri);
+                $domain = mb_str_replace('{'.$name.'}', $parameters[$name], $domain);
+                $uri    = mb_str_replace('{'.$name.'}', $parameters[$name], $uri);
             }
 
             if(!empty($domain)) $uri = '//'.$domain.$uri;

@@ -139,13 +139,11 @@
             $mime = get_mime_type($filepath);
             if(!$mime) $mime = 'application/octet-stream';
 
-            $response->headers->addHeader('Content-Type', $mime);
-            $response->headers->addHeader('Content-Transfer-Encoding', 'Binary');
-            $response->headers->addHeader('Content-Length', $response->body->getSize());
+            $response->setHeader('Content-Type', $mime);
+            $response->setHeader('Content-Transfer-Encoding', 'Binary');
+            $response->setHeader('Content-Length', $response->body->getSize());
 
-            var_dump($response->headers);
-
-            $response->headers->addHeader('Content-Disposition',
+            $response->setHeader('Content-Disposition',
                 ($download ? 'attachment; filename="'.$name.'"' : 'inline; filename="'.$name.'"')
             );
 
@@ -164,6 +162,33 @@
             $response->headers->addHeadear('Content-Type', 'application/octet-stream');
             return $response;
 
+        }
+
+
+        /**
+         * Check if a header has already been set
+         * @param   string      $name       Header name
+        **/
+        public function hasHeader($name) {
+            return $this->headers->hasHeader($name);
+        }
+
+        /**
+         * Set a new header value (override if already exists)
+         * @param   string      $name       Header name
+         * @param   string      $value      Header value
+        **/
+        public function setHeader($name, $value) {
+            return $this->headers->setHeader($name, $value);
+        }
+
+        /**
+         * Add a header value
+         * @param   string      $name       Header name
+         * @param   string      $value      Header value
+        **/
+        public function addHeader($name, $value) {
+            return $this->headers->addHeader($name, $value);
         }
 
 
@@ -272,6 +297,9 @@
                     'must-revalidate', 'proxy-revalidate'
                 ]);
             }
+
+
+            //var_dump($this->headers); exit;
 
             foreach($this->headers as $name => $value) {
                 @header(sprintf('%s: %s', $name, $value), true);

@@ -22,7 +22,7 @@
          * This helps change some app behavior
         **/
         'environment'     => (object) array(
-            'debug'             => true,
+            'debug'             => false,
             'maintenance'       => false,
         ),
 

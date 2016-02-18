@@ -75,7 +75,7 @@
         **/
         static public function text($body, $code = 200) {
 
-            $response = new self($html, $code);
+            $response = new self($body, $code);
             $response->headers->addHeader('Content-Type', 'text/plain; charset=utf-8');
 
             return $response;

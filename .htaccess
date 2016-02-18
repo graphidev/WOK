@@ -1,6 +1,9 @@
 <IfModule mod_rewrite.c>
 
     RewriteEngine On
+    
+    RewriteBase /
+    Options +FollowSymlinks
 
     RewriteCond %{HTTPS} off
     RewriteRule .* - [E=REQUEST_SCHEME:http]

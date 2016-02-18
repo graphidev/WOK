@@ -36,7 +36,8 @@
         **/
         public function __construct(array $headers = array()) {
 
-            $this->headers = $headers;
+            $this->headers  = $headers;
+            $this->position = 0;
 
         }
 
@@ -125,11 +126,12 @@
 
 
         function rewind() {
-            $this->position = 0;
+            reset($this->headers);
+            $this->position = key($this->headers);
         }
 
         function current() {
-            return $this->array[$this->position];
+            return $this->headers[$this->position];
         }
 
         function key() {
@@ -137,11 +139,12 @@
         }
 
         function next() {
-            ++$this->position;
+            next($this->headers);
+            $this->position = key($this->headers);
         }
 
         function valid() {
-            return isset($this->array[$this->position]);
+            return isset($this->headers[$this->position]);
         }
 
     }

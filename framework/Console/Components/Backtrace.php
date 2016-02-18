@@ -67,10 +67,10 @@
 
                 foreach($traces as $key => $t) {
 
-                    if(($options & self::IGNORE_TRIGGERED_ERRORS) && empty($t['class']) && $['function'] == 'trigger_error'  {
+                    if(empty($t['class']) && $t['function'] == 'trigger_error' && ($options & self::IGNORE_TRIGGERED_ERRORS))  {
                         unset($traces[$key]);
                     }
-                    elseif(($options & self::IGNORE_CLOSURES) && $t['function'] == '{closure}') {
+                    elseif($t['function'] == '{closure}' && ($options & self::IGNORE_CLOSURES)) {
                         unset($traces[$key]);
                     }
                     else {
@@ -87,11 +87,11 @@
                 $this->caller = $backtrace['class'].$backtrace['type'].$backtrace['function'];
             }
             else {
-                $this->caller = mb_str_replace('{closure}', 'Closure', $t['function']);
+                $this->caller = mb_str_replace('{closure}', 'Closure', $backtrace['function']);
             }
 
-            $this->file         = $backtrace['file'];
-            $this->line         = $backtrace['line'];
+            $this->file         = (isset($backtrace['file']) ? $backtrace['file'] : '');
+            $this->line         = (isset($backtrace['line']) ? $backtrace['line'] : '');
             $this->backtrace    = $traces;
 
         }

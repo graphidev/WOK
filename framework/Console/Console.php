@@ -11,8 +11,8 @@
 
     namespace Console;
 
-    use Components\Log;
-    use Components\Backtrace;
+    use Console\Components\Log;
+    use \Console\Components\Backtrace;
     use \Console\Adapters\AdapterInterface;
 
 
@@ -68,7 +68,7 @@
         public function __destruct() {
 
             foreach($this->logs as $log) {
-                $this->adapters->register($log);
+                $this->adapter->register($log);
             }
 
         }

@@ -80,7 +80,7 @@
                 trigger_error('Undefined Action '.$this->controller.'::'.$this->action, E_USER_ERROR);
 
 
-            $output = call_user_func(array($class, $this->action), $this->parameters);
+            $output = call_user_func_array(array($class, $this->action), $this->parameters);
 
             unset($class); // Call the class destructor
 

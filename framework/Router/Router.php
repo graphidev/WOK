@@ -103,8 +103,15 @@
                 $controller = strstr($target, '->', true);
                 $controller = $this->namespace.'\\'.$controller;
 
-                if(empty($parameters))
+                if(!empty($parameters)) {
+                    $parameters = array_intersect_key($parameters, $route->parameters);
+                }
+                else {
                     $parameters = array();
+                }
+
+
+
 
                 return new Dispatcher($controller, $method, $parameters);
 

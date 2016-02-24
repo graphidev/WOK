@@ -104,8 +104,9 @@
 
                 $this->translations[$namespace] = new Messages(array());
 
-                if(is_readable($filepath = $this->path.'/'.$namespace.'.ini'))
+                if(is_readable($filepath = $this->path.'/'.$namespace.'.ini')) {
                     $this->translations[$namespace] = new Messages(parse_ini_file($filepath));
+                }
 
             }
 
@@ -124,10 +125,10 @@
         **/
         public function translate($message, array $data = array(), $namespace = self::DEFAULT_NAMESPACE) {
 
-            $translation = $this->_getMessage($namespace);
+            $translation = $this->_getMessage($namespace, $message);
 
             if(!$translation)
-                throw new \OutOfBoundsException('Undefined message "'.$key.'" in "'.$namespace.'" ('.$this->locale.')');
+                throw new \OutOfBoundsException('Undefined message "'.$message.'" in "'.$namespace.'" ('.$this->locale.')');
 
             // Reference variables : &{namespace->message}
             $translation = preg_replace_callback('#&\{(?<message>[a-z0-9_\.\-]+)\}#isU', function($m) use ($namespace) {
@@ -163,7 +164,7 @@
                 }
             }
 
-            return $message;
+            return $translation;
 
         }
 

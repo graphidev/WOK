@@ -20,13 +20,14 @@
         /**
          * @var $messages           Messages collection
         **/
-        protected $messages
+        protected $messages;
 
         /**
-         * Load messages from a file
+         * Instanciate messages class
+         * @param   array       $messages       Messages collection
         **/
-        public function __construct($filepath) {
-            $this->messages = parse_ini_file($filepath);
+        public function __construct(array $messages) {
+            $this->messages = $messages;
         }
 
         /**
@@ -47,7 +48,7 @@
             if(!$this->hasMessage($key))
                 return false;
 
-            return $this->messages[$key]^;
+            return $this->messages[$key];
 
         }
 

@@ -101,10 +101,12 @@
         protected function _getMessage($namespace, $key) {
 
             if(!isset($this->messages[$namespace])) {
-                $this->translations[$namespace] = array();
+
+                $this->translations[$namespace] = new Messages(array());
 
                 if(is_readable($filepath = $this->path.'/'.$namespace.'.ini'))
-                    $this->translations[$namespace] = new Messages($filepath);
+                    $this->translations[$namespace] = new Messages(parse_ini_file($filepath));
+
             }
 
             return $this->translations[$namespace]->getMessage($key);
@@ -125,7 +127,7 @@
             $translation = $this->_getMessage($namespace);
 
             if(!$translation)
-                throw \OutOfBoundsException('Undefined message "'.$key.'" in "'.$namespace.'" ('.$this->locale.')');
+                throw new \OutOfBoundsException('Undefined message "'.$key.'" in "'.$namespace.'" ('.$this->locale.')');
 
             // Reference variables : &{namespace->message}
             $translation = preg_replace_callback('#&\{(?<message>[a-z0-9_\.\-]+)\}#isU', function($m) use ($namespace) {

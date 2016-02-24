@@ -38,8 +38,10 @@
 
             $this->meta     = stream_get_meta_data($this->stream);
             $this->seekable = $this->meta['seekable'];
-            $this->readable = in_array($this->meta['mode'], ['r', 'r+', 'w+', 'a+', 'x+', 'c+']);
-            $this->writable = in_array($this->meta['mode'], ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+']);
+
+            $mode = str_replace(['b','t'], '', $this->meta['mode']);
+            $this->readable = in_array($mode, ['r', 'r+', 'w+', 'a+', 'x+', 'c+']);
+            $this->writable = in_array($mode, ['r+', 'w', 'w+', 'a', 'a+', 'x', 'x+', 'c', 'c+']);
 
         }
 
@@ -105,6 +107,8 @@
             if (!$this->isReadable() || ($contents = stream_get_contents($this->stream)) === false) {
                 throw new \RuntimeException('Could not get contents of stream');
             }
+
+            rewind($this->stream);
 
             return $contents;
 

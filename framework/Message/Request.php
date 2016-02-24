@@ -50,6 +50,7 @@
             $password      = (isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : '');
             $auth          = $user.':'.$password;
 
+            // URI
             $this->uri     = new Uri(
                 $_SERVER['REQUEST_SCHEME'].'://'
                 .(!empty($password) && !empty($user) ? $auth.'@' : '')
@@ -58,18 +59,23 @@
                 .$_SERVER["REQUEST_URI"]
             );
 
+            // Headers
+            $this->headers = new Headers(getallheaders());
+
+
+            // Body
             $stream = fopen('php://temp', 'w+');
-            stream_copy_to_stream(fopen('php://input', 'r'), $stream);
+            stream_copy_to_stream(fopen('php://input', 'r+'), $stream);
             rewind($stream);
 
-            $body    = new Stream($stream);
+            // Fix PHP input body for submited form
+            if($this->method == 'POST' && in_array($this->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
+                fwrite($stream, json_encode($_POST));
+            }
 
-            $headers = new Headers(getallheaders());
+            rewind($stream);
 
-            parent::__construct($body, $headers);
-
-
-
+            $this->body    = new Stream($stream);
 
             // new \Components\File($path, $name, $type, $size, $error);
             foreach($_FILES as $k => $f) {
@@ -239,9 +245,8 @@
             }
 
             // POST
-            elseif($type == 'application/x-www-form-urlencoded') {
-                mb_parse_str($body, $data);
-                return $data;
+            elseif(in_array($type, ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
+                return json_decode($body, true);
             }
 
             else {

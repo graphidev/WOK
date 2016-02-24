@@ -7,9 +7,10 @@ extensions: [php]
 
 # directories and files matching this file mask will not be parsed
 exclude:
-	- controllers/
+    - controllers/
     - templates/
-	- models/
+    - models/
+    - vendor/
 
 # similar to above, but this files will be included in class tree
 #skipDocPath:

@@ -1,12 +1,12 @@
 {
-	"config": {
+    "config": {
         "vendor-dir": "vendor"
     },
 
-	"require": {
-		"filp/whoops": "^2.0",
-		"league/commonmark": "^0.13",
-		"jolicode/jolitypo": "^1.0"
-	}
+    "require": {
+        "filp/whoops": "^2.0",
+        "league/commonmark": "^0.13",
+        "jolicode/jolitypo": "^1.0"
+    }
 
 }

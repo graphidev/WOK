@@ -35,7 +35,7 @@
          * Instanciate files logging console adapter
         **/
         public function __construct($storage, $extension = 'log') {
-            $this->path         = $storage;
+            $this->storage      = $storage;
             $this->extension    = $extension;
         }
 

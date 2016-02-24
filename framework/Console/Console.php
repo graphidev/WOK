@@ -67,9 +67,7 @@
         **/
         public function __destruct() {
 
-            foreach($this->logs as $log) {
-                $this->adapter->register($log);
-            }
+            $this->adapter->register($this->logs);
 
         }
 

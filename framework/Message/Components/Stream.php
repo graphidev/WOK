@@ -103,7 +103,7 @@
         public function getContents() {
 
             if (!$this->isReadable() || ($contents = stream_get_contents($this->stream)) === false) {
-                throw new RuntimeException('Could not get contents of stream');
+                throw new \RuntimeException('Could not get contents of stream');
             }
 
             return $contents;
@@ -124,7 +124,7 @@
         **/
         public function rewind(){
             if (!$this->isSeekable() || rewind($this->stream) === false) {
-                throw new RuntimeException('Could not rewind stream');
+                throw new \RuntimeException('Could not rewind stream');
             }
         }
 
@@ -139,7 +139,7 @@
                 $length = $this->getSize(0);
 
             if (!$this->isReadable() || ($data = fread($this->stream, $length)) === false) {
-                throw new RuntimeException('Could not read from stream');
+                throw new \RuntimeException('Could not read from stream');
             }
             return $data;
         }
@@ -151,7 +151,7 @@
         public function write($string) {
 
             if (!$this->isWritable() || ($written = fwrite($this->stream, $string)) === false) {
-                throw new RuntimeException('Could not write to stream');
+                throw new \RuntimeException('Could not write to stream');
             }
             return $written;
         }

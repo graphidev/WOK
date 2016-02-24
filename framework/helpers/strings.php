@@ -14,43 +14,43 @@
     /**
      * This file contains all the strings helpers functions.
      * Beware, some of them use some configuration constants
-     * @package Core/Helpers/Strings
+     * @package Helpers
     **/
 
 
     /**
-	 * Replace the directory separator with the specific OS directory separator
-	 *
-	 * @param 	string 		$path		Path to translate
-	 * @return 	string 		Returns an OS fixed file path
-	**/
-	function ospath($path) {
+     * Replace the directory separator with the specific OS directory separator
+     *
+     * @param     string         $path        Path to translate
+     * @return    string         Returns an OS fixed file path
+    **/
+    function ospath($path) {
 
-		return str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
+        return mb_str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
 
-	}
+    }
 
-	/**
+    /**
      * Prefix path with the project root's path
      *
-     * @param   string  $path		The path to extend
-     * @return  string				Returns an absolute root path
-	 * @note This function does not expand symbolic links as realpath()
+     * @param   string  $path         The path to extend
+     * @return  string                Returns an absolute root path
+     * @note This function does not expand symbolic links as realpath()
     **/
-	function root($path = null) {
+    function root($path = null) {
 
         // Windows' server compatibility
         $path = str_replace(array('/', '\\'), DIRECTORY_SEPARATOR, $path);
-		return APPLICATION_ROOT.$path;
+        return APPLICATION_ROOT.$path;
 
-	}
+    }
 
 
     /**
      * Get the number of seconds from a string
      *
-     * @param   string     $string		String to convert in seconds
-     * @return  integer					Returns the number of seconds represented by the string
+     * @param   string     $string         String to convert in seconds
+     * @return  integer                    Returns the number of seconds represented by the string
     **/
     function transtime($string, $time = null) {
 
@@ -58,7 +58,7 @@
             $time = time();
 
         return strtotime($string, $time) - $time;
-        
+
     }
 
 
@@ -89,9 +89,9 @@
 
     /**
      * Encode a path
-     * @param 	string    $path 	Path to convert
-	 * @return	string				Returns the encoded path
-	 * @note Instead of the native url_encode function, accented letters are converted to non accented ones
+     * @param     string    $path       Path to convert
+     * @return    string                Returns the encoded path
+     * @note Instead of the native url_encode function, accented letters are converted to non accented ones
     **/
     function path_encode($string, $strtolower = false) {
 
@@ -105,19 +105,19 @@
             'u','u','u','U','U','U','c','C','N','n'
         ), $string);
 
-		// Remove not authorized characters
+        // Remove not authorized characters
         $string = preg_replace('#[^\sa-z0-9_-]#i', '', $string);
 
         // Special characters replaced with a dash
-		$string = str_replace(array(' ', '/', '+', '-', '_'), '-', trim($string));
+        $string = str_replace(array(' ', '/', '+', '-', '_'), '-', trim($string));
 
         // Transform to a lower case string
         if($strtolower)
             $string = mb_strtolower($string);
 
-		// Encode URL for not transformed characters
-		$string = urlencode($string);
+        // Encode URL for not transformed characters
+        $string = urlencode($string);
 
-		return $string;
+        return $string;
 
     }

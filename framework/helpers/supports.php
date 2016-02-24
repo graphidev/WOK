@@ -14,6 +14,7 @@
      * This file contains all the supports helpers functions.
      * These definitions provides functions that are not
      * enabled in the current PHP environment
+     * @package Helpers
     **/
 
 

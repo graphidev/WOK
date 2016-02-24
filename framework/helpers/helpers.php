@@ -11,7 +11,7 @@
 
     /**
      * This file contains the helpers functions.
-     * @package Core/Helpers/Variables
+     * @package Helpers
     **/
 
 

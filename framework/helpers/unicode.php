@@ -9,6 +9,11 @@
      * @license     BSD <licence.txt>
     **/
 
+    /**
+     * The helpers provide a unicode support.
+     * @package Helpers
+    **/
+
     if (!function_exists('mb_ucfirst')) {
         /**
          * Unicode ucfirst

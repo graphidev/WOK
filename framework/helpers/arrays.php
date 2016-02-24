@@ -12,7 +12,7 @@
 
     /**
      * This file contains all the array helpers functions.
-     * @package Core/Helpers/Arrays
+     * @package Helpers
     **/
 
 

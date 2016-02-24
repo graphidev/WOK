@@ -13,14 +13,14 @@
      * This file contains the helpers functions.
      * @package Core/Helpers/Variables
     **/
-    
+
 
     /**
      * Generate an XML string from an array
      *
-     * @param   array     $array		Array to convert
-     * @param   mixed     $xml			XML document root tag
-     * @return  string					Returns a converted XML document as a string
+     * @param   array     $array          Array to convert
+     * @param   mixed     $xml            XML document root tag
+     * @return  string                    Returns a converted XML document as a string
     **/
     function xml_encode($array, $xml = 'document'){
         if(!is_object($xml))

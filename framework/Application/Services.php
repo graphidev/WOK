@@ -25,27 +25,27 @@
         /**
          * @var object  $_instance  Service instance
         **/
-		private static $_instance;
+        private static $_instance;
 
 
-		/**
-		 * Instanciate services object for static usage
-		**/
-		public function __construct() {
-			if(!self::$_instance)
-				self::$_instance = $this;
-		}
-        
+        /**
+         * Instanciate services object for static usage
+        **/
+        public function __construct() {
+            if(!self::$_instance)
+                self::$_instance = $this;
+        }
 
-		/**
- 		 * Allow static instance call
-		**/
-		public static function getInstance() {
-			if(!self::$_instance)
-				self::$_instance = parent::__construct();
 
-			return self::$_instance;
-		}
+        /**
+         * Allow static instance call
+        **/
+        public static function getInstance() {
+            if(!self::$_instance)
+                self::$_instance = parent::__construct();
+
+            return self::$_instance;
+        }
 
 
         /**
@@ -141,10 +141,10 @@
          * @param string    $service        Service name
         **/
         public function __get($service) {
-			if(!isset($this->collection[$service]))
-				trigger_error('Undefined service '.$service, E_USER_ERROR);
+            if(!isset($this->collection[$service]))
+                trigger_error('Undefined service '.$service, E_USER_ERROR);
 
-			return $this->get($service);
+            return $this->get($service);
         }
 
         /**
@@ -152,10 +152,10 @@
          * @param string    $service        Service name
         **/
         public function __call($service, array $arguments) {
-			if(!isset($this->collection[$service]))
-				trigger_error('Undefined service '.$service, E_USER_ERROR);
+            if(!isset($this->collection[$service]))
+                trigger_error('Undefined service '.$service, E_USER_ERROR);
 
-			return $this->get($service, $arguments);
+            return $this->get($service, $arguments);
         }
 
         /**

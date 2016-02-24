@@ -1,21 +1,18 @@
 # Input and output pathes
 source: ./
-destination: ./docs
+destination: ./api
 
 # list of scanned file extensions (e.g. php5, phpt...)
 extensions: [php]
 
 # directories and files matching this file mask will not be parsed
 exclude:
-	- scripts/
 	- controllers/
+    - templates/
 	- models/
-	- var/settings-default.php
-	#- *settings-default.php
 
 # similar to above, but this files will be included in class tree
-skipDocPath:
-    #- *Component\Console
+#skipDocPath:
 
 # character set of source files; if you use only one across your files, we recommend you name it
 charset: [UTF-8]
@@ -26,15 +23,6 @@ charset: [UTF-8]
 # title of generated documentation
 title: WOK
 
-# base url used for sitemap (useful for public doc)
-#baseUrl: http://api.apigen.org
-
-# custom search engine id, will be used by search box
-#googleCseId: 011549293477758430224
-
-# Google Analytics tracking code
-#googleAnalytics: UA-35236-5
-
 # choose ApiGen template theme
 templateTheme: bootstrap # or: bootstrap
 
@@ -42,7 +30,7 @@ templateTheme: bootstrap # or: bootstrap
 #templateConfig: my/template/config.neon
 
 # the way elements are grouped in menu
-groups: packages # also: namespace, packages, none; auto will detect namespace first, than packages
+groups: auto # also: namespace, packages, none; auto will detect namespace first, than packages
 
 # access levels of included method and properties
 accessLevels: [public, protected] # also [private]

@@ -69,7 +69,7 @@
         public function __toString() {
 
             $string  = '['.$this->getDate('H:i:s').'] '.$this->message;
-            $string .= ' | ['.$this->backtrace->getCaller().'] '. $this->backtrace->getFile().' '.$this->backtrace->getLine();
+            $string .= ' | ['.$this->backtrace->getCaller().'] '. $this->backtrace->getFile().':'.$this->backtrace->getLine();
 
             return $string;
 

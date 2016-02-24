@@ -117,7 +117,7 @@
          * Get the trace line
         **/
         public function getLine() {
-            return $this->file;
+            return $this->line;
         }
 
 

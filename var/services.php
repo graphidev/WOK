@@ -113,7 +113,7 @@
             );
 
             // Register error as log
-            $console->log('['.$type.'] '.$message, $backtrace);
+            $console->log('['.$stype.'] '.$message, $backtrace);
             if($type == E_USER_ERROR) exit;
 
             // Prevent built-in behavior

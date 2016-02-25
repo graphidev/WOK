@@ -75,7 +75,7 @@
             }
 
             // Override data
-            $data = (empty($data) ? array_merge($this->data, $data) : $this->data);
+            $data = (!empty($data) ? array_merge($this->data, $data) : $this->data);
 
             echo $engine->render($template, $data);
 

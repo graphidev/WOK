@@ -105,7 +105,12 @@
                 $this->translations[$namespace] = new Messages(array());
 
                 if(is_readable($filepath = $this->path.'/'.$namespace.'.ini')) {
-                    $this->translations[$namespace] = new Messages(parse_ini_file($filepath));
+
+                    // Prevent variables replacement
+                    // @see http://php.net/manual/fr/function.parse-ini-file.php#99943
+                    $data = file_get_contents($filepath);
+                    $data = preg_replace('#\$\{(.+)\}#U', '\\\${$1}', $data);
+                    $this->translations[$namespace] = new Messages(parse_ini_string($data));
                 }
 
             }
@@ -131,6 +136,7 @@
                 throw new \OutOfBoundsException('Undefined message "'.$message.'" in "'.$namespace.'" ('.$this->locale.')');
 
             // Reference variables : &{namespace->message}
+            /*
             $translation = preg_replace_callback('#&\{(?<message>[a-z0-9_\.\-]+)\}#isU', function($m) use ($namespace) {
 
                 $ref_separator  = '->';
@@ -146,6 +152,7 @@
                 return $this->translate($m['message'], null, $namespace);
 
             }, $translation);
+            */
 
             // Apply helpers : [helper:arg1|arg2|...]
             $translation = preg_replace_callback('#\[(?<helper>[a-z0-9_\-]+):(?<values>.+)\]#isU', function($m) {
@@ -159,8 +166,9 @@
 
             // Data variables : ${var}
             if(is_array($data) && !empty($data)) {
+
                 foreach($data as $key => $value) {
-                    $translation = mb_str_replace('${'.$key.'}', $value, $translation);
+                    $translation = str_replace('${'.$key.'}', $value, $translation);
                 }
             }
 

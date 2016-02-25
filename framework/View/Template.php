@@ -51,7 +51,7 @@
          * @param string     $data        Source string to escape
         **/
         public function escape($data) {
-            return htmlentities($data, ENT_COMPAT | ENT_HTML5);
+            return htmlentities($data, ENT_QUOTES | ENT_HTML5);
         }
 
 

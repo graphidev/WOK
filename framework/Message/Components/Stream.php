@@ -108,7 +108,8 @@
                 throw new \RuntimeException('Could not get contents of stream');
             }
 
-            rewind($this->stream);
+            if($this->isSeekable())
+                rewind($this->stream);
 
             return $contents;
 

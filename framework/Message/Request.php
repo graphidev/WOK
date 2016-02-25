@@ -70,10 +70,10 @@
 
             // Fix PHP input body for submited form
             if($this->method == 'POST' && in_array($this->getMediaType(), ['application/x-www-form-urlencoded', 'multipart/form-data'])) {
+                $stream = fopen('php://temp', 'w+');
                 fwrite($stream, json_encode($_POST));
+                rewind($stream);
             }
-
-            rewind($stream);
 
             $this->body    = new Stream($stream);
 

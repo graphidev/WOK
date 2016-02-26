@@ -1,6 +1,6 @@
 .DS_Store
 /composer.lock
-/api
+/api/*
 /vendor/*
 /storage/*
 /tmp/*

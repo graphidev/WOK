@@ -1,101 +1,77 @@
 <?php
-    
-	/**
-     * Initialize WOK
-    **/
-	if(! require_once 'core/init.php' )
-		exit('System settings not available.');
-		
-    /**
-     * Initialise the framework environment
-     * This is required in order to process
-     * routing and dispatching request
-    **/
-    Request::parse();
-    Console::init();
-	Router::init();
 
     /**
-     * Start buffering
-     * Response will be generated before they will
-     * be send. If an error occured, the response 
-     * will be erased and replaced by an error response.
+     * Web Operational Kit
+     * The neither huger nor micro humble framework
+     *
+     * @copyright   All rights reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @license     BSD <licence.txt>
     **/
-    ob_start();
+
+    if(! require_once 'framework/init.php' )
+        trigger_error('Framework settings not available', E_USER_ERROR);
 
     /**
-     * End callback
-     * this function will be called at the end of PHP execution
+     * Instanciate entry point
+     * and load application services
     **/
-    register_shutdown_function(function() { 
-                
-        /**
-         * Register errors logs
-         * This will change response if an
-         * error occured from the beginning
-        **/
-        if(($error = Console::register()) && !SYSTEM_DEBUG) {
-            
-            ob_clean(); // Clean buffer
-                                                
-            Response::view('error', 500)->assign(array(
-                //'code' => $e->getCode(),
-                'message' => $error['message'],
-            ))->render();
+    $request    = new Message\Request();
+    $settings   = new Application\Settings(require_once 'var/settings.php');
+    $router     = call_user_func(require_once 'var/routes.php', $settings);
+    $services   = call_user_func(require_once 'var/services.php', $settings);
+
+
+    /**
+     * Register framework services
+    **/
+    $services->register('request', $request);
+    $services->register('router',  $router);
+
+
+    /**
+     * Instanciate application
+    **/
+    $app = new Application\Application( $services );
+
+    /*
+    $app->before(function($services) use($settings) {
+
+
+        if($settings->app->basedir) {
+
+            $request    = $services->get('request');
+            $uri        = $request->getUri();
+            $path       = mb_substr($uri->getPath(), mb_strlen($settings->app->basedir));
+
+            $uri->withPath($path);
+            $request->withUri($uri);
+            $services->register('request', $this->request);
+
         }
 
     });
-    
-
-    /**
-     * Ongoing maintenance 
-     * Output a 503 response
-    **/
-    if(SYSTEM_MAINTENANCE) {
-        Response::view('maintenance', 503)
-            ->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance')
-            ->render();
-        exit;
-    }
-
-    /**
-     * Set Custom routes and filters
-     * Note that XML manifest and in-app PHP manifest
-     * can both be used on the same instance.
-     * However the XML one will be parsed first
-    **/
-    if(file_exists(root(PATH_VAR.'/manifest.php')))
-        require_once(root(PATH_VAR.'/manifest.php'));
-
-    if(file_exists(root(PATH_VAR.'/filters.php')))
-        require_once(root(PATH_VAR.'/filters.php'));
-
-    /**
-     * Output response according to controller's return
-     * Return false if no route have been find
-    **/
-	if(!Router::dispatch()) {
-		Response::view('404', 404)
-			->cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404')
-			->render();   
-	}
+    */
 
 
     /**
-     * Shutdown if there was at least one error
-     * during the response generation
-     * This will call the shutdown callback
-     * and change the response content
+     * Define the application script
     **/
-    if(Console::getLastError())
-        exit;
+    $app->action(function() use($request, $router) {
 
+        $action = $router->fetch(
+            $request->getMethod(),
+            $request->getUri()->getHost(),
+            $request->getUri()->getPath()
+        );
 
-    /**
-     * Output response
-     * The response may have been replaced 
-     * by the error manager (Console)
-    **/
-    ob_end_flush();
-    
-?>
+        if(!$action)
+            trigger_error('This request ('.$request->getUri().') has not any associated route', E_USER_ERROR);
+
+        return $action;
+
+    });
+
+    /*
+     $app->after(function($services) {});
+    */

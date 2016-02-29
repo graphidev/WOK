@@ -136,7 +136,6 @@
                 throw new \OutOfBoundsException('Undefined message "'.$message.'" in "'.$namespace.'" ('.$this->locale.')');
 
             // Reference variables : &{namespace->message}
-            /*
             $translation = preg_replace_callback('#&\{(?<message>[a-z0-9_\.\-]+)\}#isU', function($m) use ($namespace) {
 
                 $ref_separator  = '->';
@@ -146,13 +145,12 @@
                     $ref_namespace  = mb_substr($m['message'], 0, $position);
                     $ref_message    = mb_substr($m['message'], $position + mb_strlen($ref_separator));
 
-                    return $this->translate($ref_message, null, $ref_namespace);
+                    return $this->translate($ref_message, [], $ref_namespace);
                 }
 
-                return $this->translate($m['message'], null, $namespace);
+                return $this->translate($m['message'], [], $namespace);
 
             }, $translation);
-            */
 
             // Apply helpers : [helper:arg1|arg2|...]
             $translation = preg_replace_callback('#\[(?<helper>[a-z0-9_\-]+):(?<values>.+)\]#isU', function($m) {

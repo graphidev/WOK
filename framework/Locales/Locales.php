@@ -132,7 +132,7 @@
 
             $translation = $this->_getMessage($namespace, $message);
 
-            if(!$translation)
+            if($translation === false)
                 throw new \OutOfBoundsException('Undefined message "'.$message.'" in "'.$namespace.'" ('.$this->locale.')');
 
             // Reference variables : &{namespace->message}

@@ -4,6 +4,7 @@
 /vendor/*
 /storage/*
 /tmp/*
+/models/*
 /controllers/*
 /templates/*
 /var/*

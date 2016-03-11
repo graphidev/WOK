@@ -41,7 +41,7 @@
             $this->host       = isset($parts['host'])   ? $parts['host']   : '';
             $this->port       = isset($parts['port'])   ? $parts['port']   : null;
             $this->path       = isset($parts['path'])   ? $parts['path']   : '';
-            mb_parse_str((isset($parts['query']) ? $parts['query'] : ''), $parameters);
+            mb_parse_str((isset($parts['query']) ? $parts['query'] : ''), $this->parameters);
 
         }
 

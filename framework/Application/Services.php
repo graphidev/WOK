@@ -42,7 +42,7 @@
         **/
         public static function getInstance() {
             if(!self::$_instance)
-                self::$_instance = parent::__construct();
+                self::$_instance = self::__construct();
 
             return self::$_instance;
         }

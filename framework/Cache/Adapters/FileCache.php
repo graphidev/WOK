@@ -65,7 +65,7 @@
                 'etag'      => md5($data)
             );
 
-            file_put_contents($this->storage.'/'.$key.'.'.FILE_EXTENSION, $data);
+            file_put_contents($this->storage.'/'.$key.'.'.self::FILE_EXTENSION, $data);
 
         }
 
@@ -81,7 +81,7 @@
                 return false;
 
             // Not readable file
-            $filepath = $this->storage.'/'.$key.'.'.FILE_EXTENSION;
+            $filepath = $this->storage.'/'.$key.'.'.self::FILE_EXTENSION;
             if(!is_readable($filepath))
                 return false;
 
@@ -107,7 +107,7 @@
             if(!$this->exists($key))
                 return false;
 
-            return file_get_contents($this->storage.'/'.$key.'.'.FILE_EXTENSION);
+            return file_get_contents($this->storage.'/'.$key.'.'.self::FILE_EXTENSION);
 
         }
 
@@ -121,7 +121,7 @@
                 return false;
 
             return $this->register[$key]['creation'];
-            //return filemtime($this->storage.'/'.$key.'.'.FILE_EXTENSION);
+            //return filemtime($this->storage.'/'.$key.'.'.self::FILE_EXTENSION);
 
         }
 
@@ -135,7 +135,7 @@
             if(isset($this->register[$key]))
                 unset($this->register[$key]);
 
-            return unlink($this->storage.'/'.$key.'.'.FILE_EXTENSION);
+            return unlink($this->storage.'/'.$key.'.'.self::FILE_EXTENSION);
         }
 
 

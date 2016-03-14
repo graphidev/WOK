@@ -89,7 +89,7 @@
         public function __get($property) {
 
             if(!isset($this->data[$property]))
-                trigger_error('Undefined view property '.$property, E_USER_ERROR);
+                trigger_error('Undefined view property '.$property.' in '.$this->filepath, E_USER_ERROR);
 
             return $this->data[$property];
 
@@ -103,7 +103,7 @@
         **/
         public function __call($helper, $parameters) {
             if(!isset($this->helpers[$helper]))
-                trigger_error('Undefined view helper '.$helper, E_USER_ERROR);
+                trigger_error('Undefined view helper '.$helper.' in '.$this->filepath, E_USER_ERROR);
 
             return call_user_func_array($this->helpers[$helper], $parameters);
         }

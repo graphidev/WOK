@@ -298,9 +298,6 @@
                 ]);
             }
 
-
-            //var_dump($this->headers); exit;
-
             foreach($this->headers as $name => $value) {
                 @header(sprintf('%s: %s', $name, $value), true);
             }

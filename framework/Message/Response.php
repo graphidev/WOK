@@ -247,7 +247,6 @@
             }
 
             $this->headers->setHeader('Etag', $etag);
-            $this->headers->setHeader('Pragma', ($timeleft ? 'cache' : 'no-cache'));
 
         }
 

@@ -199,6 +199,8 @@
         **/
         public function setEtagCache($etag, $modified = null) {
 
+            var_dump(date('r', $modified));
+
             $this->headers->addHeader('Etag', $etag);
 
             if(!empty($modified)) {
@@ -208,30 +210,6 @@
             }
 
         }
-
-        /**
-         * Define the cache type
-         * @param   string      $type       Caching life time
-        **/
-        public function setCacheType($time) {
-
-            $headers = array(
-                'Cache-Control'  => 'private, no-cache, no-store, must-revalidate, proxy-revalidate',
-                'Pragma'         => 'no-cache'
-            );
-
-            $headers['Cache-Control'] =  "max-age=$time, s-maxage=$time";
-            $headers['Cache-Control'] .= ', public, no-cache, must-revalidate';
-            $headers['Pragma'] = 'no-cache';
-
-            $headers['Cache-Control'] .= ', public';
-            $headers['Pragma'] = 'cache';
-
-            $this->headers->addHeader('Expires', $date->format('r'));
-
-        }
-
-
 
         /**
          * Define the response cache headers

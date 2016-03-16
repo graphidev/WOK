@@ -88,7 +88,7 @@
             if(!method_exists($this->adapter, $method))
                 trigger_error('Undefined cache adapter method '.$method, E_USER_ERROR);
 
-            return call_user_func_array([$this->adapter, $method], func_get_args());
+            return call_user_func_array([$this->adapter, $method], $arguments);
 
         }
 

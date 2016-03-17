@@ -199,8 +199,6 @@
         **/
         public function setEtagCache($etag, $modified = null) {
 
-            var_dump(date('r', $modified));
-
             $this->headers->addHeader('Etag', $etag);
 
             if(!empty($modified)) {

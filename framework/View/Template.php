@@ -49,9 +49,13 @@
         /**
          * Escape characters
          * @param string     $data        Source string to escape
+         * @param boolean    $minimal     Encode only characters that matters
+         * @see http://php.net/htmlentities
+         * @see http://php.net/htmlspecialchars
         **/
-        public function escape($data) {
-            return htmlentities($data, ENT_QUOTES | ENT_HTML5);
+        public function escape($data, $minimal = false) {
+            $flags = ENT_QUOTES | ENT_HTML5;
+            return ($minimal ? htmlspecialchars($data, $flags) : htmlentities($data, $flags));
         }
 
 

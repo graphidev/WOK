@@ -79,7 +79,6 @@
 
                 ob_start();
 
-
                     extract($data);
                     /**
                      * because $view is also part of $data array,

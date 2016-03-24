@@ -57,7 +57,7 @@
          * @param   mixed       $data       Value to cache
          * @param   mixed       $lifetime   Caching life time
         **/
-        public function store($key, $data, $lifetime) {
+        public function store($key, $data, $lifetime = 0) {
 
             $this->register[$key] = array(
                 'creation'  => time(),
@@ -87,7 +87,7 @@
 
             // Over time life
             $meta = $this->register[$key];
-            if(time() > $meta['creation'] + $meta['lifetime']) {
+            if(!empty($meta['lifetime']) && time() > $meta['creation'] + $meta['lifetime']) {
                 @unlink($filepath);
                 return false;
             }

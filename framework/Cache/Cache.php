@@ -33,7 +33,7 @@
          * @param   mixed       $data       Value to cache
          * @param   mixed       $lifetime   Caching life time
         **/
-        public function store($key, $data, $lifetime) {
+        public function store($key, $data, $lifetime = 0) {
             $this->adapter->store($key, $data, $lifetime);
         }
 

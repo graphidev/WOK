@@ -35,7 +35,7 @@
          * @param   array       $methods            Route accepted methods
          * @param   string      $domain             Route accepted domain
         **/
-        public function __construct($pattern, array $parameters = array(), array $methods = array(), $domain = null) {
+        public function __construct($pattern, array $parameters = array(), $domain = null, array $methods = array()) {
 
             $this->pattern      = $pattern;
             $this->parameters   = $parameters;

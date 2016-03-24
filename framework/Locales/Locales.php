@@ -49,7 +49,8 @@
             $this->locale   = $locale;
             $this->path     = $path.'/'.$locale;
 
-            setLocale(LC_ALL, $locale.'.UTF-8', $locale);
+            $lang = mb_strstr($locale, '_', true);
+            setLocale(LC_ALL, $locale.'.UTF-8', $locale, $lang.'.UTF-8', $lang);
 
             // Default parser : number
             $this->setParser('number', function($number) {

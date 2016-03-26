@@ -20,7 +20,7 @@
         const FILE_EXTENSION = 'tmp';
 
         protected $storage;
-        protected $register;
+        protected $register = array();
 
 
         /**
@@ -30,8 +30,6 @@
         public function __construct($storage) {
 
             $this->storage = $storage;
-
-            mkpath($this->storage);
 
             if(file_exists($register = $this->storage.'/register.json'))
                 $this->register = json_decode(file_get_contents($register), true);
@@ -64,6 +62,8 @@
                 'lifetime'  => $lifetime,
                 'etag'      => md5($data)
             );
+
+            mkpath($this->storage);
 
             file_put_contents($this->storage.'/'.$key.'.'.self::FILE_EXTENSION, $data);
 

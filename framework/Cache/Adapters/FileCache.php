@@ -132,10 +132,13 @@
         **/
         public function delete($key) {
 
-            if(isset($this->register[$key]))
-                unset($this->register[$key]);
+            if($this->exists($key))
+                return true;
+
+            unset($this->register[$key]);
 
             return unlink($this->storage.'/'.$key.'.'.self::FILE_EXTENSION);
+
         }
 
 

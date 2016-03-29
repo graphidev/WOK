@@ -137,7 +137,7 @@
                 throw new \OutOfBoundsException('Undefined message "'.$message.'" in "'.$namespace.'" ('.$this->locale.')');
 
             // Reference variables : &{namespace->message}
-            $translation = preg_replace_callback('#&\{(?<message>[a-z0-9_\.\-]+)\}#isU', function($m) use ($namespace) {
+            $translation = preg_replace_callback('#&\{(?<message>[a-z0-9>_\.\-]+)\}#isU', function($m) use ($namespace) {
 
                 $ref_separator  = '->';
                 $ref_position   = mb_strpos($ref_separator, $m['message']);

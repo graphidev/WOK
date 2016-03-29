@@ -54,7 +54,7 @@
          * @see http://php.net/htmlspecialchars
         **/
         public function escape($data, $minimal = false) {
-            $flags = ENT_QUOTES | ENT_HTML5;
+            $flags = ENT_QUOTES | ENT_HTML5 | ENT_SUBSTITUTE;
             return ($minimal ? htmlspecialchars($data, $flags) : htmlentities($data, $flags));
         }
 

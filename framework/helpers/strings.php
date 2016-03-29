@@ -94,7 +94,7 @@
      * @note Instead of the native url_encode function, accented letters are converted to non accented ones
      * @source http://chierchia.fr/blog/nettoyer-une-chaine-de-caracteres-php-permalien/
     **/
-    function path_encode($string, $lowercase = false) {
+    function path_encode($string, $lowercase = true) {
 
 		// Remove some bad encoded characters
 		$string = str_replace(array('ª','º', '°'), '', $string);

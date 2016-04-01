@@ -18,9 +18,27 @@
     class Application {
 
         /**
-         * @var object      Services collection object
+         * @var $services      Services collection object
         **/
         private $services;
+
+
+        /**
+         * @var $before        Before middleware interaction
+        **/
+        private $before;
+
+
+        /**
+         * @var $action        Main middleware interaction
+        **/
+        private $action;
+
+
+        /**
+         * @var $after        Before middleware interaction
+        **/
+        private $after;
 
 
         /**
@@ -41,18 +59,84 @@
 
 
         /**
-         * Run the application
+         * Define the main middleware action
          * @param Closure  $action     Action to execute in the application
         **/
         public function action(\Closure $action) {
 
-            $output = call_user_func($action, $this->services);
+            $this->action = $action;
 
-            while(is_callable($output)) {
-               $output = call_user_func($output, $this->services);
-           }
+        }
 
-           exit (is_null($output) ? 0 : $output);
+
+        /**
+         * Define the before middleware action
+         * @param Closure  $action     Action to execute in the application
+        **/
+        public function before(\Closure $action) {
+
+            $this->before = $action;
+
+        }
+
+
+        /**
+         * Define the before middleware action
+         * @param Closure  $action     Action to execute in the application
+        **/
+        public function after(\Closure $action) {
+
+            $this->after = $action;
+
+        }
+
+
+        /**
+         * Execute an action as far as possible
+         * @param   Closure     $action           The action to execute
+        **/
+        protected function exec(\Closure $action) {
+
+            while(is_callable($action)) {
+               $action = call_user_func($action, $this->services);
+            }
+
+            return $action;
+
+        }
+
+
+        /**
+         * Run middleware as a logical order
+         * @note this method send the end signal
+        **/
+        public function run() {
+
+            // Apply the before middleware event
+            if(!empty($this->before)) {
+
+                $before = $this->exec($this->before);
+
+                if(!is_null($before))
+                    $output = $before;
+
+            }
+
+            // Execute the main middleware action
+            if(!isset($output))
+                $output = $this->exec($this->action);
+
+            // Apply the after middleware
+            if(!empty($this->after)) {
+
+                $after = $this->exec($this->after);
+
+                if(!is_null($after))
+                    $output = $after;
+
+            }
+
+            exit (is_null($output) ? 0 : $output);
 
         }
 

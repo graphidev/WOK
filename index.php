@@ -34,24 +34,15 @@
     **/
     $app = new Application\Application( $services );
 
-    /*
-    $app->before(function($services) use($settings) {
 
+    /**
+     * Implements application middlewares
+    **/
+    if(file_exists($before = root(PATH_VAR.'/before.php')))
+        $app->before(require $before);
 
-        if($settings->app->basedir) {
-
-            $request    = $services->get('request');
-            $uri        = $request->getUri();
-            $path       = mb_substr($uri->getPath(), mb_strlen($settings->app->basedir));
-
-            $uri->withPath($path);
-            $request->withUri($uri);
-            $services->register('request', $this->request);
-
-        }
-
-    });
-    */
+    if(file_exists($after = root(PATH_VAR.'/after.php')))
+        $app->after(require $after);
 
 
     /**
@@ -72,6 +63,8 @@
 
     });
 
-    /*
-     $app->after(function($services) {});
-    */
+
+    /**
+     * Run the application
+    **/
+    $app->run();

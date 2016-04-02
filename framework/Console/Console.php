@@ -67,7 +67,8 @@
         **/
         public function __destruct() {
 
-            $this->adapter->register($this->logs);
+            if(!empty($this->logs))
+                $this->adapter->register($this->logs);
 
         }
 

@@ -44,7 +44,8 @@
         public function __get($property) {
 
             if(!isset($this->settings[$property])) {
-                trigger_error('Undefined configuration constant "'.$property.'"', E_USER_ERROR);
+                $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+                trigger_error('Undefined configuration constant "'.$property.'" ('.$backtrace[0]['file'].':'.$backtrace[0]['line'].')', E_USER_ERROR);
             }
 
             return $this->settings[$property];

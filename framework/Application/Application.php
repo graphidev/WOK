@@ -98,7 +98,7 @@
         protected function exec(\Closure $action) {
 
             while(is_callable($action)) {
-               $action = call_user_func($action, $this->services);
+               $action = call_user_func_array($action, [&$this->services]);
             }
 
             return $action;

@@ -48,7 +48,10 @@
     /**
      * Define the application script
     **/
-    $app->action(function() use($request, $router) {
+    $app->action(function($services) {
+
+        $request = $services->get('request');
+        $router  = $services->get('router');
 
         $action = $router->fetch(
             $request->getMethod(),

@@ -282,6 +282,7 @@
                 fopen('php://output', 'w+')
             );
 
+            return true;
 
         }
 

@@ -131,6 +131,18 @@
         **/
         public function translate($message, array $data = array(), $namespace = self::DEFAULT_NAMESPACE) {
 
+            // Namespace prefixed syntax (namespace->locale.to.translate)
+            if(($split = mb_strpos($message, '->')) !== false) {
+
+                $match      = mb_substr($message, 0, $split);
+
+                if($match) {
+                    $namespace  = $match;
+                    $message    = mb_strcut($message, $split+2);
+                }
+
+            }
+
             $translation = $this->_getMessage($namespace, $message);
 
             if($translation === false)

@@ -105,13 +105,11 @@
 
                 if(!empty($parameters)) {
                     $parameters = array_intersect_key($parameters, $route->parameters);
+                    $parameters = array_merge(array_flip(array_keys($route->parameters)), $parameters);
                 }
                 else {
                     $parameters = array();
                 }
-
-
-
 
                 return new Dispatcher($controller, $method, $parameters);
 

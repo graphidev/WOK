@@ -111,6 +111,15 @@
 
 
         /**
+         * Reassign URI path
+         * @param   string      $path       Path to assign
+        **/
+        public function withPath($path) {
+            $this->path = $path;
+        }
+
+
+        /**
          * Get the original URI
         **/
         public function __toString() {

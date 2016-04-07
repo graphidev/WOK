@@ -121,6 +121,14 @@
         }
 
         /**
+         * Reassign an URI component
+         * @param \Message\Components\Uri   $uri        URI component to assign
+        **/
+        public function withUri(Uri $uri) {
+            $this->uri = $uri;
+        }
+
+        /**
          * Get the Request headers list
          * @return array
         **/

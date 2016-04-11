@@ -136,7 +136,7 @@
 
             }
 
-            exit (is_null($output) ? 0 : $output);
+            exit (is_null($output) ? 0 : intval($output));
 
         }
 

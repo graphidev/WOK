@@ -8,7 +8,6 @@
     **/
     class Session /*implements \Iterator*/ {
 
-
         /**
          * Instanciate session
          * @param   string      $id         Session ID
@@ -108,8 +107,12 @@
                 setCookie(session_name(), '', 1, $cookie['path'], $cookie['domain'], $cookie['secure'], $cookie['httponly']);
             }
 
-            $this->flush();
-            @session_destroy();
+            if (session_status() == PHP_SESSION_ACTIVE) {
+
+                $this->flush();
+                @session_destroy();
+
+            }
 
         }
 

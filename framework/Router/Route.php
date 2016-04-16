@@ -54,6 +54,14 @@
 
         }
 
+        /**
+         * Check the availability of a property
+         * @param string    $property       Property's name
+        **/
+        public function __isset($property) {
+            return isset($this->$property);
+        }
+
 
         /**
          * Get a non-transformed route property

@@ -52,7 +52,7 @@
 
             // URI
             $this->uri     = new Uri(
-                $_SERVER['REQUEST_SCHEME'].'://'
+                (!empty($_SERVER['REQUEST_SCHEME']) ? $_SERVER['REQUEST_SCHEME'] : 'http').'://'
                 .(!empty($password) && !empty($user) ? $auth.'@' : '')
                 .$_SERVER['HTTP_HOST']
                 .(!empty($_SERVER['SERVER_PORT']) ? ':'.$_SERVER['SERVER_PORT'] : '')

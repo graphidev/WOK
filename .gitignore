@@ -1,4 +1,9 @@
+/.*
+!/.gitignore
+!/.htaccess
+
 .DS_Store
+
 /composer.*
 /api/*
 /vendor/*

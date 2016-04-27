@@ -34,6 +34,15 @@
         return is_callable($variable)  || is_closure($variable);
     }
 
+    /**
+     * Check if a variable is an integer
+     * @param   mixed       $variable       Variable to test
+     * @return  boolean     Returns true for both real integer type and string, false otherwise
+    **/
+    function is_intval($variable) {
+        return (is_numeric($variable) ? intval(0 + $variable) == $variable : false);
+    }
+
 
     /**
      * Get the boolean value of a variable (including string interpretation)

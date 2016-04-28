@@ -133,7 +133,7 @@
          * @return array
         **/
         public function getHeaders() {
-            return $this->headers()->__toArray();
+            return $this->headers->__toArray();
         }
 
         /**

@@ -70,7 +70,7 @@
         /**
          * Get a multiple header values
          * @param string    $name           Header name
-         * @param array    $default         Alternative default header values
+         * @param array     $default         Alternative default header values
         **/
         public function getHeaderValues($name, array $default = null) {
             $header = $this->getHeader($name, $default);
@@ -79,8 +79,44 @@
                 return $default;
 
             $values = explode(',', $header);
-            
+
             return array_map('trim', $values);
+        }
+
+        /**
+         * Get a multiple header decreasingly ordered values
+         * @param string    $name           Header name
+         * @param array     $default         Alternative default header values
+        **/
+        public function getHeaderOrderedValues($name, array $default = null) {
+
+            $values = $this->getHeaderValues($name, $default);
+
+            if(!is_array($values))
+                return $values;
+
+            $quantified = array();
+            foreach($values as $index => $item) {
+
+                $qvalue = 1;
+                if(($qpos = mb_strpos($item, $prefix = ';q=')) !== false) {
+
+                    $qvalue         = mb_substr($item, $qpos + mb_strlen($prefix));
+                    $item           = mb_substr($item, 0, $qpos); // Remove quality string
+                    $values[$index] = $item;
+
+                }
+
+                $quantified[$item] = $qvalue;
+
+            }
+
+            uasort($values, function($a, $b) use($quantified) {
+                return ($quantified[$a] >= $quantified[$b] ? -1 : 1);
+            });
+
+            return $values;
+
         }
 
 

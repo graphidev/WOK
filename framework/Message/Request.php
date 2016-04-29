@@ -166,6 +166,15 @@
         }
 
         /**
+         * Get a multiple header decreasingly ordered values
+         * @param string    $name            Header name
+         * @param array     $default         Alternative default header values
+        **/
+        public function getHeaderOrderedValues($name, array $default = null) {
+            return $this->headers->getHeaderOrderedValues($name, $default);
+        }
+
+        /**
          * Get the user accepted language
         **/
         public function getAcceptedLanguages() {

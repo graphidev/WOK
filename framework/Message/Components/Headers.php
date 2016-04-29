@@ -78,7 +78,9 @@
             if($header === $default)
                 return $default;
 
-            return explode(',', $header);
+            $values = explode(',', $header);
+            
+            return array_map('trim', $values);
         }
 
 

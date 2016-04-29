@@ -26,17 +26,16 @@
          * @param   Headers     $headers        Message headers
         **/
         public function __construct(Stream $body, Headers $headers) {
-            $this->headers = $headers;
-            $this->body    = $body;
+            $this->headers  = $headers;
+            $this->body     = $body;
         }
 
         protected function getHeaders() {
             return $this->headers;
         }
 
-        protected function getBody() {
+        public function getBody() {
             return $this->body;
         }
-
 
     }

@@ -28,21 +28,9 @@
         public function __construct($body = null, $status = 200) {
 
             $this->code = $status;
-            $headers    = new Components\Headers();
+            $this->headers    = new Components\Headers();
 
-            if(!is_resource($body)) {
-                $stream = fopen('php://temp', 'w+');
-                fputs($stream, $body);
-                rewind($stream);
-
-                $body = $stream;
-            }
-
-            $stream = new Stream($body);
-
-
-            parent::__construct($stream, $headers);
-
+            $this->setBody($body);
 
         }
 
@@ -245,6 +233,23 @@
             }
 
             $this->headers->setHeader('Etag', $etag);
+
+        }
+
+        /**
+         * Set response body
+        **/
+        public function setBody($body) {
+
+            if(!is_resource($body)) {
+                $stream = fopen('php://temp', 'w+');
+                fputs($stream, $body);
+                rewind($stream);
+
+                $body = $stream;
+            }
+
+            $this->body = new Stream($body);
 
         }
 

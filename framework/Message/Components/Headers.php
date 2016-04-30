@@ -112,7 +112,7 @@
             }
 
             uasort($values, function($a, $b) use($quantified) {
-                return ($quantified[$a] >= $quantified[$b] ? -1 : 1);
+                return ($quantified[$a] > $quantified[$b] ? -1 : 1);
             });
 
             return $values;

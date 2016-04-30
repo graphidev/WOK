@@ -115,7 +115,8 @@
                 return ($quantified[$a] > $quantified[$b] ? -1 : 1);
             });
 
-            return $values;
+            // Return reindexed values
+            return array_values($values);
 
         }
 

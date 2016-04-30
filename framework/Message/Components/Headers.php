@@ -36,7 +36,7 @@
         **/
         public function __construct(array $headers = array()) {
 
-            $this->headers  = $headers;
+            $this->headers  = array_change_key_case($headers, CASE_LOWER);
             $this->position = 0;
 
         }
@@ -48,7 +48,7 @@
         **/
         public function hasHeader($name) {
 
-            return isset($this->headers[$name]);
+            return isset($this->headers[mb_strtolower($name)]);
 
         }
 
@@ -60,10 +60,10 @@
         **/
         public function getHeader($name, $default = false) {
 
-            if(!isset($this->headers[$name]))
+            if(!isset($this->headers[mb_strtolower($name)]))
                 return $default;
 
-            return $this->headers[$name];
+            return $this->headers[mb_strtolower($name)];
 
         }
 
@@ -150,7 +150,7 @@
                 $value = implode(', ', $value);
             }
 
-            $this->headers[$name] = $value;
+            $this->headers[mb_strtolower($name)] = $value;
 
         }
 

@@ -58,7 +58,7 @@
         public function __construct($unstack = 0, $options = null) {
 
             $unstack++;
-            $traces = debug_backtrace();
+            $traces = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
             $traces = array_slice($traces, $unstack);
 
             // Filter traces with options

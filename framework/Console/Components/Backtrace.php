@@ -60,7 +60,6 @@
             $unstack++;
             $traces = debug_backtrace();
             $traces = array_slice($traces, $unstack);
-            $traces = array_reverse($traces);
 
             // Filter traces with options
             if(!empty($options)) {

@@ -57,7 +57,7 @@
         if(empty($time))
             $time = time();
 
-        return strtotime($string, $time) - $time;
+        return intval(strtotime($string, $time) - $time);
 
     }
 

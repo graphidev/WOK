@@ -86,7 +86,7 @@
         }
 
         /**
-         * Instanciate an HTML response
+         * Instanciate a JSON response
          * @param   string|array       $body           Response body
          * @param   integer            $code           Response status code
         **/
@@ -101,6 +101,22 @@
             return $response;
 
         }
+
+
+        /**
+         * Instanciate an XML response
+         * @param   string|array       $body           Response body
+         * @param   integer            $code           Response status code
+        **/
+        static public function xml($body, $code = 200) {
+
+            $response = new self($body, $code);
+            $response->headers->addHeader('Content-Type', 'application/xml; charset=utf-8');
+
+            return $response;
+
+        }
+
 
         /**
          * Instanciate a file response

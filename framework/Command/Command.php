@@ -11,58 +11,123 @@
 
     namespace Command;
 
-
-    use Components\Arguments;
-
     /**
      * The Command class provides an interface
-     * to manage CLI interactions
+     * to access command lines instructions and parameters.
     **/
-    class Command extends \Iterator {
+    class Command {
+
+        protected $path;
+        protected $arguments    = array();
+
 
         /**
-         * @var $arguments          Arguments collection
+         * Parse command line arguments
+         * @param   array       $argv       Command line splitted instructions
         **/
-        protected $arguments;
+        public function __construct(array $argv) {
 
-        /**
-         * Instanciate the command class
-        **/
-        public function __construct() {
-            $this->arguments = new Arguments();
+            foreach($argv as $arg) {
+
+                if(mb_substr($arg, 0, $lenght = mb_strlen($prefix = '--')) == $prefix) {
+
+                    $arg = mb_substr($arg, $lenght);
+
+                    if($pos = mb_strpos($arg, '=')) {
+
+                        $name   = mb_substr($arg, 0, $pos);
+                        $value  = mb_substr($arg, $pos+1);
+
+                        $delimiter = mb_substr($value, 0, 1);
+                        if(in_array($delimiter, ['"', '"']) && mb_substr($value, -1) == $delimiter) {
+                            $value = str_replace('\\'.$delimiter, $delimiter, $value);
+                            $value = mb_substr($value, 1, mb_strlen($value)-1);
+                        }
+
+                        $this->addArgument($name, $value);
+
+                    }
+                    else {
+                        $this->addArgument($arg, true);
+                    }
+
+                }
+                elseif(empty($this->path)) {
+                    $this->path = $arg;
+                }
+
+            }
+
         }
 
+
         /**
-         * Instanciate a new argument
-         * @param   string      $key        Argument single character key ( -k usage )
-         * @param   string      $name       Argument both name & multi characters key ( --key usage )
-         * @param   string      $mode       Argument value mode
-         * @param   string      $helper     Argument description helper
+         * Get the command path
         **/
-        public function withArgument($key, $name, $mode = Arguments::VALUE_IGNORED, $helper = null) {
-            $this->arguments->addArgument($key, $name, $mode, $helper);
+        public function getPath() {
+            return $this->path;
         }
 
 
         /**
-         * Check if an argument have been instanciated
-         * @param   string      $name       Argument name
+         * Check if an argument is available
+         * @param string    $name        Argument's name
         **/
         public function hasArgument($name) {
-            return $this->arguments->hasArgument($name);
+            return isset($this->arguments[$name]);
         }
 
-
         /**
-         * Get an argument
-         * @param   string      $name          Argument name
-         * @param   mixed       $default       Argument default value
+         * Get an argument value
+         * @param string    $name           Argument's name
+         * @param mixed     $default        Default argument's value
         **/
         public function getArgument($name, $default = false) {
 
-            return $this->arguments->getArgument($name, $default);
+            if(!$this->hasArgument($name))
+                return $default;
+
+            return $this->arguments[$name];
 
         }
+
+
+        /**
+         * Add an argument value
+         * @param string    $name        Argument's name
+         * @param mixed     $value       Argument's value
+        **/
+        public function addArgument($name, $value) {
+
+            $argument = $this->getArgument($name);
+
+            if($argument) {
+
+                if(is_array($argument)) {
+                    $argument[] = $value;
+
+                }
+                else {
+                    $argument = array($argument, $value);
+                }
+
+                $value = $argument;
+
+            }
+
+            $this->setArgument($name, $value);
+
+        }
+
+        /**
+         * Set an argument value
+         * @param string    $name        Argument's name
+         * @param mixed     $value       Argument's value
+        **/
+        public function setArgument($name, $value) {
+            $this->arguments[$name] = $value;
+        }
+
 
 
     }

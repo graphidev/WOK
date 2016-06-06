@@ -25,6 +25,16 @@ As I said, no extra-features would be present. But there is some of them that I 
     - Locales _(providing a translation interface)_
 
 
+## Guidelines
+
+The v2.x branch has an all new roadmap, in opposition with a complete-closed-architecture. It follows the [KISS](https://en.wikipedia.org/wiki/KISS_principle) and theses rules among others :
+
+- Do not provide features that would not be used.
+- Allow code customization instead of options based features.
+- Do not prevent custom projects architectures possibilities.
+- Keep a professionnal approach, without hacks.
+- ...
+
 ## Versioning convention
 
 This framework releases versioning are based on the [Semantic versioning 2.0.0](http://semver.org/). This means that this project releases use the **MAJOR**.**MINOR**.**PATCH**-**EXTRA** template where :

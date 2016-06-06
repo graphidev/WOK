@@ -1,119 +1,73 @@
 <?php
 
-	/**
-     * Initialize WOK
+    /**
+     * Web Operational Kit
+     * The neither huger nor micro humble framework
+     *
+     * @copyright   All rights reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @license     BSD <licence.txt>
     **/
-	require_once 'core/init.php';
+
+    if(! require_once 'framework/init.php' )
+        trigger_error('Framework settings not available', E_USER_ERROR);
+
+    /**
+     * Instanciate entry point
+     * and load application services
+    **/
+    $request    = new Message\Request();
+    $settings   = new Application\Settings(require_once 'var/settings.php');
+    $router     = call_user_func(require_once 'var/routes.php', $settings);
+    $services   = call_user_func(require_once 'var/services.php', $settings);
 
 
     /**
-     * Generate session and cookies requirements such as language
-     * We supposed that these session and cookies values are not 
-     * changed by custom developments (reserved keys)
+     * Register framework services
     **/
-    if(!Session::has('language') && Cookie::exists('language', true)):
-        Session::set('language', Cookie::get('language'));
-
-    else:
-        
-        $languages = get_accepted_languages(explode(' ', SYSTEM_LANGUAGES));
-        
-        if(!empty($languages))
-            $language = array_shift($languages);
-            
-        else
-            $language = SYSTEM_DEFAULT_LANGUAGE;
-        
-        Session::set('language', $language);
-
-        if(!Cookie::exists('language'))
-            Cookie::set('language', $language, 15811200);        
-
-    endif;
-
-    if(!Session::has('uniqid')):
-        Session::set('uniqid', Cookie::exists('uniqid') ? Cookie::get('uniqid') : uniqid(sha1(time())));
-        Cookie::set('uniqid', Session::get('uniqid'));
-    endif;
-
-    
-    /**
-     * Load XML manifest and initialize
-     * Request class according to manifest
-    **/
-    Manifest::load();
-    Request::init();
+    $services->register('request', $request);
+    $services->register('router',  $router);
 
 
     /**
-     * Set Custom things routes
-     * This should be use for development. Prefere using 
-     * XML manifest in order to keep framework structure
+     * Instanciate application
     **/
-    if(file_exists(root(PATH_VAR.'/manifest.php')))
-        require_once(root(PATH_VAR.'/manifest.php'));
-    
-    
-    
-    /**
-     * Ongoing maintenance 
-    **/
-    Controller::route(SYSTEM_MAINTENANCE, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, 'maintenance');
-        Response::view('maintenance', 503);
-    }, true);
+    $app = new Application\Application( $services );
 
 
     /**
-     * Set static pages controller (special)
+     * Implements application middlewares
     **/
-    Controller::route(Request::get('action') == 'static', function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, str_replace('/', '-', Request::uri()));
-        Response::view(Request::uri(), 200);
-    }, true);
+    if(file_exists($before = root(PATH_VAR.'/before.php')))
+        $app->before(require $before);
+
+    if(file_exists($after = root(PATH_VAR.'/after.php')))
+        $app->after(require $after);
 
 
     /**
-     * Set manifest controllers
+     * Define the application script
     **/
-    Controller::route(Request::get('action') ? true : false, function() {
-        list($controller, $action) = explode(':', strtolower(Request::get('action')));
-        if(file_exists(root(PATH_CONTROLLERS."/$controller.ctrl.php"))):
-            Controller::call($controller, $action);
-        else:
-            trigger_error("Controller '$controller' not found", E_USER_ERROR);
-        endif;
-    }, true);
+    $app->action(function($services) {
+
+        $request = $services->get('request');
+        $router  = $services->get('router');
+
+        $action = $router->fetch(
+            $request->getMethod(),
+            $request->getUri()->getHost(),
+            $request->getUri()->getPath()
+        );
+
+        if(!$action)
+            trigger_error('This request ('.$request->getUri().') has not any associated route', E_USER_ERROR);
+
+        return $action;
+
+    });
 
 
     /**
-     * Set default homepage controller
+     * Run the application
     **/
-    Controller::route(Request::uri() == '' || Request::uri() == '/' ? true : false, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PROTECTED, 'homepage');
-        Response::view('homepage', 200);
-    }, true);
-
-
-    /**
-     * If there is no response for any controller
-     * Just send a 404 response
-    **/
-    Controller::route(true, function() {
-        Response::cache(Response::CACHETIME_MEDIUM, Response::CACHE_PUBLIC, '404');
-        Response::view('404', 404);
-    }, true);
-
-
-    /**
-     * Invoke the controller queue
-    **/
-    Controller::invoke();
-
-    
-    /**
-     * Output response
-    **/
-    Response::output();
-
-?>
+    $app->run();

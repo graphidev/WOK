@@ -1,11 +1,18 @@
-# Always redirect to the controller file
-# this file analyse and treats all HTTP requests
-# Directories request are redirected to the
-# controller file in order to a better compatibility
-# Uncomment the second rewrite condition to allow them
 <IfModule mod_rewrite.c>
+
     RewriteEngine On
-    RewriteCond %{REQUEST_FILENAME} !-f
+
+    RewriteBase /
+    Options +FollowSymlinks
+
+    RewriteCond %{HTTPS} off
+    RewriteRule .* - [E=REQUEST_SCHEME:http]
+
+    RewriteCond %{HTTPS} on
+    RewriteRule .* - [E=REQUEST_SCHEME:https]
+
+    #RewriteCond %{REQUEST_FILENAME} !-f
     #RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule . index.php [L]
+
 </IfModule>

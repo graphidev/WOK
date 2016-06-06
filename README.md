@@ -43,7 +43,6 @@ Here is the price to use an awesome tool. But don't worry, just some little thin
 
 - Apache v2 server with URL Rewriting module (The nginx compatibility is not provided, for now)
 - PHP v5.4 or higher (but always prefer an higher version) (Not test in PHP v7)
-- Mcrytp library (used for cookies encryption)
 - SPL library (that should be present by default)
 
 

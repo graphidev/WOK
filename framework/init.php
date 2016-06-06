@@ -19,7 +19,7 @@
     const WOK_MAJOR_VERSION        = 2;         // Major version
     const WOK_MINOR_VERSION        = 0;         // Minor version
     const WOK_PATCH_VERSION        = 0;         // Patch version
-    const WOK_EXTRA_RELEASE        = 'alpha';   // Extra version
+    const WOK_EXTRA_RELEASE        = 'stable';   // Extra version
     const WOK_RELEASE_NAME         = 'Helium';  // Release name
 
     // Define full WOK version (without extra release)

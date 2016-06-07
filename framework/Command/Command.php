@@ -27,6 +27,8 @@
         **/
         public function __construct(array $argv) {
 
+            $this->arguments    = new Components\Arguments();
+
             foreach($argv as $arg) {
 
                 if(mb_substr($arg, 0, $lenght = mb_strlen($prefix = '--')) == $prefix) {
@@ -44,11 +46,11 @@
                             $value = mb_substr($value, 1, mb_strlen($value)-1);
                         }
 
-                        $this->addArgument($name, $value);
+                        $this->arguments->addArgument($name, $value);
 
                     }
                     else {
-                        $this->addArgument($arg, true);
+                        $this->arguments->addArgument($arg, true);
                     }
 
                 }
@@ -70,11 +72,18 @@
 
 
         /**
+         * Get arguments object
+        **/
+        public function getArguments() {
+            return $this->arguments;
+        }
+
+        /**
          * Check if an argument is available
          * @param string    $name        Argument's name
         **/
         public function hasArgument($name) {
-            return isset($this->arguments[$name]);
+            return $this->arguments->hasArgument($name);
         }
 
         /**
@@ -84,10 +93,7 @@
         **/
         public function getArgument($name, $default = false) {
 
-            if(!$this->hasArgument($name))
-                return $default;
-
-            return $this->arguments[$name];
+            return $this->arguments->getArgument($name, $default);
 
         }
 
@@ -98,25 +104,7 @@
          * @param mixed     $value       Argument's value
         **/
         public function addArgument($name, $value) {
-
-            $argument = $this->getArgument($name);
-
-            if($argument) {
-
-                if(is_array($argument)) {
-                    $argument[] = $value;
-
-                }
-                else {
-                    $argument = array($argument, $value);
-                }
-
-                $value = $argument;
-
-            }
-
-            $this->setArgument($name, $value);
-
+            return $this->arguments->addArgument($name, $default);
         }
 
         /**
@@ -125,7 +113,7 @@
          * @param mixed     $value       Argument's value
         **/
         public function setArgument($name, $value) {
-            $this->arguments[$name] = $value;
+            return $this->arguments->setArgument($name, $default);
         }
 
 

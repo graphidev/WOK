@@ -67,7 +67,7 @@
                 $message .= "".PHP_EOL."";
 
             fwrite($this->stdout, $message);
-
+            return $this;
         }
 
 
@@ -85,7 +85,15 @@
         **/
         public function newline() {
             $this->write(PHP_EOL.PHP_EOL);
+            return $this;
         }
 
+        /**
+         * Write a tabulation
+        **/
+        public function tab() {
+            $this->write(chr(9));
+            return $this;
+        }
 
     }

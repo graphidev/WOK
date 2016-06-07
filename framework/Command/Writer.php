@@ -80,4 +80,12 @@
         }
 
 
+        /**
+         * Write an empty new line
+        **/
+        public function newline() {
+            $this->write(PHP_EOL.PHP_EOL);
+        }
+
+
     }

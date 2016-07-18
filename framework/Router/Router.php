@@ -18,30 +18,32 @@
     class Router {
 
         /**
+         * @var   string    Controllers namespace prefix
+        **/
+        protected $namespace   =    'Controllers';
+
+        /**
          * @var   array     Routes collection
         **/
         protected $routes      = array();
 
 
         /**
-         * Register a new route
-         * @param   string      $action         Associated route action
-         * @param   Route       $route          Route instance
-         * @param   string      $alias          Route custom name
-         * @param   boolean     $prioritize     Prioritize route
+         * Instanciate router
+         * @param string    $prefix        Controllers namespace prefix
         **/
-        public function addRoute($action, Route $route, $alias = null, $prioritize = false) {
+        public function __construct($namespace = 'Controllers') {
+            $this->namespace = $namespace;
+        }
 
-            $name = (!empty($alias) ? $alias : $action);
-            $item = array(
-                $name => (object) array(
-                    'action'    => $action,
-                    'route'     => $route,
-                )
-            );
 
-            $this->routes = ($prioritize ? $item + $this->routes : $this->routes + $item);
-
+        /**
+         * Register a new route
+         * @param   string      $action     Associated route action
+         * @param   Route       $route      Route instance
+        **/
+        public function addRoute($action, Route $route) {
+            $this->routes[$action] = $route;
         }
 
 
@@ -64,7 +66,7 @@
             if(!$this->hasRoute($action))
                 return false;
 
-            return $this->routes[$action]->route;
+            return $this->routes[$action];
         }
 
 
@@ -77,10 +79,7 @@
         **/
         public function fetch($method, $domain, $uri) {
 
-            foreach($this->routes as $name => $properties) {
-
-                $target = $properties->action;
-                $route  = $properties->route;
+            foreach($this->routes as $target => $route) {
 
                 // Invalid domain
                 if(!empty($route->domain) && $route->domain != $domain)
@@ -102,6 +101,7 @@
 
                 $method     = substr(strstr($target, '->', false), 2);
                 $controller = strstr($target, '->', true);
+                $controller = $this->namespace.'\\'.$controller;
 
                 if(!empty($parameters)) {
                     $parameters = array_intersect_key($parameters, $route->parameters);

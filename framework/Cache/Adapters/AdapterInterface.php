@@ -17,15 +17,37 @@
     **/
     interface AdapterInterface {
 
+        /**
+         * Store an item data for defined life time
+         * @param       $key          string      Item identifier
+         * @param       $data         mixed       Item value to store
+         * @param       $lifetime     integer     Item life time (null|0 for undefined)
+         * @return      boolean       Return weither the item has been store or not
+        **/
+        public function store($key, $data, $lifetime = 0);
+
+
+        /**
+         * Check the availability of a cached item
+         * @param       $key          string      Item identifier
+         * @return      boolean       Return weither the item is available or not
+        **/
+        public function contains($key);
+
+
+        /**
+         * Get  cached value
+         * @param       $key          string      Item identifier
+         * @return      boolean       Return weither the item is available or not
+        **/
         public function fetch($key);
 
-        public function exists($key);
 
-        public function store($key, $data, $lifetime);
-
+        /**
+         * Delete a specific cached value
+         * @param   string      $key        Cached value key
+        **/
         public function delete($key);
-
-        public function clear();
 
 
     }

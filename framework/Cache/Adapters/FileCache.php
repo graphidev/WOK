@@ -12,25 +12,41 @@
     namespace Cache\Adapters;
 
     /**
-     * The Cache class provide an interface
-     * to store, retrieve and remove values caching
+     * The FileCache is an adapter based on
+     * the file system for the Cache class.
     **/
     class FileCache implements AdapterInterface {
 
+
+        /**
+         * File caching extension
+         * @constant    string
+        **/
         const FILE_EXTENSION = 'tmp';
 
+        /**
+         * Storage path
+         * @var string
+        **/
         protected $storage;
+
+
+        /**
+         * Files cache register
+         * @var array()
+        **/
         protected $register = array();
 
 
         /**
-         * Instanciate the file cache adapter
-         * @param   string     $storage           Cache file storage path
+         * Instanciate adapter storage path
+         * @param   string   $path   Storage path
         **/
-        public function __construct($storage) {
+        public function __construct($path) {
 
-            $this->storage = $storage;
+            $this->storage = $path;
 
+            // Load the storage path register
             if(file_exists($register = $this->storage.'/register.json'))
                 $this->register = json_decode(file_get_contents($register), true);
 
@@ -38,22 +54,11 @@
 
 
         /**
-         * Update register file
-        **/
-        public function __destruct() {
-
-            if(!empty($this->register)) {
-                file_put_contents($this->storage.'/register.json', json_encode($this->register));
-            }
-
-        }
-
-
-        /**
-         * Store a value in the cache
-         * @param   string      $key        Value key
-         * @param   mixed       $data       Value to cache
-         * @param   mixed       $lifetime   Caching life time
+         * Store a data value for defined life time
+         * @param       $key          string      Data identifier
+         * @param       $data         mixed       Data value to store
+         * @param       $lifetime     integer     Data life time (null|0 for undefined)
+         * @return      boolean     Return weither the item has been store or not
         **/
         public function store($key, $data, $lifetime = 0) {
 
@@ -65,16 +70,17 @@
 
             mkpath($this->storage);
 
-            file_put_contents($this->storage.'/'.$key.'.'.self::FILE_EXTENSION, $data);
+            return file_put_contents($this->storage.'/'.$key.'.'.self::FILE_EXTENSION, $data);
 
         }
 
 
         /**
          * Check the availability of a cached value
-         * @param   string      $key        Cached value key
+         * @param       $key          string      Value identifier
+         * @return      boolean     Return weither the item is available or not
         **/
-        public function exists($key) {
+        public function contains($key) {
 
             // Not in the register
             if(!isset($this->register[$key]))
@@ -99,12 +105,13 @@
 
 
         /**
-         * Retrieve a cached value
-         * @param   string      $key        Cached value key
+         * Get cached value
+         * @param       $key          string      Item identifier
+         * @return                boolean     Return weither the item is available or not
         **/
         public function fetch($key) {
 
-            if(!$this->exists($key))
+            if(!$this->contains($key))
                 return false;
 
             return file_get_contents($this->storage.'/'.$key.'.'.self::FILE_EXTENSION);
@@ -113,26 +120,12 @@
 
 
         /**
-         *
-        **/
-        public function getLastModifiedTime($key) {
-
-            if(!$this->exists($key))
-                return false;
-
-            return $this->register[$key]['creation'];
-            //return filemtime($this->storage.'/'.$key.'.'.self::FILE_EXTENSION);
-
-        }
-
-
-        /**
-         * Delete a specific cached value
+         * Delete a cached value
          * @param   string      $key        Cached value key
         **/
         public function delete($key) {
 
-            if($this->exists($key))
+            if($this->contains($key))
                 return true;
 
             unset($this->register[$key]);
@@ -143,12 +136,42 @@
 
 
         /**
-         * Remove all cached values
+         * Get the cache last modified time
+         * @note This method is not part of the AdapterInterface
         **/
-        public function clear() {
-            @rmpath($this->storage);
+        public function getLastModifiedTime($key) {
+
+            if(!$this->contains($key))
+                return false;
+
+            return $this->register[$key]['creation'];
+
         }
 
+        /**
+         * Clear file cache
+         * @note This method is not part of the AdapterInterface
+        **/
+        public function clear() {
+
+            $this->register = array();
+
+            return @rmpath($this->storage);
+
+        }
+
+
+        /**
+         * Update the current register
+         * @note This method is not part of the AdapterInterface
+        **/
+        public function __destruct() {
+
+            if(!empty($this->register)) {
+                file_put_contents($this->storage.'/register.json', json_encode($this->register));
+            }
+
+        }
 
 
     }

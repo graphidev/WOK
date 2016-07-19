@@ -12,48 +12,68 @@
     namespace Cache;
 
     /**
-     * The Cache class provide an interface
-     * to store, retrieve and remove values caching
+     * The Cache class provides an interface
+     * to manage data caching througt adapters.
     **/
     class Cache {
 
+        /**
+         * Cache system adapter
+         * @var $adapter    AdapterInterface
+        **/
         protected $adapter;
 
+
         /**
-         * Instanciate the cache interface
-         * @param   \Cache\Adapter      $adapter            Cache adapter
+         * Instanciante cache adapter
+         * @param   AdapterInterface    $adapter        Adapter implementing AdapterInterface
         **/
         public function __construct(Adapters\AdapterInterface $adapter) {
             $this->adapter = $adapter;
         }
 
+
         /**
-         * Store a value in the cache
-         * @param   string      $key        Value key
-         * @param   mixed       $data       Value to cache
-         * @param   mixed       $lifetime   Caching life time
+         * Store an item data for defined life time
+         * @param       $key          string      Item identifier
+         * @param       $data         mixed       Item value to store
+         * @param       $lifetime     integer     Item life time (null|0 for undefined)
+         * @return      boolean     Return weither the item has been store or not
         **/
         public function store($key, $data, $lifetime = 0) {
-            $this->adapter->store($key, $data, $lifetime);
+            return $this->adapter->store($key, $data, $lifetime);
         }
 
 
         /**
-         * Check the availability of a cached value
-         * @param   string      $key        Cached value key
+         * Check the availability of a cached item
+         * @param       $key          string      Item identifier
+         * @return      boolean     Return weither the item is available or not
+        **/
+        public function contains($key) {
+            return $this->adapter->contains($key);
+        }
+
+
+        /**
+         * Alias of contains method
+         * @param       $key          string      Item identifier
+         * @return      boolean     Return weither the item is available or not
         **/
         public function exists($key) {
-            return $this->adapter->exists($key);
+            return $this->contains($key);
         }
 
 
+
         /**
-         * Retrieve a cached value
-         * @param   string      $key        Cached value key
+         * Get  cached value
+         * @param       $key          string      Item identifier
+         * @return                boolean     Return weither the item is available or not
         **/
         public function fetch($key) {
 
-            if(!$this->exists($key))
+            if(!$this->contains($key))
                 return false;
 
             return $this->adapter->fetch($key);
@@ -71,19 +91,11 @@
 
 
         /**
-         * Remove all cached values
+         * Allow custom method adapter call
+         * @param       $method         string          Method's name
+         * @param       $arguments      array           Method's arguments
         **/
-        public function clear() {
-            return $this->adapter->clear(func_get_args());
-        }
-
-
-        /**
-         * Allow specific adapter methods call
-         * @param   string      $method         Adapter method's name
-         * @param   string      $arguments      Adapter method's arguments
-        **/
-        public function __call($method, array $arguments = null) {
+        public function __call($method, array $arguments = array()) {
 
             if(!method_exists($this->adapter, $method))
                 trigger_error('Undefined cache adapter method '.get_class($this->adapter).'::'.$method, E_USER_ERROR);

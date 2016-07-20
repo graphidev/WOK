@@ -17,8 +17,7 @@
      * Instanciate entry point
      * and load application services
     **/
-    $segments   = array_slice($argv, 1);
-    $command    = new Command\Command($segments);
+    $command    = new Command\Command(array_slice($argv, 1));
     $settings   = new Application\Settings(require_once 'var/settings.php');
     $router     = call_user_func(require_once 'var/routes.php', $settings);
     $services   = call_user_func(require_once 'var/services.php', $settings);

@@ -13,4 +13,5 @@
 /controllers/*
 /templates/*
 /var/*
+/etc/*
 /src/*

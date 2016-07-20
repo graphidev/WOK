@@ -1,25 +1,25 @@
 <?php
 
     /**
-    * Web Operational Kit
-    * The neither huger nor micro humble framework
-    *
-    * @copyright   All rights reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
-    * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
-    * @license     BSD <license.txt>
+     * Web Operational Kit
+     * The neither huger nor micro humble framework
+     *
+     * @copyright   All rights reserved 2015, Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @author      Sébastien ALEXANDRE <sebastien@graphidev.fr>
+     * @license     BSD <license.txt>
     **/
 
     /**
      *    Welcome in the WOK initialization file
      *
      * You don't have to edit any line of this file.
-     * To add / call some options, please use /var/options.php
+     * To add / call some options, please use /etc/options.php
      *
     **/
     const WOK_MAJOR_VERSION        = 2;         // Major version
     const WOK_MINOR_VERSION        = 0;         // Minor version
     const WOK_PATCH_VERSION        = 0;         // Patch version
-    const WOK_EXTRA_RELEASE        = 'stable';   // Extra version
+    const WOK_EXTRA_RELEASE        = 'stable';  // Extra version
     const WOK_RELEASE_NAME         = 'Helium';  // Release name
 
     // Define full WOK version (without extra release)
@@ -33,7 +33,7 @@
     const PATH_CORE             = '/framework';         // Framework core's path
     const PATH_STORAGE          = '/storage';           // Storage folder's path
     const PATH_TEMPLATES        = '/templates';         // Views template's path
-    const PATH_VAR              = '/var';               // Application configuration path
+    const PATH_ETC              = '/etc';               // Application configuration path
     const PATH_TMP              = '/tmp';               // Temporary files' directory
 
     // Define absolute project root path
@@ -78,7 +78,7 @@
      * Once everything is fine loaded, we call the options file.
      * This one will be used to add your own stuffs.
     **/
-    if(file_exists($options = APPLICATION_ROOT.PATH_VAR.'/options.php'))
+    if(file_exists($options = APPLICATION_ROOT.PATH_ETC.'/options.php'))
         require_once $options;
 
     /**

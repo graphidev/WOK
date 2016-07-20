@@ -17,9 +17,9 @@
      * and load application services
     **/
     $request    = new Message\Request();
-    $settings   = new Application\Settings(require_once 'var/settings.php');
-    $router     = call_user_func(require_once 'var/routes.php', $settings);
-    $services   = call_user_func(require_once 'var/services.php', $settings);
+    $settings   = new Application\Settings(require_once root(PATH_ETC.'/settings.php'));
+    $router     = call_user_func(require_once root(PATH_ETC.'/routes.php'), $settings);
+    $services   = call_user_func(require_once root(PATH_ETC.'/services.php'), $settings);
 
 
     /**
@@ -38,10 +38,10 @@
     /**
      * Implements application middlewares
     **/
-    if(file_exists($before = root(PATH_VAR.'/before.php')))
+    if(file_exists($before = root(PATH_ETC.'/before.php')))
         $app->before(require $before);
 
-    if(file_exists($after = root(PATH_VAR.'/after.php')))
+    if(file_exists($after = root(PATH_ETC.'/after.php')))
         $app->after(require $after);
 
 
